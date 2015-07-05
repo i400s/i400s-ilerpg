@@ -1,0 +1,20 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140927                R BNDTYPF
+000111140406      *
+000112140927                  BNBIND    R               REFFLD(BIND)
+000115140927                  BNSDSC    R               REFFLD(SDSC)
+000116140927                  BNDSCR    R               REFFLD(DSCR)
+000117140927
+000118140927                  BNDLTD    R               REFFLD(DLTD)
+000119140927      *
+000120140927                  BNCUSR    R               REFFLD(CUSR)
+000121140927                  BNCPGM    R               REFFLD(CPGM)
+000122140927                  BNCDTS    R               REFFLD(CDTS)
+000123140927                  BNEUSR    R               REFFLD(EUSR)
+000124140927                  BNEPGM    R               REFFLD(EPGM)
+000125140927                  BNEDTS    R               REFFLD(EDTS)
+000126140927
+000127140406      *
+000128140927                K BNBIND

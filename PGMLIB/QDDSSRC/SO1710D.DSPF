@@ -1,0 +1,849 @@
+000100140322      * ________________________________________________________________________
+000101140410      * !"£$%^&*()_+{}:@~<>?
+000200140327      * |Description  :  Standard template
+000300140327      * |Programmer   :  Jonathan Wilson
+000400140327      * |Date Created :  31/10/1994
+000500140327      * |-----------------------------------------------------------------------
+000600140327      * |MODIFICATIONS
+000700140327      * |-----------------------------------------------------------------------
+000800140728      * |By          :   Jonathan Wilson
+000900140728      * |Date        :   28/07/2014
+001000140327      * |Scan        :
+001100140728      * |Description :   Bibliographic maintenance
+001200140906      *-------------------------------------------------------------------------
+001201140906      *
+001202140906      *
+001203140906                                            REF(*LIBL/MTBIBLP MTBIBLF)
+001204140906
+001300140322                                            DSPSIZ(24 80 *DS3)
+001600140322                                            PRINT
+001700140322                                            ALTHELP
+001800140322                                            ALTPAGEUP
+001900140322                                            ALTPAGEDWN
+002000140322                                            CF02
+002100140322                                            CF03
+002200140322                                            CF04
+002300140322                                            CF05
+002400140322                                            CF06
+002500140322                                            CF09
+002600140322                                            CF10
+002700140322                                            CF11
+002800140322                                            CF12
+002900140322                                            CF13
+003000140322                                            CF14
+003100140322                                            CF15
+003200140322                                            CF16
+003300140322                                            CF17
+003400140322                                            CF18
+003500140322                                            CF19
+003600140322                                            CF20
+003700140322                                            CF21
+003800140322                                            CF22
+003900140322                                            CF23
+004000140825                                            CF24
+004100140322                                            HELP
+004101140916
+004102140916      * 22     : *ON=Valid function key pressed, *OFF=Enter pressed
+004103140916      * 23     : *ON=Rollup
+004104140916      * 24     : *ON=RollDown
+004105140916                                            VLDCMDKEY(22)
+004106140916                                            ROLLUP(23)
+004107140916                                            ROLLDOWN(24)
+004403140906      *
+004500140906      *-------------------------------------------------------------------------
+004600140924                R S1SFL01                   SFL
+004601140906      *-------------------------------------------------------------------------
+004602140906      *
+004603140906      *
+004700140322                                            TEXT('List subfile record')
+004701140906      * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
+004800140906        21                                  SFLNXTCHG
+004801140906
+004802140906
+004803140906      * 01     : *OFF=Control (UL), *ON=Detail (PR)
+004804140906      * 02     : *OFF=Detail records to display, *ON='(No records to display)'
+004805140906      * 03-04  : *VAR=Condition fields, based on "view" (BinFmt, 00=V1, 01=V2..11=V4)
+004806140906      * 05     : *RES=If 03-04 is not enough
+004807140906      * 06-08  : *VAR=Condition fields, based on "mode" (BinFmt, ..111=M8), (edit, view, etc.)
+004808140906      * 09     : *RES=If 06-08 is not enough
+004809140906      * 10-19  : *VAR=Condition fields
+004810140906      *  10    :  *OFF=Allow option, *ON=Protect option
+004811140906      *  11-19 :  *VAR=Suggested use is to condition PR/UL of "control" fields individually
+004812140906      *  11-19 :  *VAR=Suggested use is to condition output of "detail" fields.
+004813140906      * 20     : *RES=If 10-19 is not enough
+004814140906                  S10120        20A  H      TEXT('Save field, *IN01-20')
+004819140906
+004820140906
+004821140906      * 97-88  : *VAR=Condition errors
+004822140906      *  97    :  *ON=S1OPT in error
+004823140906      *  96    :  *ON=BLISBN in error
+004824140906      *  95-88 :  *RES=Additional 'key' fields in error
+005705140906                  S18897        10A  H      TEXT('Save field, *IN88-97')
+005707140829
+005708140829
+005900140905                  S1OPT          2A  B 11  2
+006000140906       N10                                  DSPATR(UL)
+006001140906        10                                  DSPATR(PR)
+006200140322        97                                  DSPATR(RI)
+006300140322        97                                  DSPATR(PC)
+006301140829
+006302140825      *
+006303140825      * 'Keys'
+006500140916                  BLISBN    R        B 11  6
+006600140825       N01                                  DSPATR(UL)
+006700140825        01                                  DSPATR(PR)
+006800140322        96                                  DSPATR(RI)
+006900140322        96                                  DSPATR(PC)
+006901140825      *
+006902140825      * 'Records'
+006904140916        01N02     BLSKSN    R        O 11 17
+006905140916        01N02     S1DLTD    R    4   O 11 28REFFLD(BLDLTD)
+006906140916        01N02     BLSUPN    R        O 11 33
+006907140916        01N02     BLIMPN    R        O 11 41
+008200140915        01N02
+008201140923       N03N04     S1FTTL    R   31   O 11 50REFFLD(JMREF2/FTTL *LIBL/JMREF2)
+008702140915        01N02
+008703140923       N03 04     S1FATN    R   31   O 11 50REFFLD(JMREF2/FATN *LIBL/JMREF2)
+008705140825      *
+008706140829      * 'No records to display'
+008707140920        01 02                          12  4'(No records to display)'
+008708140920       N01 02                          13  4'(No records to display)'
+008724140409
+008800140906      *
+008900140906      *-------------------------------------------------------------------------
+009100140924                R C1PNL01                   SFLCTL(S1SFL01)
+009101140906      *-------------------------------------------------------------------------
+009102140906      *
+009103140906      *
+009111140906      * 21     : *ON=A field has changed, *OFF=No fields have changed
+009112140906                                            CHANGE(21)
+009200140906                                            SFLSIZ(0010)
+009300140906                                            SFLPAG(0010)
+009400140322                                            TEXT('List control record')
+009600140322                                            KEEP
+009700140322                                            RTNCSRLOC(&D@CRCD &D@CFLD &D@CPSN)
+009800140322                                            CSRLOC(D@PROW D@PCOL)
+009801140905                                            SFLCSRRRN(&D@SCRR)
+009900140322                                            OVERLAY
+009901140906
+009902140906      * 02     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+010000140906       N02                                  SFLDSP
+010100140906       N02                                  SFLDSPCTL
+010200140906        02                                  SFLCLR
+010201140906      * 25     : *OFF=More..., *ON=Bottom
+010300140906        25                                  SFLEND(*MORE)
+010301140906      * 01     : *OFF=All 'subset' fields (UL), *ON=All 'subset' fields (PR)
+010302140906      * 10-19  : *VAR=Condition fields
+010303140906      *  10    :  *RES=If 11-19 is not enough (Use 20 first to save confusion)
+010304140906      *  11-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "subset/key" individual fields
+010305140906      *  20    :  *RES=If 11-19 is not enough
+010306140906                  C10120        20A  H      TEXT('Save field, *IN01-20')
+010307140906
+010308140906
+010309140906      * 97-88  : *VAR=Condition errors
+010310140906      *  97    :  *ON=C1SKSN in error
+010311140906      *  96    :  *ON=C1SUPN in error
+010312140906      *  95    :  *ON=C1IMPN in error
+010313140906      *  94-88 :  *RES=Additional 'subset' fields in error
+010314140906                  C18897        10A  H      TEXT('Save field, *IN88-97')
+010315140906
+010316140906
+010317140327                  D@PROW         3S 0H
+010318140327                  D@PCOL         3S 0H
+010319140327                  D@CRCD        10A  H
+010320140327                  D@CFLD        10A  H
+010321140327                  D@CPSN         4S 0H
+010322140903                  D@SCRR         5S 0H
+010323140327                  S@PGM         10A  O  1  2
+010324140921                  @MODE          8A  O  1 13
+010325140728                                        1 25'Work with bibliographic records'
+010326140906                                             DSPATR(HI)
+010400140923                  VCOID         10A  O  1 71
+010401140921                                        2 71DATE(*JOB *YY) EDTCDE(Y)
+010402140828                                        3  2'Search key  . . .'
+010403140905                  C1#01          1A  O  3 20
+010404140905                  C1SKSN    R        B  3 22REFFLD(BLSKSN)
+010406140906       N01N11                               DSPATR(UL)
+010407140906        01
+010408140906      O 11                                  DSPATR(PR)
+010409140906        97                                  DSPATR(RI)
+010410140906        97                                  DSPATR(PC)
+010411140917                                        3 34'Name, generic*, *ALL, *BLANKS'
+010412140828                                        4  2'Supplier  . . . .'
+010413140905                  C1#02          1A  O  4 20
+010414140905                  C1SUPN    R        B  4 22REFFLD(BLSUPN)
+010415140906       N01N12                               DSPATR(UL)
+010416140906        01
+010417140906      O 12                                  DSPATR(PR)
+010418140906        96                                  DSPATR(RI)
+010419140906        96                                  DSPATR(PC)
+010420140903                  DSONM4    R        O  4 34REFFLD(MTSUPPF/DSONM4 *LIBL/MTSUPPP)
+010421140828                                        5  2'Imprint . . . . .'
+010422140905                  C1#03          1A  O  5 20
+010423140905                  C1IMPN    R        B  5 22REFFLD(BLIMPN)
+010424140906       N01N13                               DSPATR(UL)
+010425140906        01
+010426140906      O 13                                  DSPATR(PR)
+010427140906        95                                  DSPATR(RI)
+010428140906        95                                  DSPATR(PC)
+010429140923                  IPISBP    R        O  5 34REFFLD(MTIMPNF/IPISBP *LIBL/MTIMPNP)
+010430140923                  C1IPNM    R   38   O  5 43REFFLD(MTIMPNF/IPIPNM *LIBL/MTIMPNP)
+010431140828                                        7  2'Type options, press Enter'
+010432140423                                            COLOR(BLU)
+010433140906      * 06-08  : *VAR=Condition fields, based on "mode" (BinFmt, ..111=M8), (edit, view, etc.)
+010434140906       N06N07N08                        8  3'1=Create   2=Change   3=Copy    4=-
+010435140816                                            Delete    5=View    7=Rename'
+010436140423                                            COLOR(BLU)
+010437140906       N06N07 08                        8  3'5=View'
+010438140423                                            COLOR(BLU)
+010439140906       N06 07N08                        8  3'5=View, /=Select'
+010440140906                                            COLOR(BLU)
+010441140906      * 03-04  : *VAR=Condition fields, based on "view" (BinFmt, 00=V1, 01=V2..11=V4)
+010447140916       N03N04                          10  2'Opt ISBN       SchKey     *Dlt Sup-
+010448140923                                            No   ImpNo    Title                -
+010449140916                                                      '
+010450140423                                            DSPATR(HI)
+010451140916       N03 04                          10  2'Opt ISBN       SchKey     *Dlt Sup-
+010452140923                                            No   ImpNo    Author               -
+010453140916                                                      '
+010454140906                                            DSPATR(HI)
+010455140327
+010456140906      *
+010457140327      *-------------------------------------------------------------------------
+010458140924                R C1FTR01
+010459140906      *-------------------------------------------------------------------------
+010460140906      *
+010461140906      *
+010462140327                                            TEXT('List footer record')
+010463140327                                            OVERLAY
+010464140916       N06N07N08
+010465140916       N03N04                          22  2'F3=Exit      F5=Refresh   F6=Creat-
+010466140916                                            e    F11=View1    F12=Cancel   F16=-
+010467140916                                            Position '
+010468140327                                            COLOR(BLU)
+010469140916       N06N07N08
+010470140916       N03N04                          23  2'F17=Subset                        -
+010471140916                                                                               -
+010472140916                                                     '
+010473140916                                            COLOR(BLU)
+010474140916       N06N07N08
+010475140916       N03 04                          22  2'F3=Exit      F5=Refresh   F6=Creat-
+010476140916                                            e    F11=View2    F12=Cancel   F16=-
+010477140916                                            Position '
+010478140423                                            COLOR(BLU)
+010479140916       N06N07N08
+010480140916       N03 04                          23  2'F17=Subset                        -
+010481140916                                                                               -
+010482140916                                                     '
+010483140916                                            COLOR(BLU)
+010484140925      *
+010485140925      *-------------------------------------------------------------------------
+010486141002                R D1HDR00
+010487140925      *-------------------------------------------------------------------------
+010488140925      *
+010489140925      *
+010490140925                                            TEXT('D1 header')
+010491140925                                            RTNCSRLOC(&D@CRCD &D@CFLD &D@CPSN)
+010492141003      ***                                       CSRLOC(D@PROW D@PCOL)
+010500140925
+010501140925
+010502140925                  D@PROW    R        H      REFFLD(D@PROW *SRC)
+010503140925                  D@PCOL    R        H      REFFLD(D@PCOL *SRC)
+010504140925                  D@CRCD    R        H      REFFLD(D@CRCD *SRC)
+010505140925                  D@CFLD    R        H      REFFLD(D@CFLD *SRC)
+010506140925                  D@CPSN    R        H      REFFLD(D@CPSN *SRC)
+010507140925
+010508140925
+010509141002      * 01     : *OFF=All 'key' fields (UL), *ON=All 'key' fields (PR)
+010510141002      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+010511141002      * 10-19  : *VAR=Condition fields
+010512141002      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+010513141002      * 20     : *RES=If 10-19 is not enough
+010514141002                  P00#01        20A  H      TEXT('Save field, *IN01-20')
+010515141002                  P00#88        10A  H      TEXT('Save field, *IN88-97')
+010516140925                  S@PGM     R        O  1  2REFFLD(S@PGM *SRC)
+010517140925                  @MODE     R        O  1 13REFFLD(@MODE *SRC)
+010518140925                                        1 24'Maintain bibliographic record'
+010519140925                                            DSPATR(HI)
+010520140925                  VCOID     R        O  1 70REFFLD(VCOID *SRC)
+010521140925                                        2 70DATE(*JOB *YY) EDTCDE(Y)
+010533140327
+010534140911      *
+010535140911      *-------------------------------------------------------------------------
+010536140925                R D1PNL01A
+010537140911      *-------------------------------------------------------------------------
+010538140911      *
+010539140911      *
+010540140925                                            TEXT('D1 panel 01')
+010541140911      * 21     : *ON=A field has changed, *OFF=No fields have changed
+010542140911                                            CHANGE(21)
+010545141003                                            OVERLAY
+010552141001                  P01A60        38A  H      TEXT('Save field, *IN60-97')
+010553140925      *
+010554140925      *
+010565140925                                        3  2'Type choices, press Enter.'
+010566140911      *
+010567140911      *
+010568140911                                        5  2'ISBN . . . . . . . . . . . .'
+010569140911                  D1#01          1A  O  5 31
+010570140911                  BLISBN    R        B  5 33
+010571140911       N01N10                               DSPATR(UL)
+010572140911        01
+010573140911      O 10                                  DSPATR(PR)
+010574140911        97                                  DSPATR(RI)
+010575140914       N01N10 97                            DSPATR(PC)
+010576140923                  D1DLTD    R    4A  O  5 47REFFLD(BLDLTD)
+010577140914      *
+010578140914      *
+010579140928                                        6  2'  Last edited information  . :'
+010581140914                  BLEUSR    R        O  6 35REFFLD(BLEUSR)
+010582140920                  BLEDTS    R     Z  O  6 46REFFLD(BLEDTS)
+010583140911      *
+010584140911      *
+010585140914
+010586140914                                        7  2'Supplier . . . . . . . . . .'
+010587140928                  D1#02          1A  O  7 31
+010588140914                  BLSUPN    R        B  7 33
+010589140927       N02                                  DSPATR(UL)
+010591140927        02                                  DSPATR(PR)
+010592140911        96                                  DSPATR(RI)
+010593140927       N02    96                            DSPATR(PC)
+010594140914                  DSONM4    R        O  7 47REFFLD(MTSUPPF/DSONM4 *LIBL/MTSUPPP)
+010595140911      *
+010596140911      *
+010597140914                                        8  2'Imprint  . . . . . . . . . .'
+010598140928                  D1#03          1A  O  8 31
+010599140914                  BLIMPN    R        B  8 33
+010600140927       N02                                  DSPATR(UL)
+010602140927        02                                  DSPATR(PR)
+010603140911        95                                  DSPATR(RI)
+010604140927       N02    95                            DSPATR(PC)
+010605140923                  IPISBP    R        O  8 47REFFLD(MTIMPNF/IPISBP *LIBL/MTIMPNP)
+010606140923      *
+010607140923      *
+010608140923                                        9  2'  Name . . . . . . . . . . . :'
+010609140923                  IPIPNM    R        O  9 35REFFLD(MTIMPNF/IPIPNM *LIBL/MTIMPNP)
+010610140911      *
+010611140911      *
+010612140928                                       10  2'130 Title  . . . . . . . . .'
+010613140928                  D1#04          1A  O 10 31
+010614140927                  D1FTTL    R  540   B 10 33REFFLD(JMREF2/FTTL *LIBL/JMREF2)
+010615140911                                            CHECK(LC)
+010616140911       N02                                  DSPATR(UL)
+010617140911        02                                  DSPATR(PR)
+010618140913        94                                  DSPATR(RI)
+010619140911       N02    94                            DSPATR(PC)
+010620140927                                       17 14'Cntd'
+010621140928                  D1#05          1A  O 17 19
+010622140928                  D1CI01    R        B 17 21REFFLD(JMREF2/CI *LIBL/JMREF2)
+010623140927       N02                                  DSPATR(UL)
+010624140927        02                                  DSPATR(PR)
+010625140927        93                                  DSPATR(RI)
+010626140927       N02    93                            DSPATR(PC)
+010628140928                                       17 24'Search key :'
+010629140928                  BLSKSN    R        O 17 37
+010630140928                                       17 48'Binding'
+010631140928                  D1#06          1A  O 17 56
+010632140928                  BLBIND    R        B 17 58
+010633140927       N02                                  DSPATR(UL)
+010634140927        02                                  DSPATR(PR)
+010635140927        92                                  DSPATR(RI)
+010636140927       N02    92                            DSPATR(PC)
+010639140928                  BNSDSC    R        O 17 63REFFLD(BNDTYPF/BNSDSC *LIBL/BNDTYP)
+010647140927      *
+010648140927      *
+010649140927                                       18  2'100 Author . . . . . . . . .'
+010650140928                  D1#07          1A  O 18 31
+010651140927                  D1FATN    R  240   B 18 33REFFLD(JMREF2/FATN *LIBL/JMREF2)
+010652140925                                            CHECK(LC)
+010653140925       N02                                  DSPATR(UL)
+010654140925        02                                  DSPATR(PR)
+010655140927        91                                  DSPATR(RI)
+010656140927       N02    91                            DSPATR(PC)
+010657140927                                       21 34'Cntd'
+010658140928                  D1#08          1A  O 21 39
+010659140928                  D1CI02    R        B 21 41REFFLD(JMREF2/CI *LIBL/JMREF2)
+010660140927       N02                                  DSPATR(UL)
+010661140927        02                                  DSPATR(PR)
+010662140927        90                                  DSPATR(RI)
+010663140927       N02    90                            DSPATR(PC)
+010664140925      *
+010665140925      *-------------------------------------------------------------------------
+010666140925                R D1PNL02A
+010667140925      *-------------------------------------------------------------------------
+010668140925      *
+010669140925      *
+010670140925                                            TEXT('D1 panel 02')
+010671140925      * 21     : *ON=A field has changed, *OFF=No fields have changed
+010672140925                                            CHANGE(21)
+010673141003                                            OVERLAY
+010680141001                  P02A60        38A  H      TEXT('Save field, *IN60-97')
+010681140927                                        3  2'Published date . . . . . . .'
+010682140928                  D1#09          1A  O  3 31
+010683140927                  BLPBDT    R        B  3 33
+010684140927                                            DATFMT(*JOB)
+010685140927       N02                                  DSPATR(UL)
+010686140927        02                                  DSPATR(PR)
+010687140927        97                                  DSPATR(RI)
+010688140927       N02    97                            DSPATR(PC)
+010689140925      *
+010690140925      *
+010691140927                                        4  2'Reprint date . . . . . . . .'
+010692140928                  D1#10          1A  O  4 31
+010693141003                  BLRPDT    R        B  4 33
+010695140925       N02                                  DSPATR(UL)
+010696140925        02                                  DSPATR(PR)
+010697140927        96                                  DSPATR(RI)
+010698140927       N02    96                            DSPATR(PC)
+010699141003                  D1RPDT        10A  B  4 50
+010700141003       N02                                  DSPATR(UL)
+010701141003        02                                  DSPATR(PR)
+010702141003        95                                  DSPATR(RI)
+010703141003       N02    95                            DSPATR(PC)
+010790140925      *
+010791140925      *-------------------------------------------------------------------------
+010792140927                R S2SFL02B                  SFL
+010793140925      *-------------------------------------------------------------------------
+010794140925      *
+010795140925      *
+010796140925                                            TEXT('List subfile record')
+010797140925      * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
+010798140925        21                                  SFLNXTCHG
+010800140927      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+010801141005      * 09     : *OFF=Unhandled, *ON=(PC) if first, or only, record on page with no errors.
+010802140927      * 10-19  : *VAR=Condition fields
+010803140927      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+010804140927      * 20     : *RES=If 10-19 is not enough
+010805141001                  S02B01        20A  H      TEXT('Save field, *IN01-20')
+010807141001                  S02B80        18A  H      TEXT('Save field, *IN80-97')
+010808141006      *
+010809141006      *
+010810141006                  S2NEF          1A  H      TEXT('No error found')
+010811141007                  S2I09          1A  H      TEXT('(no)error found on page')
+010812141009                  S2CHG          1A  H      TEXT('Changed state')
+010815141007      *
+010818140925      *
+010819140928                  S2TAGC    R        B  6  4REFFLD(MTTITLF/TITAGC *LIBL/MTTITLP)
+010820140927       N02N10                               DSPATR(UL)
+010821140927        02
+010822140927      O 10                                  DSPATR(PR)
+010823140927        97                                  DSPATR(RI)
+010824141004       N02N10 97
+010825141005      ON02N10 09                            DSPATR(PC)
+010826140930        97                                  CHECK(ER)
+010827140927                  MTSDSC    R        O  6  8REFFLD(MRCCDEF/MTSDSC *LIBL/MRCCDE)
+010828140928                  S2SEQN    R        B  6 20REFFLD(MTTITLF/DSEQN0 *LIBL/MTTITLP)
+010829140928                                            EDTWRD('0   ')
+010830140927       N02N10                               DSPATR(UL)
+010831140927        02
+010832140927      O 10                                  DSPATR(PR)
+010833140927        96                                  DSPATR(RI)
+010834140927       N02N10 96                            DSPATR(PC)
+010836140930        96                                  CHECK(ER)
+010839140928                                        6 25'. . .'
+010840140928                  D1#11          1A  O  6 31
+010841140927                  S2FTTL    R  420   B  6 35REFFLD(JMREF2/FTTL *LIBL/JMREF2)
+010842140925                                            CHECK(LC)
+010843140925       N02                                  DSPATR(UL)
+010844140925        02                                  DSPATR(PR)
+010845140927        95                                  DSPATR(RI)
+010846141004       N02    95
+010847141005      ON02    09                            DSPATR(PC)
+010848140930        95                                  CHECK(ER)
+010849140927                                       11 56'Cntd'
+010850140928                  D1#12          1A  O 11 61
+010851140928                  S2CI      R        B 11 63REFFLD(JMREF2/CI *LIBL/JMREF2)
+010852140929       N02                                  DSPATR(UL)
+010853140929        02                                  DSPATR(PR)
+010854140927        94                                  DSPATR(RI)
+010855140929       N02    94                            DSPATR(PC)
+010856140930        94                                  CHECK(ER)
+010857140927                  S2EOF          3A  O 11 77
+010858140925                                            DSPATR(HI)
+010859140925
+010860140925      *
+010861140925      *-------------------------------------------------------------------------
+010862140927                R C2PNL02B                  SFLCTL(S2SFL02B)
+010863140925      *-------------------------------------------------------------------------
+010864140925      *
+010865140925      *
+010866140925      * 21     : *ON=A field has changed, *OFF=No fields have changed
+010867140925                                            CHANGE(21)
+010868141001                                            SFLSIZ(50)
+010869140925                                            SFLPAG(0001)
+010870140925                                            TEXT('List control record')
+010871141003      ***                                      KEEP
+010872140930                                            SFLCSRRRN(&P02BSR)
+010873141003                                            OVERLAY
+010874140925
+010875141002      * 03     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+010876141002       N03                                  SFLDSP
+010877141002       N03                                  SFLDSPCTL
+010878141002        03                                  SFLCLR
+010879140930                  P02BSC         5S 0H      SFLSCROLL
+010880140930                  P02BRN         4S 0H      SFLRCDNBR
+010881141001                  P02BSR         5S 0H
+010882141001                  P02BRR         5S 0H
+010883141005                  P02BSP         5S 0H
+010884140925
+010885140925
+010886141001                  P02B60        38A  H      TEXT('Save field, *IN60-97')
+010887140927                                        5  2'Title(s), Tag, Seq. :'
+010888140927      *
+010889140927      *-------------------------------------------------------------------------
+010890140927                R S2SFL02C                  SFL
+010891140927      *-------------------------------------------------------------------------
+010892140927      *
+010893140927      *
+010894140927                                            TEXT('List subfile record')
+010896140927      * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
+010897140927        21                                  SFLNXTCHG
+010898141001      * 01     : *OFF=All 'key' fields (UL), *ON=All 'key' fields (PR)
+010899141001      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+010900141005      * 09     : *OFF=Unhandled, *ON=(PC) if first, or only, record on page with no errors.
+010901141001      * 10-19  : *VAR=Condition fields
+010902141001      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+010903141001      * 20     : *RES=If 10-19 is not enough
+010904141001                  S02C01        20A  H      TEXT('Save field, *IN01-20')
+010905141001                  S02C80        18A  H      TEXT('Save field, *IN80-97')
+010906141006      *
+010907141006      *
+010910141006                  S2NEF          1A  H      TEXT('No error found')
+010911141007                  S2I09          1A  H      TEXT('(no)error found on page')
+010912141009                  S2CHG          1A  H      TEXT('Changed state')
+010913140927      *
+010914140927      *
+010915140928                  S2TAGC    R        B 13  4REFFLD(MTAUTHF/AUTAGC *LIBL/MTAUTHP)
+010916140927       N02N10                               DSPATR(UL)
+010917140927        02
+010918140927      O 10                                  DSPATR(PR)
+010919140927        97                                  DSPATR(RI)
+010920141004       N02N10 97
+010921141005      ON02N10 09                            DSPATR(PC)
+010922141004        97                                  CHECK(ER)
+010923140927                  MTSDSC    R        O 13  8REFFLD(MRCCDEF/MTSDSC *LIBL/MRCCDE)
+010924140928                  S2SEQN    R        B 13 20REFFLD(MTAUTHF/AUSEQN *LIBL/MTAUTHP)
+010925140929                                            EDTWRD('0   ')
+010926140927       N02N10                               DSPATR(UL)
+010927140927        02
+010928140927      O 10                                  DSPATR(PR)
+010929140927        96                                  DSPATR(RI)
+010930140927       N02N10 96                            DSPATR(PC)
+010931141004        96                                  CHECK(ER)
+010932140928                                       13 25'. . .'
+010933140928                  D1#13          1A  O 13 31
+010934141008                  S2FATN    R  240   B 13 35REFFLD(JMREF2/FATN *LIBL/JMREF2)
+010935140927                                            CHECK(LC)
+010936140927       N02                                  DSPATR(UL)
+010937140927        02                                  DSPATR(PR)
+010938140927        95                                  DSPATR(RI)
+010939141004       N02    95
+010940141005      ON02    09                            DSPATR(PC)
+010941141004        95                                  CHECK(ER)
+010942141008                                       16 36'Cntd'
+010943141008                  D1#14          1A  O 16 41
+010944141008                  S2CI      R        B 16 43REFFLD(JMREF2/CI *LIBL/JMREF2)
+010945140929       N02                                  DSPATR(UL)
+010946140929        02                                  DSPATR(PR)
+010947140927        94                                  DSPATR(RI)
+010948140929       N02    94                            DSPATR(PC)
+010949141004        94                                  CHECK(ER)
+010950141008                  S2EOF          3A  O 16 77
+010951140927                                            DSPATR(HI)
+010952140927
+010953140927      *
+010954140927      *-------------------------------------------------------------------------
+010955140927                R C2PNL02C                  SFLCTL(S2SFL02C)
+010956140927      *-------------------------------------------------------------------------
+010957140927      *
+010958140927      *
+010959140927      * 21     : *ON=A field has changed, *OFF=No fields have changed
+010960140927                                            CHANGE(21)
+010961141001                                            SFLSIZ(0050)
+010962141008                                            SFLPAG(0002)
+010963140927                                            TEXT('List control record')
+010964141003      ***                                      KEEP
+010965140930                                            SFLCSRRRN(&P02CSR)
+010966141003                                            OVERLAY
+010967140927
+010968141002      * 03     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+010969141002       N03                                  SFLDSP
+010970141002       N03                                  SFLDSPCTL
+010971141002        03                                  SFLCLR
+010972140930                  P02CSC         5S 0H      SFLSCROLL
+010973140930                  P02CRN         4S 0H      SFLRCDNBR
+010974140930                  P02CSR         5S 0H
+010975140930                  P02CRR         5S 0H
+010976141005                  P02CSP         5S 0H
+010977140927
+010978140927
+010979141001                  P02C60        38A  H      TEXT('Save field, *IN60-97')
+010980140927                                       12  2'Author(s), Tag, Seq. :'
+010981141001      *
+010982141001      *-------------------------------------------------------------------------
+010983141001                R D1PNL02D
+010984141001      *-------------------------------------------------------------------------
+010985141001      *
+010986141001      *
+010987141001                                            TEXT('D1 panel 02')
+010988141001      * 21     : *ON=A field has changed, *OFF=No fields have changed
+010989141001                                            CHANGE(21)
+010990141001                                            OVERLAY
+010991141001      * 01     : *OFF=All 'key' fields (UL), *ON=All 'key' fields (PR)
+010992141001      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+010993141001      * 10-19  : *VAR=Condition fields
+010994141001      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+010995141001      * 20     : *RES=If 10-19 is not enough
+010996141001                  P02D60        38A  H      TEXT('Save field, *IN60-97')
+010997141001                                       21  2'Just stuff to prove  . . . .'
+010998141001                  D1#15          1A  O 21 31
+010999141003                  D1RPDD        10A  B 21 33
+011000141003       N02                                  DSPATR(UL)
+011001141003        02                                  DSPATR(PR)
+011002141003        97                                  DSPATR(RI)
+011003141003       N02    97                            DSPATR(PC)
+011004140921      *
+011005140921      *-------------------------------------------------------------------------
+011006140925                R D1FTR00
+011007140921      *-------------------------------------------------------------------------
+011008140921      *
+011009140921      *
+011010140921                                            TEXT('List footer record')
+011011141003                                            OVERLAY
+011012140911      *
+011013140911      *
+011014140911      * 25     : *OFF=More..., *ON=Bottom
+011015140911       N25                             22 73'More...'
+011016140911                                            DSPATR(HI)
+011017140911        25                             22 74'Bottom'
+011018140911                                            DSPATR(HI)
+011019140911                                       23  2'F3=Exit   F5=Refresh   F12=Cancel'
+011020140911                                            COLOR(BLU)
+011021140911
+011022140911
+011023140906      *
+011024140327      *-------------------------------------------------------------------------
+011025140924                R S1SFL02                   SFL
+011026140906      *-------------------------------------------------------------------------
+011027140906      *
+011028140906      *
+011029140327                                            TEXT('List subfile record')
+011030140908        01N02     BLISBN    R        O  8  2
+011031140908        01N02     BLSKSN    R        O  8 13
+011032140908        01N02     S1DLTD    R        O  8 24REFFLD(S1DLTD *SRC)
+011033140908        01N02     BLSUPN    R        O  8 29
+011034140908        01N02     BLIMPN    R        O  8 37
+011035140923        01N02     S1FTTL    R        O  8 45REFFLD(S1FTTL *SRC)
+011036140923        01N02     S1FATN    R        O  8 45REFFLD(S1FATN *SRC)
+011037140908
+011038140908
+011039140909        02                              9  4'(No records to display)'
+011040140327
+011041140906      *
+011042140327      *-------------------------------------------------------------------------
+011043140924                R C1PNL02                   SFLCTL(S1SFL02)
+011044140906      *-------------------------------------------------------------------------
+011045140906      *
+011046140906      *
+011047140908                                            SFLSIZ(14)
+011048140908                                            SFLPAG(14)
+011049140327                                            TEXT('List control record')
+011050140327                                            OVERLAY
+011051140906      * 02     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+011052140906       N02                                  SFLDSP
+011053140906       N02                                  SFLDSPCTL
+011054140906        02                                  SFLCLR
+011055140906      * 25     : *OFF=More..., *ON=Bottom
+011056140906        25                                  SFLEND(*MORE)
+011057140908                  S@PGM     R        O  1  2REFFLD(S@PGM *SRC)
+011058140923                  @MODE     R        O  1 13REFFLD(@MODE *SRC)
+011059140908                                        1 25'Work with bibliographic records'
+011060140908                                             DSPATR(HI)
+011061140923                  VCOID     R        O  1 71REFFLD(VCOID *SRC)
+011062140921                                        2 71DATE(*JOB *YY) EDTCDE(Y)
+011063140908                                        3  2'Search key  . . .'
+011064140908                  C1#01          1A  O  3 20
+011065140908                  C1SKSN    R        O  3 22REFFLD(BLSKSN)
+011066140908                                        4  2'Supplier  . . . .'
+011067140908                  C1#02          1A  O  4 20
+011068140908                  C1SUPN    R        O  4 22REFFLD(BLSUPN)
+011069140908                  DSONM4    R        O  4 34REFFLD(MTSUPPF/DSONM4 *LIBL/MTSUPPP)
+011070140908                                        5  2'Imprint . . . . .'
+011071140908                  C1#03          1A  O  5 20
+011072140908                  C1IMPN    R        O  5 22REFFLD(BLIMPN)
+011073140908                  IPIPNM    R        O  5 34REFFLD(MTIMPNF/IPIPNM *LIBL/MTIMPNP)
+011074140327                                        6  2'Press Enter to confirm your choice-
+011075140327                                            s for 4=Delete.'
+011076140423                                            COLOR(BLU)
+011077140925                                        7  2'Press F12=Exit to return to change-
+011078140327                                            your choices'
+011079140423                                            COLOR(BLU)
+011080140327
+011081140906      *
+011082140906      *-------------------------------------------------------------------------
+011083140924                R C1FTR02
+011084140906      *-------------------------------------------------------------------------
+011085140906      *
+011086140906      *
+011087140327                                            TEXT('List footer record')
+011088140327                                            OVERLAY
+011089140908                                       23  2'F3=Exit   F5=Refresh   F12=Cancel'
+011090140327                                            COLOR(BLU)
+011091140327
+011092140910      *-------------------------------------------------------------------------
+011093140910                R #ERRSFL                   SFL
+011094140910      *-------------------------------------------------------------------------
+011095140910                                            SFLMSGRCD(24)
+011096140910                  MSGKEY                    SFLMSGKEY
+011097140910                  PGMQ                      SFLPGMQ
+011098140910                R #ERRCTL                   SFLCTL(#ERRSFL)
+011099140925                                            OVERLAY
+011100140910                                            SFLDSP
+011101140910                                            SFLDSPCTL
+011102140910                                            SFLINZ
+011103140910        99
+011104140910      ON99                                  SFLEND
+011105140910                                            SFLSIZ(0099)
+011106140910                                            SFLPAG(0001)
+011107140910                  PGMQ                      SFLPGMQ
+011108140906
+011109140910
+011110140327      *-------------------------------------------------------------------------
+011111140918                R POSWDWW1                  WINDOW(*DFT 10 38)
+011112140910      *-------------------------------------------------------------------------
+011113140327
+011114140906
+011115140327      *-------------------------------------------------------------------------
+011116140918                R POSPNLD1
+011117140910      *-------------------------------------------------------------------------
+011118140918                                            WINDOW(POSWDWW1)
+011119140327                                            OVERLAY
+011120140911      * 21     : *ON=A field has changed, *OFF=No fields have changed
+011121140911                                            CHANGE(21)
+011122140327                                        1 15'Position to'
+011123140327                                            DSPATR(HI)
+011124140327                                        2  1'Type choices, press Enter.'
+011125140423                                            COLOR(BLU)
+011126140327                                        4  1'Supplier reference .'
+011127140814      *           P1SUPN    R        B  4 24REFFLD(BLSUPN)
+011128140327                                        5  1'Reciept number . . .'
+011129140728      *           P1DCMN    R        B  5 24REFFLD(RDDCMN)
+011130140327                                        6  1'ISBN . . . . . . . .'
+011131140814                  P1ISBN    R        B  6 24REFFLD(BLISBN)
+011132140327                                        8  1'F3=Exit   f5=Refresh'
+011133140423                                            COLOR(BLU)
+011134140327
+011135140906
+011136140327      *-------------------------------------------------------------------------
+011137140918                R POSPNLS1                  SFL
+011138140910      *-------------------------------------------------------------------------
+011139140327                                            SFLMSGRCD(09)
+011140140327                  MSGKEY                    SFLMSGKEY
+011141140327                  PGMQ                      SFLPGMQ
+011142140918                R POSPNLC1                  SFLCTL(POSPNLS1)
+011143140918                                            WINDOW(POSWDWW1)
+011144140327                                            SFLDSP
+011145140327                                            SFLDSPCTL
+011146140327                                            SFLINZ
+011147140327        99
+011148140327      ON99                                  SFLEND
+011149140327                                            SFLSIZ(0099)
+011150140327                                            SFLPAG(0001)
+011151140327                  PGMQ                      SFLPGMQ
+011152140327
+011153140906
+011154140910      *-------------------------------------------------------------------------
+011155140918                R SBSWDWW1
+011156140910      *-------------------------------------------------------------------------
+011157140910                                            WINDOW(*DFT 10 69)
+011158140910
+011159140910
+011160140910      *-------------------------------------------------------------------------
+011161140918                R SBSPNLD1
+011162140910      *-------------------------------------------------------------------------
+011163140918                                            WINDOW(SBSWDWW1)
+011164140910                                            OVERLAY
+011165140911      * 21     : *ON=A field has changed, *OFF=No fields have changed
+011166140911                                            CHANGE(21)
+011167140910                                        1 25'Subset/Sequence records'
+011168140910                                            DSPATR(HI)
+011169140910                                        2  1'Type choices, press Enter.'
+011170140910                                            COLOR(BLU)
+011171140918                                        4  1'Show deleted?  . . .'
+011172140910                  C1DLTD         1A  B  4 24
+011173140910        97                                  DSPATR(RI)
+011174140910        97                                  DSPATR(PC)
+011175140924                                        4 33'*=All, N=None, O=Only'
+011176140910                                        8  1'F3=Exit   F5=Refresh   F12=Cancel'
+011177140910                                            COLOR(BLU)
+011178140910
+011179140910
+011180140910      *-------------------------------------------------------------------------
+011181140918                R SBSPNLS1                  SFL
+011182140910      *-------------------------------------------------------------------------
+011183140910                                            SFLMSGRCD(09)
+011184140910                  MSGKEY                    SFLMSGKEY
+011185140910                  PGMQ                      SFLPGMQ
+011186140918                R SBSPNLC1                  SFLCTL(SBSPNLS1)
+011187140918                                            WINDOW(SBSWDWW1)
+011188140910                                            SFLDSP
+011189140910                                            SFLDSPCTL
+011190140910                                            SFLINZ
+011191140910        99
+011192140910      ON99                                  SFLEND
+011193140910                                            SFLSIZ(0099)
+011194140910                                            SFLPAG(0001)
+011195140910                  PGMQ                      SFLPGMQ
+011196140910
+011197140910
+011198140327      *-------------------------------------------------------------------------
+011199140918                R SSSWDWW1
+011200140910      *-------------------------------------------------------------------------
+011201140917                                            WINDOW(*DFT 12 69)
+011202140910
+011203140910
+011204140910      *-------------------------------------------------------------------------
+011205140918                R SSSPNLD1
+011206140910      *-------------------------------------------------------------------------
+011207140918                                            WINDOW(SSSWDWW1)
+011208140327                                            OVERLAY
+011209140910      * 21     : *ON=A field has changed, *OFF=No fields have changed
+011210140910                                            CHANGE(21)
+011211140910                                        1 25'Search/select generation'
+011212140327                                            DSPATR(HI)
+011213140327                                        2  1'Type choices, press Enter.'
+011214140423                                            COLOR(BLU)
+011215140910                                        4  1'Search/select text .'
+011216140910                  C1SSFN        40A  B  4 24
+011217140729        97                                  DSPATR(RI)
+011218140729        97                                  DSPATR(PC)
+011219140910                                            CHECK(LC)
+011220140917                  C1SSSQ         5  0O  5 24
+011221140910                                        6  1'Converted string   :'
+011222140910                  C2SSFN        40A  O  6 24
+011223140917                                        7  1'                  :'
+011224140917                  C3SSFN        40A  O  7 24
+011225140917                                        8  1'                  :'
+011226140917                  C4SSFN        40A  O  8 24
+011227140917                                        9  1'Generated SS data :'
+011228140917                  C1SSGT        10A  O  9 24
+011229140917                                       10  1'F3=Exit   F5=Refresh   F12=Cancel'
+011230140423                                            COLOR(BLU)
+011231140327
+011232140327
+011233140910      *-------------------------------------------------------------------------
+011234140918                R SSSPNLS1                  SFL
+011235140910      *-------------------------------------------------------------------------
+011236140917                                            SFLMSGRCD(11)
+011237140327                  MSGKEY                    SFLMSGKEY
+011238140327                  PGMQ                      SFLPGMQ
+011239140918                R SSSPNLC1                  SFLCTL(SSSPNLS1)
+011240140918                                            WINDOW(SSSWDWW1)
+011241140327                                            SFLDSP
+011242140327                                            SFLDSPCTL
+011243140327                                            SFLINZ
+011244140327        99
+011245140327      ON99                                  SFLEND
+011246140327                                            SFLSIZ(0099)
+011247140327                                            SFLPAG(0001)
+011248140327                  PGMQ                      SFLPGMQ

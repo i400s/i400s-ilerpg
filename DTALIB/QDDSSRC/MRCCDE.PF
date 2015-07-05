@@ -1,0 +1,21 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140926                R MRCCDEF
+000111140406      *
+000112140926                  MTTAGC    R               REFFLD(TAGC)
+000113140926                  MTTGIR    R               REFFLD(TGIR)
+000114140926                  MTTGTP    R               REFFLD(TGTP)
+000115140926                  MTSDSC    R               REFFLD(SDSC)
+000116140926                  MTDSCR    R               REFFLD(DSCR)
+000117140927
+000118140927                  MTDLTD    R               REFFLD(DLTD)
+000119140927      *
+000120140927                  MTCUSR    R               REFFLD(CUSR)
+000121140927                  MTCPGM    R               REFFLD(CPGM)
+000122140927                  MTCDTS    R               REFFLD(CDTS)
+000123140927                  MTEUSR    R               REFFLD(EUSR)
+000124140927                  MTEPGM    R               REFFLD(EPGM)
+000125140927                  MTEDTS    R               REFFLD(EDTS)
+000126140406      *
+000127140926                K MTTAGC

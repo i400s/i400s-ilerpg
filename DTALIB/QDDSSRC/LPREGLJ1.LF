@@ -1,0 +1,32 @@
+000001140415                                            JDFTVAL
+000100140415                R LPREGLF                   JFILE(*LIBL/LPREGLP +
+000101140415                                            *LIBL/LPDCMNP)
+000103140415
+000104140415                J                           JOIN(1 2)
+000105140415                                            JFLD(RLADCN RHDCMN)
+000106140415
+000110140415
+000111140415                  RLADRF
+000112140415                  RLADCN
+000113140415                  RLSDRF
+000114140415                  RLDCMN
+000115140415                  RLALCT
+000116140415                  RHSUPN
+000117140415                  RHDCMN
+000118140415                  RHSDRF
+000119140415                  RHDCMC
+000120140415                  RHRCDT
+000126140415                  RHTGDQ
+000127140415                  RHTGDV
+000128140415                  RHTDSV
+000129140415                  RHTVAV
+000130140415                  RHDGDQ
+000131140415                  RHDGDV
+000132140415                  RHDDSV
+000133140415                  RHDVAV
+000134140415                  RHBCHN
+000135140415
+000136140415                K RLADRF
+000137140414                K RLADCN
+000138140415                K RLSDRF
+000139140415                K RLDCMN

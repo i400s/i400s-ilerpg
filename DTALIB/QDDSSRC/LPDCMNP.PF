@@ -1,0 +1,32 @@
+000003140406                                            REF(*LIBL/JMREF2 JMREF2)
+000004140411                                            UNIQUE
+000005140406      *
+000100140406                R LPDCMNF
+000101140406      *
+000102140406                  RHSUPN    R               REFFLD(SUPN)
+000103140406                  RHDCMN    R               REFFLD(DCMN)
+000104140406                  RHSDRF    R               REFFLD(SDRF)
+000105140406                  RHDCMC    R               REFFLD(DCMC)
+000106140409                  RHRCDT    R               REFFLD(RCDT)
+000107140411                  RHTGDQ    R               REFFLD(TGDQ)
+000108140411                  RHTGDV    R               REFFLD(TGDV)
+000109140411                  RHTDSV    R               REFFLD(TDSV)
+000110140411                  RHTVAV    R               REFFLD(TVAV)
+000111140411                  RHDGDQ    R               REFFLD(DGDQ)
+000112140411                  RHDGDV    R               REFFLD(DGDV)
+000113140411                  RHDDSV    R               REFFLD(TDSV)
+000114140411                  RHDVAV    R               REFFLD(TVAV)
+000115140415                  RHBCHN    R               REFFLD(BCHN)
+000116140416                  RHDCMT    R               REFFLD(DCMT)
+000117140416                  RHDLTD    R               REFFLD(DLTD)
+000118140416                  RHSTTS    R               REFFLD(STTS)
+000119140409      *
+000120140409                  RHCUSR    R               REFFLD(CUSR)
+000121140409                  RHCPGM    R               REFFLD(CPGM)
+000122140409                  RHCDTS    R               REFFLD(CDTS)
+000123140409                  RHEUSR    R               REFFLD(CUSR)
+000124140409                  RHEPGM    R               REFFLD(CPGM)
+000125140409                  RHEDTS    R               REFFLD(CDTS)
+000126140409
+000127140327                K RHSUPN
+000128140327                K RHDCMN

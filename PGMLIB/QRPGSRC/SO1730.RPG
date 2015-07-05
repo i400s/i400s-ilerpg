@@ -1,0 +1,4274 @@
+000100140410      *_________________________________________________________________________
+000400140410      * Description  : Standard Shell
+000500140410      * Programmer   : Jonathan Wilson
+000600140410      * Date Created : 31/03/1994
+000700140410      *_________________________________________________________________________
+000800140410      * Description  : xxxxxxxxxxxxxxxxxxxx
+000900140410      * System       : xxxxxxx
+001000140410      * Programmer   : xxxxxxxxxxxx
+001100140410      * Date Created : xx/xx/xxxx
+001200140410      *_________________________________________________________________________
+001300140410      * MODIFICATIONS
+001400140410      *_________________________________________________________________________
+001500140410      *
+001600140410      * By           :
+001700140410      * Date         :
+001800140410      * Scan string  :
+001900140410      * Description  :
+002000140410      *_________________________________________________________________________
+002100140410      * INDICATORS
+002200140410      *_________________________________________________________________________
+002300140410      *
+002400140410      * 01-06/*VAR - Subfile detail conditioning
+002500140410      * 07-   *ON  - RollDown
+002600140410      * 08-   *ON  - RollUp
+002700140410      * 09-11 *VAR - Condition mode of operation
+002800140410      * 12-14 *VAR - Condition function key text
+002900140410      * 20-   *ON  - 'Bottom'
+003000140410      *       *OFF - 'More...'
+003100140410      * 21-   *ON  - RollUp
+003200140410      * 08-   *ON  - RollUp
+003300140410      * 08-   *ON  - RollUp
+003400140410      * 08-   *ON  - RollUp
+003500140410      * 08-   *ON  - RollUp
+003600140410      * 08-   *ON  - RollUp
+003700140410      *
+003800140410     H        1   D
+003900140410      *
+004000140410      * Supplier registration link and P.L. reciepts registration
+004100140410     FLPREGLJ1IF  E           K        DISK         KINFDS IDF1R1
+004200140410     F            LPREGLF                           KRENAMEDTAF1R1
+004300140410     FSORCINLGIF  E           K        DISK         KINFDS IDF2R1
+004400140410     F            SORCINF                           KRENAMEDTAF2R1
+004500140410      *
+004600140410      * Supplier registration link record
+004700140410     FLPREGLL1UF  E           K        DISK                      A
+004800140410     F            LPREGLF                           KRENAMELPREGLF1
+004900140410      *
+005000140410      * Purchase ledger reciepts registration
+005100140410     FLPDCMNL1UF  E           K        DISK
+005200140410     F            LPDCMNF                           KRENAMELPDCMNF1
+005300140410      *
+005400140410      * Supplier order reciept lines
+005500140410     FSORCINLAUF  E           K        DISK
+005600140410     F            SORCINF                           KRENAMESORCINFA
+005700140414     FSORCINLIIF  E           K        DISK
+005800140414     F            SORCINF                           KRENAMESORCINFI
+005900140410      *
+006000140410      * Supplier
+006100140410     FMTSUPPP IF  E           K        DISK
+006200140410      *
+006300140410      * Bibliographic
+006400140410     FMTBIBLP IF  E           K        DISK
+006500140410      *
+006600140410      * Title
+006700140410     FMTTITLP IF  E           K        DISK
+006800140410      *
+006900140410      * Author
+007000140410     FMTAUTHP IF  E           K        DISK
+007100140410      *
+007200140415      * Suppler order title file
+007300140415     FSOORTIP IF  E           K        DISK
+007301140423      *
+007302140423      *
+007303140423     FMTDCMTL1IF  E           K        DISK
+007304140423     F            MTDCMTF                           KRENAMEMTDCMTF1
+007305140415      *
+007500140410      * Supplier order reciept title
+007600140410     FSORCTAL1IF  E           K        DISK
+007700140410     F            SORCTAF                           KRENAMESORCTAF1
+007800140410      *
+007900140410      * Display file
+008000140410     FSO1730D CF  E                    WORKSTN      KINFDS D@INFD
+008100140410     F                                        D@RR1 KSFILE LSTSFL01
+008200140410     F                                        D@RR1 KSFILE CNDSFL01
+008300140410      *
+008400140410      *
+008500140415     E                    KP1        50 64  AKY1   136
+008600140410     E                    KD1        50 64
+008700140410     E                    KR1        50 72
+008800140410     E                    F@RD        5  1
+008900140410     E                    S1          5  1
+009000140410     E                    D1         47  1
+009100140410      *-------------------------------------------------------------------------
+009200140410      * Data structure definitions
+009300140410      *-------------------------------------------------------------------------
+009400140410      * P.L. receipts registraion
+009500140410     IF1DS      EIDSLPDCMNP                   3
+009600140410     IF2DS      EIDSSORCINP                   3
+009700140410     IRLDS      EIDSLPREGLP                   3
+009800140410     IF1KY        DS                          4 128
+009900140410      *    1 - 64   Primary keys
+010000140410     I I                                      1  64 F1KP
+010100140410     I I                                      1   70F1DCMN
+010200140410     I I                                      8  17 F2ISBN
+010300140410     I I                                     18  220F2DSQN
+010400140410      *   65 - 128  Additional keys
+010500140410     I I                                     65  75 F1SDRF
+010600140410     I I                                     76  76 F1DCMC
+010700140410     I I                                     77  830F1SUPN
+010800140410     I I                                     84  94 F1ADRF
+010900140410     I I                                     95 1010F1ADCN
+011000140410     I I                                    124 128 F1RD
+011100140410      * File sequence 1
+011200140410     IF1R1        DS                             64
+011300140410     I I                                      1   1 R1DCMC
+011400140410     I I                                      2  12 R1ADRF
+011500140410     I I                                     13  190R1ADCN
+011600140410     I I                                     20  30 R1SDRF
+011700140410     I I                                     31  370R1DCMN
+011800140410     I I                                     38  47 R1ISBN
+011900140410     I I                                     48  520R1DSQN
+012000140410     I I                                     60  64 R1RD
+012100140410      * OPT = '7=Rename'
+012200140410     IO1KY        DS                             64
+012300140410      ***I I                                      1   70O1CHRN
+012400140410      * File information data structures
+012500140415     IIDF1R1      DS
+012600140410     I                                        9   9 OPN@11
+012700140410     I                                       83  92 FNM@11
+012800140410     I                                       93 102 FLB@11
+012900140410     I                                    B 393 3940LOK@11
+013000140410     I                                      401 465 KST@11
+013100140415     IIDF2R1      DS
+013200140410     I                                        9   9 OPN@21
+013300140410     I                                       83  92 FNM@21
+013400140410     I                                       93 102 FLB@21
+013500140410     I                                    B 393 3940LOK@21
+013600140410     I                                      401 465 KST@21
+013700140410      * Common format for 'Deleting record from &1/&2' status message
+013800140410     IIDF@        DS
+013900140410     I                                        1  10 F@FLIB
+014000140410     I                                       11  20 F@FNAM
+014100140410     I                                       21  84 F@KEYS
+014200140410      *
+014300140410      * Prompt character : or . for list panel
+014400140410     IS1DS        DS
+014500140410     I                                        1   5 S1
+014600140410     I                                        1   1 S1#01
+014700140410     I                                        2   2 S1#02
+014800140410     I                                        3   3 S1#03
+014900140410     I                                        4   5 S1#04
+015000140410     I                                        5   5 S1#05
+015100140410      *
+015200140410      * Prompt character : or . for edit panel
+015300140410     ID1DS        DS
+015400140410     I                                        1  47 D1
+015500140410     I                                        1   1 D1#01
+015600140410     I                                        2   2 D1#02
+015700140410     I                                        3   3 D1#03
+015800140410     I                                        4   4 D1#04
+015900140410     I                                        5   5 D1#05
+016000140410     I                                        6   6 D1#06
+016100140410     I                                        7   7 D1#07
+016200140410     I                                        8   8 D1#08
+016300140410     I                                        9   9 D1#09
+016400140410     I                                       10  10 D1#10
+016500140410     I                                       11  11 D1#11
+016600140410     I                                       12  12 D1#12
+016700140410     I                                       13  13 D1#13
+016800140410     I                                       14  14 D1#14
+016900140410     I                                       15  15 D1#15
+017000140410     I                                       16  16 D1#16
+017100140410     I                                       17  17 D1#17
+017200140410     I                                       18  18 D1#18
+017300140410     I                                       19  19 D1#19
+017400140410     I                                       20  20 D1#20
+017500140410     I                                       21  21 D1#21
+017600140410     I                                       22  22 D1#22
+017700140410     I                                       23  23 D1#23
+017800140410     I                                       24  24 D1#24
+017900140410     I                                       25  25 D1#25
+018000140410     I                                       26  26 D1#26
+018100140410     I                                       27  27 D1#27
+018200140410     I                                       28  28 D1#28
+018300140410     I                                       29  29 D1#29
+018400140410     I                                       30  30 D1#30
+018500140410     I                                       31  31 D1#31
+018600140410     I                                       32  32 D1#32
+018700140410     I                                       33  33 D1#33
+018800140410     I                                       34  34 D1#34
+018900140410     I                                       35  35 D1#35
+019000140410     I                                       36  36 D1#36
+019100140410     I                                       37  37 D1#37
+019200140410     I                                       38  38 D1#38
+019300140410     I                                       39  39 D1#39
+019400140410     I                                       40  40 D1#40
+019500140410     I                                       41  41 D1#41
+019600140410     I                                       42  42 D1#42
+019700140410     I                                       43  43 D1#43
+019800140410     I                                       44  44 D1#44
+019900140410     I                                       45  45 D1#45
+020000140410     I                                       46  46 D1#46
+020100140410     I                                       47  47 D1#47
+020200140410      *
+020300140410      * Temporary data structures
+020400140410     IF@DS        DS                          22048
+020500140410     IF@KY        DS                            128
+020600140410      *
+020700140410      * File definition daa strutcures
+020800140410     ISUDS      EIDSMTSUPPP
+020900140410     IBLDS      EIDSMTBIBLP
+021000140415     ITIDS      EIDSMTTITLP
+021100140410     IAUDS      EIDSMTAUTHP
+021200140415      ***I              ECATG1                          ECATG2
+021300140415      ***I              ETIM10                          ETIM1A
+021400140415      ***I              ETIM20                          ETIM2A
+021500140410     ISTDS      EIDSSOORTIP
+021600140410     ITRDS      EIDSSORCTAP
+021700140410     IDTDS      EIDSMTDCMTP
+021800140410      *
+021900140410      * Formatted option data structures
+022000140410     IOPTIND      DS
+022100140410     I                                        1   6 SV9297
+022200140410     I                                        7   8 OPT
+022300140410     I                                        7   7 OPTL
+022400140410     I                                        8   8 OPTR
+022500140415     IF@RDDS      DS
+022600140410     I                                        1   5 F@RD
+022700140410      *
+022800140410      * Binary/packed decimal conversion data structures
+022900140410     IPD0052      DS
+023000140410     I                                    P   1   32DC0052
+023100140410     IPD0092      DS
+023200140410     I                                    P   1   52DC0092
+023300140410     IPD0070      DS
+023400140410     I                                    P   1   70CD0070
+023500140410     IBN002C      DS
+023600140410     I                                    B   1   20BD002C
+023700140410      *
+023800140410      * External perameters for calls
+023900140410     IX@LOMD     IDS
+024000140410     I I            256                   B   1   40BZ0001
+024100140410     IX@PSC      IDS
+024200140410     I                                    B   1   40BZ0002
+024300140410     IX@MK       IDS
+024400140410     I                                    B   1   40BZ0003
+024500140410     IX@EC       IDS
+024600140410     I I            272                   B   1   40X@ECBP
+024700140410     I                                    B   5   80X@ECBA
+024800140410     I                                        9  15 X@MI
+024900140410     I                                       16  16 X@EC#1
+025000140410     I                                       17 272 X@MDIT
+025100140410     IE@EC        DS                            272
+025200140410     IX@ID       IDS
+025300140410     I                                        1   10X@IDC
+025400140410     I                                        2   70X@IDD
+025500140410     I                                        8  130X@IDT
+025600140410     I                                       14  140X@IDM
+025700140415     IX@OD       IDS
+025900140410     I                                        1   10X@ODC
+026000140410     I                                        2   30X@OD1
+026100140410     I                                        4   50X@OD2
+026200140410     I                                        6   70X@OD3
+026300140410     I                                        2   70X@ODD
+026400140410     I                                        8  130X@ODT
+026500140410     I                                       14  160X@ODU
+026600140410      *
+026700140410      * Formated date/time stamp
+026800140415     I@DT        IDS
+026900140410     I I            0001                      1   40DT@Y
+027000140410     I I            '-'                       5   5 DT@F01
+027100140410     I I            01                        6   70DT@M
+027200140410     I I            '-'                       8   8 DT@F02
+027300140410     I I            01                        9  100DT@D
+027400140410     I I            '-'                      11  11 DT@F03
+027500140410     I                                       12  130DT@H
+027600140410     I I            '-'                      14  14 DT@F04
+027700140410     I                                       15  160DT@MI
+027800140410     I I            '-'                      17  17 DT@F05
+027900140410     I                                       18  190DT@S
+028000140410     I I            '-'                      20  20 DT@F06
+028100140415     I                                       21  260DT@U
+028200140410      *
+028300140410      * Display file information data structure
+028400140410     ID@INFD      DS
+028401140423     I                                      369 369 D@AIB
+028500140410     I                                    B 370 3710D@ROCL
+028600140410      *
+028700140410      * Program status data structure
+028800140410     I           SDS
+028900140410     I                                     *PROGRAM S@PGM
+029000140410     I                                      254 263 S@USER
+029100140410      *
+029200140410      * Local data area
+029300140423     I#LDA        DS                            256
+029400140410      *
+029500140410      * Constants
+029600140410     I              10                    C         D@RR1M
+029700140410     I              10                    C         D@RR1D
+029800140410     I              2                     C         D@MVF1
+029900140410     I              11                    C         C@PROW
+030000140410     I              2                     C         C@PCOL
+030100140410     I              '1'                   C         YES
+030200140410     I              '0'                   C         NO
+030300140410     I              '*UP  '               C         UP
+030400140410     I              '*DOWN'               C         DOWN
+030500140410     I              '1'                   C         BOTTOM
+030600140410     I              '0'                   C         MORE
+030700140410     I              1                     C         #INKEY
+030800140410     I              2                     C         #LOKEY
+030900140410     I              3                     C         #HIKEY
+031000140410     I              4                     C         #CHKEY
+031100140410     I              'LMMSGF    *LIBL     'C         C@PMFN
+031200140410     I              'QCPFMSG   *LIBL     'C         C@SMFN
+031300140410     I              '00000000000000000000-C         O5099
+031400140410     I              '00000000000000000000-
+031500140410     I              '0000000000'
+031600140410     I              '....................-C         EDT01A
+031700140410     I              '....................-
+031800140410     I              '.......'
+031900140410     I              ':...................-C         EDT01C
+032000140410     I              '....................-
+032100140410     I              '.......'
+032200140410     I              '::::::::::::::::::::-C         EDT01V
+032300140410     I              '::::::::::::::::::::-
+032400140410     I              ':::::::'
+032500140410      *
+032600140410      * *ENTRY, main program start
+032700140410     C           *ENTRY    PLIST
+032800140410     C                     PARM           E@OPT
+032900140410     C                     PARM           E@FKEY
+033000140410     C           S1ADCN    PARM           E@ADCN
+033100140410     C                     PARM           E@DCMN
+033200140410     C           S1SUPN    PARM           E@SUPN
+033300140410     C           S1LNKD    PARM           E@LNKD
+033400140410     C                     PARM           E@OTLN
+033500140410     C           S1EXPD    PARM           E@EXPD
+033600140410     C                     PARM           E@ISBN
+033700140410     C                     PARM           E@DSQN
+033800140410     C           X@EC      PARM X@EC      E@EC
+033900140410      *
+034000140410      * Set mode
+034100140410     C                     SELEC
+034200140410     C           E@OPT     WHEQ ' 5'
+034300140410     C                     MOVEA'001'     *IN,09
+034400140410     C                     MOVEL'*VIEW'   @MODE
+034500140410     C           E@OPT     WHEQ 'F4'
+034600140415     C                     MOVEA'010'     *IN,09
+034700140410     C                     MOVEL'*SELEC'  @MODE
+034800140410     C                     OTHER
+034900140415     C                     MOVEA'000'     *IN,09
+035000140410     C                     MOVEL'*MAINT'  @MODE
+035100140410     C                     ENDSL
+035200140410      *
+035300140410      * If keys passed setup key and call edit subroutine
+035400140410     C                     SELEC
+035500140410     C           E@ADCN    WHNE N1ADCN
+035600140410     C           E@DCMN    ANDNEN1DCMN
+035700140410     C           E@FKEY    ANDNE'KN'
+035800140410     C                     MOVE ' 1'      OPT
+035900140410     C                     MOVE E@ADCN    RLADCN
+036000140410     C                     MOVE E@DCMN    RLDCMN
+036100140410     C                     EXSR @LNF1
+036200140410     C                     OTHER
+036300140410     C                     EXSR @LST01
+036400140410     C                     ENDSL
+036500140410      *
+036600140410      * Re-calculate
+036700140410     C                     EXSR @RCLF1
+036800140410      *
+036900140410      * *EXIT, end main program
+037000140410     C                     OUT  #LDA
+037100140410     C                     SETON                     LR
+037200140410     C                     RETRN
+037300140410      *
+037400140410      *-------------------------------------------------------------------------
+037500140410     C           @LST01    BEGSR
+037600140410      *-------------------------------------------------------------------------
+037700140410      *
+037800140410      *
+037900140410     C                     MOVE '*ENT'    @FMT
+038000140410      *
+038100140410      *
+038200140410     C           @FMT      DOWNE*BLANKS
+038300140410      *
+038400140410      *
+038500140410     C           @FMT      IFEQ '*UPD'
+038600140410     C           @FMT      OREQ '*CRT'
+038700140410     C           @FMT      OREQ '*ENT'
+038800140410      *
+038900140410      *
+039000140410     C           @FMT      IFEQ '*ENT'
+039100140410      *
+039200140410      *
+039300140410     C                     EXSR @F1SQ
+039400140410      *
+039500140410      *
+039600140415     C           #INKEY    OCUR F1KY
+039700140415     C                     CLEARF1KY
+039800140410     C                     MOVE '6'       F@DIR
+039900140410     C                     EXSR @KYF1
+040000140410     C                     MOVE F1KY      C1KY
+040100140410      *
+040200140410      *
+040300140410     C                     MOVE F1KY      F@KY
+040400140410     C           #LOKEY    OCUR F1KY
+040500140410     C                     MOVE F@KY      F1KY
+040600140410      *
+040700140410      *
+040800140410     C                     MOVE '7'       F@DIR
+040900140410     C                     EXSR @KYF1
+041000140410      *
+041100140410      *
+041200140410     C                     MOVE '*CRT'    @FMT
+041300140410      *
+041400140410      *
+041500140410     C                     ENDIF
+041600140410      *
+041700140410      *
+041800140410     C           @FMT      IFEQ '*CRT'
+041900140410     C                     Z-ADD50        E1
+042000140410     C                     MOVE *LOVAL    KY1
+042100140410     C                     MOVE *LOVAL    KP1
+042200140410     C                     CLEARC1OPT
+042300140410     C                     MOVEA*IN,92    C19297
+042400140410     C           #INKEY    OCUR F1KY
+042500140410     C                     MOVE F1KY      C1KY
+042600140410     C                     ENDIF
+042700140410      *
+042800140410      *
+042900140410     C                     SETOF                     26
+043000140410     C                     WRITELSTPNL01
+043100140410      *
+043200140410      *
+043300140410     C           #CHKEY    OCUR F1KY
+043400140410     C                     MOVE C1OPT     OPT
+043500140410     C                     MOVEAC19297    *IN,92
+043600140410     C           C19297    IFNE *ZEROS
+043700140410     C                     SETON                     28
+043800140410     C                     ELSE
+043900140410     C                     SETOF                     28
+044000140410     C                     ENDIF
+044100140410     C                     MOVE C1KY      F1KY
+044200140410     C                     MOVE *ON       F@DIR
+044300140410     C                     EXSR @KYF1
+044400140410      *
+044500140410      *
+044600140410     C                     MOVEA'010000'  *IN,01
+044700140410     C                     SELEC
+044800140410     C           F1V       WHEQ 1
+044900140410     C                     MOVEA'0001'    *IN,03
+045000140410     C           F1V       WHEQ 2
+045100140410     C                     MOVEA'0010'    *IN,03
+045200140410     C                     ENDSL
+045300140415     C                     MOVEA*IN,01    SV0106
+045400140410     C                     WRITELSTSFL01
+045500140410      *
+045600140410      *
+045700140410     C           1         OCUR F1DS
+045800140410     C           1         OCUR F2DS
+045900140410     C           1         OCUR RLDS
+046000140410      *
+046100140410      *
+046200140410     C                     SELEC
+046300140410     C           @ROLL     WHEQ UP
+046400140410      *
+046500140424      * All ready at bottom
+046600140410     C           D@MOB     IFEQ BOTTOM
+046700140410     C                     MOVE 'CPD6A69' X@MI
+046800140423     C                     CALL 'QMHSNDPM'@SNDSM
+046900140410     C           #LOKEY    OCUR F1KY
+047000140410     C                     EXSR @SLF1
+047100140410     C                     ELSE
+047200140415     C           #HIKEY    OCUR F1KY
+047300140410     C                     EXSR @SGF1
+047400140410     C                     ENDIF
+047500140410      *
+047600140410      *
+047700140410     C           @ROLL     WHEQ DOWN
+047800140410     C           #LOKEY    OCUR F1KY
+047900140410     C                     EXSR @SLF1
+048000140410     C                     EXSR @RPF1
+048100140410      *
+048200140424      * All ready at top
+048300140410     C           *IN99     IFEQ *ON
+048400140410     C                     MOVE 'CPD6A66' X@MI
+048500140410     C                     CALL 'QMHSNDPM'@SNDSM
+048600140410     C                     ENDIF
+048700140410      *
+048800140410      *
+048900140410     C                     Z-ADD1         D@RR1
+049000140410     C           *IN99     DOWEQ*OFF
+049100140410     C           D@RR1     ANDLTD@RR1M
+049200140410      ***C           F@RD,01   IFEQ 'R'
+049300140410      ***C                     MOVE RHSDRF    T1SDRF
+049400140410      ***C                     MOVE RHDCMN    T1DCMN
+049500140410      ***C                     ENDIF
+049600140410     C                     ADD  1         D@RR1
+049700140410     C                     EXSR @RPF1
+049800140410     C                     ENDDO
+049900140410      *
+050000140410      *
+050100140410     C           *IN99     IFEQ *ON
+050200140410     C           #INKEY    OCUR F1KY
+050300140410      *
+050400140410      *
+050500140410     C                     ELSE
+050600140410     C           #LOKEY    OCUR F1KY
+050700140410     C                     EXSR @KYF1
+050800140410     C                     ENDIF
+050900140410      *
+051000140410      *
+051100140415     C                     CLEAR@ROLL
+051200140410      *
+051300140410      *
+051400140410     C                     EXSR @SLF1
+051500140410      *
+051600140410      *
+051700140410     C                     OTHER
+051800140410     C           #LOKEY    OCUR F1KY
+051900140410     C                     EXSR @SLF1
+052000140410     C                     ENDSL
+052100140410      *
+052200140410      *
+052300140410     C                     EXSR @RDF1
+052400140410      *
+052500140410      *
+052600140410     C           *IN99     IFEQ *ON
+052700140410     C                     EXSR @SGF1
+052800140410     C                     EXSR @RPF1
+052900140410      *
+053000140410      *
+053100140410     C           *IN99     IFEQ *OFF
+053200140410     C           #LOKEY    OCUR F1KY
+053300140410     C                     EXSR @KYF1
+053400140410     C                     EXSR @SLF1
+053500140415     C                     EXSR @RDF1
+053600140410     C                     ENDIF
+053700140410     C                     ENDIF
+053800140410      *
+053900140410      *
+054000140415     C           *IN99     IFEQ *ON
+054100140410     C                     CLEARLSTSFL01
+054200140410     C                     MOVEA'100000'  *IN,01
+054300140410     C                     SELEC
+054400140410     C           F1V       WHEQ 1
+054500140410     C                     MOVEA'0001'    *IN,03
+054600140410     C           F1V       WHEQ 2
+054700140410     C                     MOVEA'0010'    *IN,03
+054800140410     C                     ENDSL
+054900140410     C                     MOVEA*IN,01    SV0106
+055000140410     C                     WRITELSTSFL01
+055100140410     C                     MOVEA'11'      *IN,01
+055200140410     C                     WRITELSTSFL01
+055300140410     C                     MOVE BOTTOM    D@MOB
+055400140410      *
+055500140410      *
+055600140410     C           #INKEY    OCUR F1KY
+055700140410     C                     MOVE F1KY      F@KY
+055800140410     C           #LOKEY    OCUR F1KY
+055900140410     C                     MOVE F@KY      F1KY
+056000140410      *
+056100140410      *
+056200140410     C                     ELSE
+056300140410     C           #LOKEY    OCUR F1KY
+056400140410     C                     EXSR @KYF1
+056500140410     C                     ENDIF
+056600140410      *
+056700140410      *
+056800140410     C           #CHKEY    OCUR F1KY
+056900140410     C                     MOVEA'000000'  *IN,01
+057000140410     C                     SELEC
+057100140410     C           F1V       WHEQ 1
+057200140410     C                     MOVEA'0001'    *IN,03
+057300140410     C           F1V       WHEQ 2
+057400140410     C                     MOVEA'0010'    *IN,03
+057500140410     C                     ENDSL
+057600140410     C                     Z-ADD0         D@RR1
+057700140410     C           *IN99     DOWEQ*OFF
+057800140410     C           D@RR1     ANDLTD@RR1M
+057900140410      *
+058000140410      *
+058100140410     C                     EXSR @FSF1
+058200140410     C                     MOVEA*IN,01    SV0106
+058300140410      *
+058400140410      *
+058500140410     C                     ADD  1         D@RR1
+058600140410     C                     WRITELSTSFL01
+058700140410      *
+058800140410      *
+058900140410     C           D@RR1     IFEQ D@RR1M
+059000140410     C                     MOVE F@RDDS    W1RD
+059100140410     C           2         OCUR F1DS
+059200140410     C           2         OCUR F2DS
+059300140410     C           2         OCUR RLDS
+059400140410     C                     ENDIF
+059500140410      *
+059600140410      *
+059700140410     C                     EXSR @RDF1
+059800140410     C                     ENDDO
+059900140410      *
+060000140410      *
+060100140410     C           *IN99     IFEQ *ON
+060200140410     C                     MOVE BOTTOM    D@MOB
+060300140410      *
+060400140410      *
+060500140410     C                     ELSE
+060600140410     C                     MOVE MORE      D@MOB
+060700140410     C           1         OCUR F1DS
+060800140410     C           1         OCUR F2DS
+060900140415     C           1         OCUR RLDS
+061000140410     C                     MOVE W1RD      F@RDDS
+061100140410     C           #HIKEY    OCUR F1KY
+061200140410     C                     EXSR @KYF1
+061300140410     C                     ENDIF
+061400140410      *
+061500140410      *
+061600140410     C                     ENDIF
+061700140410      *
+061800140410      *
+061900140410     C                     EXSR @VLC01
+062000140410      *
+062100140410      *
+062200140410     C           #CHKEY    OCUR F1KY
+062300140410     C                     SETON                     26
+062400140410     C                     MOVE D@MOB     *IN20
+062500140410      *
+062600140410      *
+062700140410     C                     SELEC
+062800140410     C           @FMT      WHEQ '*ERR'
+062900140410     C                     CLEARD@PROW
+063000140410     C                     CLEARD@PCOL
+063100140410     C                     OTHER
+063200140410     C                     Z-ADDC@PROW    D@PROW
+063300140410     C                     Z-ADDC@PCOL    D@PCOL
+063400140410     C                     ENDSL
+063500140410      *
+063600140410      *
+063700140410      ***C                     RESETS1DS
+063800140410     C           1         DO   5         W1
+063900140410     C           W1        ADD  44        W2
+064000140410     C           S1,W1     IFEQ ':'
+064100140410     C                     MOVE *OFF      *IN,W2
+064200140410     C                     ELSE
+064300140410     C                     MOVE *ON       *IN,W2
+064400140410     C                     ENDIF
+064500140410     C                     ENDDO
+064600140410      *
+064700140423      * This is a subsetted list.
+064800140410     C           S1LNKD    IFNE N1LNKD
+064900140410     C           S1EXPD    ORNE N1EXPD
+065000140410     C                     MOVE 'MSG1830' X@MI
+065100140410     C                     CALL 'QMHSNDPM'@SNDPM
+065200140410     C                     ENDIF
+065300140410      *
+065400140410      *
+065500140410     C                     WRITE#ERRCTL
+065600140410     C                     WRITELSTFTR01
+065700140410     C                     EXFMTLSTPNL01
+065800140410      *
+065900140410      *
+066000140410     C                     MOVE *IN,21    @CHG
+066100140410     C                     CLEARE@FKEY
+066200140410     C                     CLEAR@FMT
+066300140410     C                     SELEC
+066400140410     C           *IN07     WHEQ *ON
+066500140410     C                     MOVE DOWN      @ROLL
+066600140410     C                     MOVE '*UPD'    @FMT
+066700140410     C           *IN08     WHEQ *ON
+066800140410     C                     MOVE UP        @ROLL
+066900140410     C                     MOVE '*UPD'    @FMT
+067000140410     C                     OTHER
+067100140410     C                     CLEAR@ROLL
+067200140410     C                     ENDSL
+067300140410     C                     CALL 'QMHRMVPM'@RMVPM
+067400140410     C                     MOVEAO5099     *IN,50
+067500140410      *
+067600140410      *
+067700140410     C                     SELEC
+067800140410      *
+067900140410      *
+068000140410     C           *INKC     WHEQ *ON
+068100140410     C                     MOVE 'KC'      E@FKEY
+068200140410      *
+068300140410      *
+068400140410     C           *INKD     WHEQ *ON
+068500140410     C           D@CRCD    ANDNE'LSTSFL01'
+068600140410     C           1         CHAINLSTSFL01             28
+068700140410     C                     EXSR @F4L01
+068800140410     C                     SETON                     28
+068900140410     C                     MOVEASV0106    *IN,01
+069000140410     C                     UPDATLSTSFL01
+069100140410     C                     MOVE '*DSP'    @FMT
+069200140410      *
+069300140410      *
+069400140410     C           *INKD     WHEQ *ON
+069500140410     C                     EXSR @F4L01
+069600140410     C                     MOVE '*ENT'    @FMT
+069700140410      *
+069800140410      *
+069900140410     C           *INKE     WHEQ *ON
+070000140415     C                     MOVE '6'       F@DIR
+070100140410     C                     EXSR @KYF1
+070200140410     C                     MOVE '*CRT'    @FMT
+070300140410      *
+070400140410      *
+070500140410      ***C           *INKF     WHEQ *ON
+070600140410      ***C           S1....    IFNE N1....
+070700140410      ***C                     MOVE *ON       C1DO
+070800140410      ***C                     EXSR @VLC01
+070900140410      ***C           @FMT      IFEQ *BLANKS
+071000140410      ***C           E@FKEY    DOWEQ*BLANKS
+071100140410      ***C                     MOVE 'KF'      OPT
+071200140410      ***C                     EXSR @EDT01
+071300140410      ***C                     ENDDO
+071400140410      ***C                     MOVE '*UPD'    @FMT
+071500140410      ***C                     ENDIF
+071600140410      *
+071700140410      *
+071800140410      ***C                     ELSE
+071900140410      ***C                     MOVE 'MSG1899' X@MI
+072000140410      ***C                     CALL 'QMHSNDPM'@SNDPM
+072100140410      ***C                     MOVE '*ERR'    @FMT
+072200140410      ***C                     ENDIF
+072300140410      *
+072400140410      *
+072500140410     C           *INKK     WHEQ *ON
+072600140410     C                     ADD  1         F1V
+072700140410     C           F1V       IFGT 1
+072800140410     C                     Z-ADD0         F1V
+072900140410     C                     ENDIF
+073000140410     C                     MOVE '*UPD'    @FMT
+073100140410      *
+073200140410      *
+073300140410     C           *INKL     WHEQ *ON
+073400140410     C                     MOVE 'KL'      E@FKEY
+073500140410      *
+073600140410      *
+073700140410     C           *INKR     WHEQ *ON
+073800140410     C                     MOVE *ON       C1DO
+073900140410     C                     EXSR @VLC01
+074000140410     C           @FMT      IFEQ *BLANKS
+074100140410     C                     EXSR @SBS01
+074101140415     C           E@FKEY    IFEQ *BLANKS
+074200140410     C                     MOVE '*ENT'    @FMT
+074300140410     C                     ELSE
+074400140410     C                     MOVE '8'       F@DIR
+074500140410     C                     EXSR @KYF1
+074600140410     C                     MOVE '*DSP'    @FMT
+074700140410     C                     ENDIF
+074800140410     C                     ENDIF
+074900140410      *
+075000140410      *
+075100140410     C           *IN23     WHEQ *OFF
+075200140410     C           *IN07     OREQ *ON
+075300140410     C           *IN08     OREQ *ON
+075400140410     C           *INKQ     OREQ *ON
+075500140410      *
+075600140410      *
+075700140410     C                     READCLSTSFL01                 28
+075800140410     C           *IN28     DOWEQ*OFF
+075900140410      *
+076000140410      *
+076100140410     C                     EXSR @VSF1
+076200140410     C           *IN99     IFEQ *ON
+076300140410     C                     SETON                     28
+076400140410     C                     MOVE '*ERR'    @FMT
+076500140410     C                     ENDIF
+076600140410      *
+076700140410      *
+076800140410     C                     UPDATLSTSFL01
+076900140410      *
+077000140410      *
+077100140410     C                     READCLSTSFL01                 28
+077200140410     C                     ENDDO
+077300140410      *
+077400140410      *
+077500140410     C                     MOVE *ON       C1DO
+077600140410     C                     EXSR @VLC01
+077700140410      *
+077800140410      *
+077900140410     C           @FMT      IFEQ *BLANKS
+078000140410     C                     EXSR @P1RT
+078100140410     C                     ENDIF
+078200140410      *
+078300140410      *
+078400140410     C           @FMT      IFEQ *BLANKS
+078500140410      *
+078600140410      *
+078700140410     C           1         DO   50        I
+078800140410     C                     MOVE '3'       F@DIR
+078900140410     C                     EXSR @KYF1
+079000140410     C                     ENDDO
+079100140410      *
+079200140410      *
+079300140410     C                     SELEC
+079400140410     C           F1SQ      WHEQ 1
+079500140410     C                     SORTAKR1
+079600140410     C                     ENDSL
+079700140410      *
+079800140410      *
+079900140410     C           1         DO   50        I
+080000140410     C                     MOVE '4'       F@DIR
+080100140410     C                     EXSR @KYF1
+080200140410     C                     ENDDO
+080300140410      *
+080400140410      *
+080500140410     C           *LOVAL    LOKUPKP1,E1               99
+080600140410     C           *IN99     IFEQ *ON
+080700140410     C           C1OPT     ORNE *BLANKS
+080800140410      *
+080900140410      *
+081000140410     C           C1OPT     IFNE *BLANKS
+081100140410     C                     MOVE C1OPT     OPT
+081200140410     C                     MOVE C1KY      F1KY
+081300140410     C                     MOVE *ON       F@DIR
+081400140410     C                     EXSR @KYF1
+081500140410      *
+081600140410      *
+081700140410      ***C                     MOVE S1....    ......
+081800140410     C                     EXSR @F1OPS
+081900140410     C           X@ECBA    IFNE *ZERO
+082000140410     C                     CALL 'QMHSNDPM'@SNDPM
+082100140410     C                     SETON                     9697
+082200140410     C                     MOVE '*ERR'    @FMT
+082300140410     C                     ENDIF
+082400140410     C                     MOVEA*IN,92    C19297
+082500140410      *
+082600140410      *
+082700140410     C           @FMT      IFEQ *BLANKS
+082800140410     C                     MOVE *ON       F1DO
+082900140410      *
+083000140410      *
+083100140410     C           E@FKEY    IFNE *BLANKS
+083200140410     C           E@FKEY    IFNE ' /'
+083300140410     C                     MOVE '*UPD'    @FMT
+083400140410     C                     ENDIF
+083500140410     C                     ELSE
+083600140410     C                     CLEARC1OPT
+083700140410     C           #INKEY    OCUR F1KY
+083800140410     C                     MOVE F1KY      C1KY
+083900140410     C           #CHKEY    OCUR F1KY
+084000140410     C                     ENDIF
+084100140410     C                     ENDIF
+084200140410     C                     ENDIF
+084300140410      *
+084400140410      *
+084500140410     C           *LOVAL    LOKUPKP1,E1               99
+084600140410     C           *IN99     DOWEQ*ON
+084700140410     C           E@FKEY    ANDNE*BLANKS
+084800140410     C           @FMT      ANDNE*BLANKS
+084900140410     C                     MOVE KY1,E1    OPTIND
+085000140410     C                     MOVELKY1,E1    F1KY
+085100140410     C                     MOVE *ON       F@DIR
+085200140410     C                     EXSR @KYF1
+085300140410      *
+085400140410      *
+085500140410     C                     EXSR @F1OPS
+085600140410     C           X@ECBA    IFNE *ZERO
+085700140410     C                     CALL 'QMHSNDPM'@SNDPM
+085800140410     C           #LOKEY    OCUR F1KY
+085900140415     C                     MOVELKY1,E1    F1KY
+086000140410     C                     MOVE '*UPD'    @FMT
+086100140410     C                     ELSE
+086200140410      *
+086300140410      *
+086400140410     C                     MOVE *ON       F1DO
+086500140410     C                     EXSR @F1DO
+086600140410      *
+086700140410      *
+086800140410     C           E@FKEY    IFNE *BLANKS
+086900140410     C           #LOKEY    OCUR F1KY
+087000140410     C                     MOVELKY1,E1    F1KY
+087100140410     C                     ELSE
+087200140410     C                     MOVE *LOVAL    KY1,E1
+087300140415     C                     MOVE *LOVAL    KP1,E1
+087400140410     C                     ENDIF
+087500140410      *
+087600140410      *
+087700140410     C           *LOVAL    LOKUPKP1,E1               99
+087800140410      *
+087900140410      *
+088000140410     C                     ENDIF
+088100140410      *
+088200140410      *
+088300140410     C                     ENDDO
+088400140410      *
+088500140410      *
+088600140410     C           E@FKEY    IFNE ' /'
+088700140410     C                     MOVE '*UPD'    @FMT
+088800140410     C                     ENDIF
+088900140410      *
+089000140410      *
+089100140410     C                     ENDIF
+089200140410      *
+089300140410      *
+089400140410     C                     ENDIF
+089500140410      *
+089600140410      *
+089700140410     C           @FMT      IFEQ *BLANKS
+089800140410     C           @CHG      IFEQ YES
+089900140410     C                     MOVE '*DSP'    @FMT
+090000140410     C                     ENDIF
+090100140410     C                     ENDIF
+090200140410      *
+090300140424      * Function key not allowed
+090400140410     C                     OTHER
+090500140410     C                     MOVE 'CPD6A60' X@MI
+090600140423     C                     CALL 'QMHSNDPM'@SNDSM
+090700140410     C                     MOVE '*ERR'    @FMT
+090800140410      *
+090900140410     C                     ENDSL
+091000140410      *
+091100140410      *
+091200140410     C                     ENDDO
+091300140410      *
+091400140410      *
+091500140410     C                     ENDSR
+091600140410      *
+091700140410      *-------------------------------------------------------------------------
+091800140410     C           @VLC01    BEGSR
+091900140410      *-------------------------------------------------------------------------
+092000140410      *
+092100140410      *
+092200140410     C           S1SUPN    IFNE M1SUPN
+092300140410     C           S1ADCN    ORNE M1ADCN
+092400140410      *
+092500140423      * Cannot change list with options pending.
+092600140410     C           *LOVAL    LOKUPKP1,E1               99
+092700140410     C                     SELEC
+092800140410     C           *IN99     WHEQ *ON
+092900140410     C           C1DO      ANDEQ*ON
+093000140410     C           C1OPT     ORNE *BLANKS
+093100140410     C           C1DO      ANDEQ*ON
+093200140410     C                     MOVE 'MSG1833' X@MI
+093300140410     C                     CALL 'QMHSNDPM'@SNDPM
+093400140410     C           S1ADCN    COMP M1ADCN               9191
+093500140410     C           S1SUPN    COMP M1SUPN               9090
+093600140410     C                     MOVE '*ERR'    @FMT
+093700140410      *
+093800140423      * You cannot change the list and press a function key.
+093900140410     C           *IN23     WHEQ *ON
+094000140410     C           C1DO      ANDEQ*ON
+094100140410     C           *IN07     ANDEQ*OFF
+094200140410     C           *IN08     ANDEQ*OFF
+094300140410     C           *INKQ     ANDEQ*OFF
+094400140410     C           *INKR     ANDEQ*OFF
+094500140410     C                     MOVE 'MSG1834' X@MI
+094600140410     C                     CALL 'QMHSNDPM'@SNDPM
+094700140410     C           S1ADCN    COMP M1ADCN               9191
+094800140410     C           S1SUPN    COMP M1SUPN               9090
+094900140410     C                     MOVE '*ERR'    @FMT
+095000140410      *
+095100140410      *
+095200140410     C                     OTHER
+095300140410      *
+095400140410      *
+095500140410     C                     ENDSL
+095600140410      *
+095700140410      *
+095800140410     C           @FMT      IFNE '*ERR'
+095900140410     C                     MOVE '*ENT'    @FMT
+096000140410     C                     ENDIF
+096100140410      *
+096200140410      *
+096300140410     C                     ELSE
+096400140410      *
+096500140410      *
+096600140410      ***C           *IN23     IFEQ *ON
+096700140410      ***C           C1DO      ANDEQ*ON
+096800140410      ***C           *IN07     ANDEQ*OFF
+096900140410      ***C           *IN08     ANDEQ*OFF
+097000140410      ***C           *INKF     ANDEQ*OFF
+097100140410      ***C           *INKR     ANDEQ*OFF
+097200140410      ***C           S1ADCN    IFEQ N1ADCN
+097300140410      ***C           S1SUPN    OREQ N1SUPN
+097400140410      ***C                     MOVE 'MSG1835' X@MI
+097500140410      ***C                     CALL 'QMHSNDPM'@SNDPM
+097600140410      ***C           S1ADCN    COMP N1ADCN                   91
+097700140410      ***C           S1SUPN    COMP N1SUPN                   90
+097800140410      ***C                     MOVE '*ERR'    @FMT
+097900140410      ***C                     ENDIF
+098000140410      ***C                     ENDIF
+098100140410      *
+098200140410      *
+098300140410     C                     ENDIF
+098400140410      *
+098500140410      *
+098600140410     C                     MOVE S1ADCN    RHDCMN
+098700140410     C                     EXSR @RTRH
+098800140410     C           X@ECBA    IFNE *ZERO
+098900140410     C           C1DO      ANDEQ*ON
+099000140410     C                     CALL 'QMHSNDPM'@SNDPM
+099100140410     C                     SETON                     91
+099200140410     C                     MOVE '*ERR'    @FMT
+099300140410      *
+099400140410      *
+099500140410     C                     ELSE
+099600140410      *
+099700140423      * Document type must be "I"
+099800140410     C           RHDCMC    IFNE 'I'
+099900140410     C           C1DO      ANDEQ*ON
+100000140410     C                     MOVEL'MSG1855' X@MI
+100100140410     C                     CALL 'QMHSNDPM'@SNDPM
+100200140410     C                     SETON                     91
+100300140410     C                     MOVE '*ERR'    @FMT
+100400140410     C                     ENDIF
+100500140410     C                     ENDIF
+100600140410      *
+100700140410      *
+100800140410     C                     MOVE RHSUPN    ESUPN4
+100900140410     C                     EXSR @RTSU
+101000140410     C                     MOVELDSONM0    D1SONM
+101100140410      *
+101200140410      *
+101300140410     C                     SELEC
+101400140410     C           RHDCMC    WHEQ 'A'
+101500140410     C                     MOVEL'*ADV'    D1DMCD
+101600140410     C           RHDCMC    WHEQ 'I'
+101700140410     C                     MOVEL'*INV'    D1DMCD
+101800140410     C                     OTHER
+101900140410     C                     CLEARD1DMCD
+101901140410     C                     ENDSL
+102000140410      *
+102100140410      *
+102200140410     C                     MOVE S1SUPN    ESUPN4
+102300140410     C                     EXSR @RTSU
+102400140415     C           X@ECBA    IFNE *ZERO
+102500140410     C           C1DO      ANDEQ*ON
+102600140410     C           S1SUPN    ANDNEN1SUPN
+102700140410     C                     CALL 'QMHSNDPM'@SNDPM
+102800140410     C                     SETON                     90
+102900140410     C                     MOVE '*ERR'    @FMT
+102901140410     C                     ENDIF
+103000140410      *
+103100140410      *
+103200140410     C                     MOVE *OFF      C1DO
+103300140410     C                     ENDSR
+103400140410      *
+103500140410      *-------------------------------------------------------------------------
+103600140410     C           @P1RT     BEGSR
+103700140410      *-------------------------------------------------------------------------
+103800140410      *
+103900140410      *
+104000140410     C           *INKQ     IFEQ *ON
+104100140410     C                     EXSR @POS01
+104200140410      *
+104300140410      *
+104400140410     C           E@FKEY    IFEQ *BLANKS
+104500140410      *
+104600140410      *
+104700140410     C                     MOVE 'UPD'     @FMT
+104800140410      *
+104900140410      *
+105000140410     C                     ELSE
+105100140410      *
+105200140410      *
+105300140410     C                     MOVE '*DSP'    @FMT
+105400140410      *
+105500140410      *
+105600140410     C                     ENDIF
+105700140410      *
+105800140410      *
+105900140410     C                     ENDIF
+106000140410      *
+106100140410      *
+106200140410     C                     ENDSR
+106300140410      *
+106400140410      *-------------------------------------------------------------------------
+106500140410     C           @FSF1     BEGSR
+106600140410      *-------------------------------------------------------------------------
+106700140410      *
+106800140410      *
+106900140410     C                     SELEC
+107000140410     C           F@RD,01   WHEQ 'R'
+107100140410      ***C                     MOVE RHSDRF    T1SDRF
+107200140410      ***C                     MOVE RHDCMN    T1DCMN
+107300140410     C                     SETOF                     0304
+107400140410     C           F@RD,02   WHEQ 'R'
+107500140410     C                     SETON                     03
+107600140410      *
+107700140410      *
+107800140410     C           RDDCMN    SETLLLPDCMNF1                 04
+107900140410     C           *IN04     IFEQ *ON
+108000140410     C                     SETOF                     04
+108100140410     C                     CLEARD1NORG
+108200140410     C           RDDCMN    SETLLLPREGLF1                 04
+108300140410     C           *IN04     IFEQ *ON
+108400140410     C                     SETOF                     04
+108500140410     C                     ELSE
+108600140410     C                     SETON                     04
+108700140410     C                     MOVE '*'       D1NORG
+108800140410     C                     ENDIF
+108900140410     C                     ELSE
+109000140410     C                     SETON                     04
+109100140410     C                     ENDIF
+109200140410      ***C           RDSDRF    IFNE T1SDRF
+109300140410      ***C           RDDCMN    ORNE T1DCMN
+109400140410      ***C                     SETON                     04
+109500140410      ***C                     ENDIF
+109600140410     C                     ENDSL
+109700140410      *
+109800140410      *
+109900140410     C                     MOVE RDSDRF    D1SDRF
+110000140410     C                     MOVE RDISBN    D1ISBN
+110100140410     C                     MOVE RDDCMN    D1DCMN
+110200140410      *
+110300140410      *
+110400140410     C           RDDCQT    MULT RDSOPR    D1DCMV
+110500140410     C                     SUB  RDDSCV    D1DCMV
+110600140410     C                     ADD  RDVATV    D1DCMV
+110700140410     C           RDISBN    IFEQ '*VATCARR'
+110800140410     C                     ADD  RDVATA    D1DCMV
+110801140415     C                     ENDIF
+110900140410      *
+111000140410      *
+111100140410     C                     MOVE RHSUPN    ESUPN4
+111200140410     C                     EXSR @RTSU
+111300140410      *
+111400140410      *
+111500140410     C                     MOVE RDSPON    WK007C  7
+111600140410     C           RDSORT    CAT  WK007C:0  D1ONLN    P
+111700140410     C           D1ONLN    CAT  ',':0     D1ONLN
+111800140410     C                     MOVE RDSPOL    WK007C
+111900140410     C           '0'       CHECKWK007C    W4      50
+112000140410     C           W4        DOWGT0
+112100140410     C           W4        ANDLT8
+112200140410     C           1         SUBSTWK007C:W4 WK001C  1
+112300140410     C           W1007C    CAT  WK001C:0  W1007C  7
+112400140410     C                     ADD  1         W4
+112500140410     C                     ENDDO
+112600140410     C           D1ONLN    CAT  W1007C:0  D1ONLN
+112700140410     C                     CLEARW1007C
+112800140410      *
+112900140410      *
+113000140410     C                     MOVE RDDCMN    TRDCMN
+113100140410     C                     MOVE RDISBN    TRISBN
+113200140410     C                     MOVE RDDSQN    TRDSQN
+113300140410     C                     MOVE RDISBN    EISBR0
+113400140415     C                     MOVE RDSORT    FSORT3
+113500140410     C                     MOVE RDSPON    ESPON2
+113600140410     C                     EXSR @RTTR
+113700140415     C           TRTITL    CAT  '/':0     D1ATTT
+113800140410     C           D1ATTT    CAT  TRAUTH:0  D1ATTT
+113900140410      *
+114000140410      *
+114100140410     C           RHRCDT    IFNE *ZEROS
+114200140410     C                     MOVELRHRCDT    X@ID
+114300140415     C                     CALL 'QWCCVTDT'@CVTFD
+114400140410     C                     MOVELX@OD      RHRCDT
+114500140410     C                     ENDIF
+114600140410      *
+114700140410      *
+114800140410     C                     Z-ADDE1        I
+114900140410     C                     EXSR @KYF1
+115000140410     C           F1KP      LOKUPKP1,1                    99
+115100140410     C           *IN99     IFEQ *ON
+115200140410     C                     MOVE KY1,I     OPTIND
+115300140410     C                     MOVEASV9297    *IN,92
+115400140410     C                     ELSE
+115500140410     C                     CLEAROPT
+115600140415     C                     MOVEA'000000'  *IN,92
+115700140410     C                     ENDIF
+115800140410      *
+115900140410      *
+116000140410     C                     MOVEA*IN,92    SV9297
+116100140410     C           SV9297    IFNE *ZEROS
+116200140410     C                     SETON                     28
+116300140410     C                     ELSE
+116400140410     C                     SETOF                     28
+116500140410     C                     ENDIF
+116600140410      *
+116700140410      *
+116800140410     C                     ENDSR
+116900140410      *
+117000140410      *-------------------------------------------------------------------------
+117100140410     C           @VSF1     BEGSR
+117200140410      *-------------------------------------------------------------------------
+117300140410      *
+117400140410      *
+117500140410     C           OPTL      IFEQ *ZERO
+117600140410     C                     CLEAROPTL
+117700140410     C                     ENDIF
+117800140410     C           OPTL      IFEQ *BLANKS
+117900140410     C           OPTR      ANDEQ*ZERO
+118000140410     C                     CLEAROPTR
+118100140410     C                     ENDIF
+118200140410     C           OPTR      IFEQ *BLANKS
+118300140410     C                     MOVE OPTL      OPTR
+118400140410     C                     CLEAROPTL
+118500140410     C                     ENDIF
+118600140410      *
+118700140410      *
+118800140410     C                     MOVEA'000000'  *IN,92
+118900140410      *
+119000140410      *
+119100140410     C                     EXSR @F1DO
+119200140410     C           *IN99     IFEQ *ON
+119300140410     C                     SETON                     97
+119400140410      *
+119500140410      *
+119600140410     C                     EXSR @KYF1
+119700140410      *
+119800140410      *
+119900140410     C           SV0106    IFEQ '0100000'
+120000140410     C           SV0106    OREQ '0100001'
+120100140410      *
+120200140410      *
+120300140410     C           OPT       IFNE *BLANKS
+120400140410      *
+120500140410      *
+120600140410      ***C           S1....    IFEQ N1....
+120700140410      ***C           S1....    OREQ N1....
+120800140410      ***C                     MOVE 'MSG1838' X@MI
+120900140410      ***C           S1....    IFEQ N1....
+121000140410      ***C                     SETON                     91
+121100140410      ***C                     ENDIF
+121200140410      ***C                     SETON                     97
+121300140410      ***C                     ELSE
+121301140423      *
+121302140423      * Key fields cannot be empty
+121400140410     C           RHSDRF    IFEQ N1SDRF
+121500140410     C           RHDCMN    ANDNEN1DCMN
+121600140410     C                     SETON                     96
+121700140410     C                     MOVE 'MSG1524' X@MI
+121800140410     C                     CALL 'QMHSNDPM'@SNDPM
+121900140410      *
+122000140410      *
+122100140410     C                     ELSE
+122200140410      *
+122300140410      *
+122400140410     C                     ENDIF
+122500140410      *
+122600140410      *
+122700140410     C                     ELSE
+122800140410      *
+122900140423      * Option must be entered when key fields are not empty.
+123000140410     C           RHSDRF    IFNE N1SDRF
+123100140410     C           RHDCMN    ORNE N1DCMN
+123200140410     C                     SETON                     9697
+123300140410     C                     MOVE 'MSG1525' X@MI
+123400140410     C                     CALL 'QMHSNDPM'@SNDPM
+123500140410     C                     ENDIF
+123600140410     C                     ENDIF
+123700140410      *
+123800140410      *
+123900140410     C                     MOVE F1KY      C1KY
+124000140410     C                     MOVE OPT       C1OPT
+124100140410     C                     MOVEA*IN,92    C19297
+124200140410      *
+124300140410      *
+124400140410     C                     ELSE
+124500140410      *
+124600140423      * Option not allowed against existing records.
+124700140410     C           OPT       IFEQ ' 1'
+124800140423     C           OPT       ANDNE' 1'                       Force not true
+124900140410     C                     MOVE 'MSG1551' X@MI
+125000140410     C                     CALL 'QMHSDNPM'@SNDPM
+125100140410     C                     SETON                     97
+125200140410      *
+125300140410      *
+125400140410     C                     ELSE
+125500140410      *
+125600140410      *
+125700140410     C                     Z-ADDE1        I
+125800140410     C           F1KP      LOKUPKP1,I                    99
+125900140410      *
+126000140410      *
+126100140410     C           *IN99     IFEQ *ON
+126200140410     C           OPT       IFEQ *BLANKS
+126300140410     C                     MOVE *LOVAL    KP1,I
+126400140410     C                     MOVE *LOVAL    KY1,I
+126500140410     C                     ELSE
+126600140410     C                     MOVEA*IN,92    SV9297
+126700140410     C                     MOVE OPTIND    KY1,I
+126800140410     C                     ENDIF
+126900140410      *
+127000140410      *
+127100140410     C                     ELSE
+127200140410     C           OPT       IFNE *BLANKS
+127300140410     C                     Z-ADDE1        I
+127400140410     C           *LOVAL    LOKUPKP1,I                    99
+127500140410     C           *IN99     IFEQ *ON
+127600140410     C                     MOVE F1KP      KP1,I
+127700140410     C                     MOVELF1KY      KY1,I
+127800140410     C                     MOVEA*IN,92    SV9297
+127900140410     C                     MOVE OPTIND    KY1,I
+128000140410     C                     ELSE
+128100140410     C           E1        IFNE 1
+128200140410     C                     SUB  1         E1
+128300140410     C                     MOVE F1KP      KP1,E1
+128400140410     C                     MOVELF1KY      KY1,E1
+128500140410     C                     MOVEA*IN,92    SV9297
+128600140410     C                     MOVE OPTIND    KY1,E1
+128700140410     C                     ENDIF
+128800140410     C                     ENDIF
+128900140410     C                     ENDIF
+129000140410     C                     ENDIF
+129100140410     C                     ENDIF
+129200140410      *
+129300140410      *
+129400140410     C                     ENDIF
+129500140410      *
+129600140410      *
+129700140410     C                     ENDIF
+129800140410      *
+129900140410      *
+130000140410     C           OPT       IFNE ' /'
+130100140410     C                     MOVE *ON       @CHG
+130200140410     C                     ENDIF
+130300140410      *
+130400140410      *
+130500140410     C                     MOVEASV0106    *IN,01
+130600140410      *
+130700140410      *
+130800140410     C                     MOVEA*IN,92    WK007C  7
+130900140410     C           WK007C    IFNE '000000'
+131000140410     C                     SETON                         99
+131100140410     C                     ELSE
+131200140410     C                     SETOF                         99
+131300140410     C                     ENDIF
+131400140410      *
+131500140410      *
+131600140410     C                     ENDSR
+131700140410      *
+131800140410      *-------------------------------------------------------------------------
+131900140410     C           @F1DO     BEGSR
+132000140410      *-------------------------------------------------------------------------
+132100140410      *
+132200140410      *
+132300140410     C                     SETOF                         99
+132400140410      *
+132500140410      *
+132600140410     C                     SELEC
+132700140410     C           OPT       WHEQ '  '
+132800140410      *
+132900140410      *
+133000140410     C           OPT       WHEQ ' /'
+133100140410     C           @MODE     ANDEQ'*SELEC'
+133200140410     C           F1DO      IFEQ *ON
+133300140410     C                     EXSR @SLC01
+133400140410     C                     ENDIF
+133500140410      *
+133600140410      *
+133700140410      ***C           OPT       WHEQ ' 1'
+133800140410      ***C           @MODE     ANDQE'*MAINT'
+133900140410      ***C           F1DO      IFEQ *ON
+134000140410      ***C                     EXSR @EDT01
+134100140410      ***C                     ENDIF
+134200140410      *
+134300140410      *
+134400140410     C           OPT       WHEQ ' 1'
+134500140410     C           @MODE     ANDEQ'*MAINT'
+134600140410     C           F1DO      IFEQ *ON
+134700140410     C                     EXSR @LNK01
+134800140410     C                     ENDIF
+134900140410      *
+135000140410      *
+135100140410     C           OPT       WHEQ ' 2'
+135200140410     C           @MODE     ANDEQ'*MAINT'
+135300140410     C                     SELEC
+135400140410     C           F1DO      WHEQ *ON
+135500140415     C           F@RD,01   ANDEQ'R'
+135600140410     C                     EXSR @EDT01
+135700140410     C           F1DO      WHEQ *ON
+135800140410     C           F@RD,02   ANDEQ'R'
+135900140410     C                     EXSR @EDT02
+136000140410     C                     ENDSL
+136100140410      *
+136200140410      *
+136300140410      ***C           OPT       WHEQ ' 3'
+136400140410      ***C           @MODE     ANDEQ'*MAINT'
+136500140410      ***C           F1DO      IFEQ *ON
+136600140410      ***C                     EXSR @EDT01
+136700140410      ***C                     ENDIF
+136800140410      *
+136900140410      *
+137000140410      ***C           OPT       WHEQ ' 4'
+137100140410      ***C           @MODE     ANDEQ'*MAINT'
+137200140410      ***C           F1DO      IFEQ *ON
+137300140410      ***C                     EXSR CND01
+137400140410      ***C                     ENDIF
+137500140410      *
+137600140410      *
+137700140410     C           OPT       WHEQ ' 4'
+137800140410     C           @MODE     ANDEQ'*MAINT'
+137900140410     C           F1DO      IFEQ *ON
+138000140410     C                     EXSR @LNK01
+138100140410     C                     ENDIF
+138200140410      *
+138300140410      *
+138400140410     C           OPT       WHEQ ' 5'
+138500140410     C                     SELEC
+138600140410     C           F1DO      WHEQ *ON
+138700140415     C           F@RD,01   ANDEQ'R'
+138800140410     C                     EXSR @EDT01
+138900140410     C           F1DO      WHEQ *ON
+139000140410     C           F@RD,02   ANDEQ'R'
+139100140410     C                     EXSR @EDT02
+139200140410     C                     ENDSL
+139300140410      *
+139400140410      *
+139500140410      ***C           OPT       WHEQ ' 6'
+139600140410      ***C           F1DO      IFEQ *ON
+139700140410      ***C                     EXSR @PRT01
+139800140410      ***C                     ENDIF
+139900140410      *
+140000140410      *
+140100140410      ***C           OPT       WHEQ ' 7'
+140200140410      ***C           @MODE     ANDEQ'*MAINT'
+140300140410      ***C           F1DO      IFEQ *ON
+140400140410      ***C                     EXSR @EDT01
+140500140410      ***C                     ENDIF
+140600140410      *
+140700140410      *
+140800140410     C                     OTHER
+140900140410     C                     MOVE 'CPD6A7C' X@MI
+141000140423     C                     CALL 'QMHSNDPM'@SNDSM
+141100140410     C                     SETON                     99
+141200140410     C                     ENDSL
+141300140410      *
+141400140410      *
+141500140410     C                     MOVE *OFF      F1DO
+141600140410      *
+141700140410      *
+141800140410     C                     ENDSR
+141900140410      *
+142000140410      *-------------------------------------------------------------------------
+142100140410     C           @SLC01    BEGSR
+142200140410      *-------------------------------------------------------------------------
+142300140410      *
+142400140410      *
+142500140410     C                     MOVE RHDCMN    E@ADCN
+142600140410     C                     MOVE RDISBN    E@ISBN
+142700140410     C                     MOVE RDDSQN    E@DSQN
+142800140410      *
+142900140410      *
+143000140410     C                     MOVE ' /'      E@FKEY
+143100140410      *
+143200140410      *
+143300140410     C                     ENDSR
+143400140410      *
+143500140410      *-------------------------------------------------------------------------
+143600140410     C           @F1SQ     BEGSR
+143700140410      *-------------------------------------------------------------------------
+143800140410      *
+143900140410      *
+144000140410     C                     SELEC
+144100140410      ***C           S1SUPN    WHNE N1SUPN
+144200140410      ***C                     Z-ADD2         F1SQ
+144300140410      *
+144400140410      *
+144500140410     C                     OTHER
+144600140410     C                     Z-ADD1         F1SQ
+144700140410     C           S1LNKD    IFEQ 'Y'
+144800140410     C           S1ADCN    CHAINLPDCMNL1            N99
+144900140410     C           *IN99     IFEQ *ON
+145000140410     C                     CLEARS1ADRF
+145100140410     C                     ELSE
+145200140410     C                     MOVE RHSDRF    S1ADRF
+145300140410     C                     ENDIF
+145400140410     C                     MOVE ':'       S1#02
+145500140410     C                     CLEARS1SUPN
+145600140410     C                     ELSE
+145700140410     C                     MOVE '.'       S1#02
+145800140410     C                     ENDIF
+145900140410      *
+146000140410      *
+146100140410     C                     ENDSL
+146200140410      *
+146300140410      *
+146400140410     C                     ENDSR
+146500140410      *
+146600140410      *-------------------------------------------------------------------------
+146700140410     C           @KYF1     BEGSR
+146800140410      *-------------------------------------------------------------------------
+146900140410      *
+147000140410      *
+147100140410     C                     SELEC
+147200140410     C           F@DIR     WHEQ *ON
+147300140410     C                     MOVE F1DCMN    RHDCMN
+147400140410     C                     MOVE F1SDRF    RHSDRF
+147500140410     C                     MOVE F1DCMC    RHDCMC
+147600140410      *
+147700140410     C                     MOVE F1DCMN    RDDCMN
+147800140410     C                     MOVE F1SDRF    RDSDRF
+147900140410     C                     MOVE F1DCMC    RDDCMC
+148000140410     C                     MOVE F2ISBN    RDISBN
+148100140410     C                     MOVE F2DSQN    RDDSQN
+148200140410     C                     MOVE F1ADRF    RDADRF
+148300140410     C                     MOVE F1ADCN    RDADCN
+148400140410      *
+148500140410     C                     MOVE F1ADRF    RLADRF
+148600140410     C                     MOVE F1ADCN    RLADCN
+148700140410     C                     MOVE F1DCMN    RLDCMN
+148800140410      *
+148900140410     C                     MOVE F1RD      F@RDDS
+149000140410      *
+149100140410      *
+149200140410     C           F@DIR     WHEQ *OFF
+149300140410      *
+149400140410      *
+149500140410     C                     SELEC
+149600140410     C           F@RD,01   WHEQ 'R'
+149700140410     C                     MOVE RHDCMN    F1DCMN
+149800140410     C                     MOVE RHSDRF    F1SDRF
+149900140410     C                     MOVE RHDCMC    F1DCMC
+150000140410     C                     CLEARF2ISBN
+150100140410     C                     CLEARF2DSQN
+150200140410     C                     MOVE RLADRF    F1ADRF
+150300140410     C                     MOVE RLADCN    F1ADCN
+150400140410     C           F@RD,02   WHEQ 'R'
+150500140410     C                     MOVE RDDCMN    F1DCMN
+150600140410     C                     MOVE RDSDRF    F1SDRF
+150700140410     C                     MOVE RDDCMC    F1DCMC
+150800140410      *
+150900140410     C                     MOVE RDISBN    F2ISBN
+151000140410     C                     MOVE RDDSQN    F2DSQN
+151100140410     C                     MOVE RDADRF    F1ADRF
+151200140410     C                     MOVE RDADCN    F1ADCN
+151300140410     C                     ENDSL
+151400140410      *
+151500140410     C                     MOVE F@RDDS    F1RD
+151600140410      *
+151700140410      *
+151800140410     C           F@DIR     WHEQ '3'
+151900140410     C           KY1,I     IFNE *LOVAL
+152000140410     C                     MOVELKY1,I     F1KY
+152100140410     C                     MOVE KY1,I     OPTIND
+152200140410     C                     ENDIF
+152300140410      *
+152400140410      *
+152500140410     C                     SELEC
+152600140410     C           F1SQ      WHEQ 1
+152700140410     C           KY1,I     IFEQ *LOVAL
+152800140410     C                     MOVE *LOVAL    KR1,I
+152900140410     C                     ELSE
+153000140410     C                     MOVE F1DCMC    R1DCMC
+153100140410     C                     MOVE F1ADRF    R1ADRF
+153200140410     C                     MOVE F1ADCN    R1ADCN
+153300140410     C                     MOVE F1SDRF    R1SDRF
+153400140410     C                     MOVE F1DCMN    R1DCMN
+153500140410     C                     MOVE F2ISBN    R1ISBN
+153600140410     C                     MOVE F1SDRF    R1SDRF
+153700140410     C                     MOVE F2DSQN    R1DSQN
+153800140410      *
+153900140410     C                     MOVE F1RD      R1RD
+154000140410     C                     MOVELF1R1      KR1,I
+154100140410     C                     MOVE OPTIND    KR1,I
+154200140410     C                     ENDIF
+154300140410     C                     ENDSL
+154400140410      *
+154500140410      *
+154600140415     C           F@DIR     WHEQ '4'
+154700140410     C                     MOVE *LOVAL    F1KY
+154800140410     C                     SELEC
+154900140410     C           F1SQ      WHEQ 1
+155000140410     C           KR1,I     ANDNE*LOVAL
+155100140410     C                     MOVELKR1,I     F1R1
+155200140410     C                     MOVE KR1,I     OPTIND
+155300140410     C                     CLEARF1KY
+155400140410      *
+155500140410      *
+155600140415     C                     MOVE R1DCMC    F1DCMC
+155700140410     C                     MOVE R1ADRF    F1ADRF
+155800140410     C                     MOVE R1ADCN    F1ADCN
+155900140410     C                     MOVE R1SDRF    F1SDRF
+156000140410     C                     MOVE R1DCMN    F1DCMN
+156100140410     C                     MOVE R1ISBN    F2ISBN
+156200140410     C                     MOVE R1SDRF    F1SDRF
+156300140410     C                     MOVE R1DSQN    F2DSQN
+156400140410     C                     MOVE R1RD      F1RD
+156500140410     C                     ENDSL
+156600140410      *
+156700140410     C           F1KY      IFEQ *LOVAL
+156800140410     C                     MOVE *LOVAL    KP1,I
+156900140410     C                     MOVE *LOVAL    KY1,I
+157000140410     C                     ELSE
+157100140410     C                     MOVE F1KP      KP1,I
+157200140410     C                     MOVELF1KY      KY1,I
+157300140410     C                     MOVE OPTIND    KY1,I
+157400140410     C                     ENDIF
+157500140410      *
+157600140410      *
+157700140410     C           F@DIR     WHEQ '5'
+157800140410      ***C                     MOVE .....     O1
+157900140410      *
+158000140410      *
+158100140410     C           F@DIR     WHEQ '6'
+158200140410     C                     MOVE 'A'       F1DCMC
+158300140410      ***C                     MOVE S1SUPN    F1SUPN
+158400140410     C                     SELEC
+158500140410     C           S1LNKD    WHEQ 'Y'
+158600140410     C                     MOVE S1ADRF    F1ADRF
+158700140410     C                     MOVE S1ADCN    F1ADCN
+158800140410     C           S1LNKD    WHEQ 'N'
+158900140410     C                     CLEARF1ADRF
+159000140410     C                     CLEARF1ADCN
+159100140410     C                     ENDSL
+159200140410      *
+159300140410      *
+159400140410     C           F@DIR     WHEQ '7'
+159500140410     C                     MOVE S1ADCN    M1ADCN
+159600140410     C                     MOVE S1SUPN    M1SUPN
+159700140410     C                     MOVE S1LNKD    M1LNKD
+159800140410     C                     MOVE S1EXPD    M1EXPD
+159900140410      *
+160000140410      *
+160100140410     C           F@DIR     WHEQ '8'
+160200140410     C                     MOVE M1ADCN    S1ADCN
+160300140410     C                     MOVE M1SUPN    S1SUPN
+160400140410     C                     MOVE M1LNKD    S1LNKD
+160500140410     C                     MOVE M1EXPD    S1EXPD
+160600140410      *
+160700140410      *
+160800140410     C           F@DIR     WHEQ '9'
+160900140410      ***C                     MOVE O1....    .....
+161000140410      *
+161100140410      *
+161200140410     C                     ENDSL
+161300140410      *
+161400140410      *
+161500140410     C                     MOVE *OFF      F@DIR
+161600140410      *
+161700140410      *
+161800140410     C                     ENDSR
+161900140410      *
+162000140410      *-------------------------------------------------------------------------
+162100140410     C           @SLF1     BEGSR
+162200140410      *-------------------------------------------------------------------------
+162300140410      *
+162400140410      *
+162500140410     C                     SELEC
+162600140410     C           F1SQ      WHEQ 1
+162700140410     C           F2ISBN    IFEQ *BLANKS
+162800140410     C           F1R@K1    SETLLDTAF1R1
+162900140410     C                     ELSE
+163000140410     C           F1R@K1    SETGTDTAF1R1
+163100140410     C                     ENDIF
+163200140410     C                     MOVE 'R'       F@RD,1
+163300140410     C                     ENDSL
+163400140410      *
+163500140410      *
+163600140410     C           S1EXPD    IFEQ 'Y'
+163700140410     C                     SELEC
+163800140410     C           F1SQ      WHEQ 1
+163900140415     C           F2R@K1    SETLLDTAF2R1
+164000140410     C                     ENDSL
+164100140410     C                     MOVE 'R'       F@RD,2
+164200140410     C                     ELSE
+164300140410     C                     MOVE *ON       F2@EOF
+164400140410     C                     ENDIF
+164500140410      *
+164600140410      *
+164700140410     C                     ENDSR
+164800140410      *
+164900140410      *-------------------------------------------------------------------------
+165000140410     C           @SGF1     BEGSR
+165100140410      *-------------------------------------------------------------------------
+165200140410      *
+165300140410      *
+165400140410     C                     SELEC
+165500140410     C           F1SQ      WHEQ 1
+165600140410     C           F1R@K1    SETGTDTAF1R1
+165700140410     C                     MOVE 'R'       F@RD,1
+165800140410     C                     ENDSL
+165900140410      *
+166000140410      *
+166100140410     C           S1EXPD    IFEQ 'Y'
+166200140410     C                     SELEC
+166300140410     C           F1SQ      WHEQ 1
+166400140415     C           F2R@K1    SETGTDTAF2R1
+166500140410     C                     ENDSL
+166600140410     C                     MOVE 'R'       F@RD,2
+166700140410     C                     ELSE
+166800140410     C                     MOVE *ON       F2@EOF
+166900140410     C                     ENDIF
+167000140410      *
+167100140410      *
+167200140410     C                     ENDSR
+167300140410      *
+167400140410      *-------------------------------------------------------------------------
+167500140410     C           @RDF1     BEGSR
+167600140410      *-------------------------------------------------------------------------
+167700140410      *
+167800140410      *
+167900140410     C           F@RD,01   IFEQ 'R'
+168000140410      *
+168100140410      *
+168200140410     C                     MOVE YES       @VREC
+168300140410     C           *IN99     DOUEQ*ON
+168400140410     C           @VREC     OREQ YES
+168500140410      *
+168600140410      *
+168700140410     C                     SELEC
+168800140410     C           F1SQ      WHEQ 1
+168900140410     C                     READ DTAF1R1             N    99
+169000140410     C                     ENDSL
+169100140410      *
+169200140410      *
+169300140410     C           *IN99     CASNE*ON       @VRF1
+169400140410     C                     ENDCS
+169500140410     C                     ENDDO
+169600140410      *
+169700140410      *
+169800140410     C                     MOVE *IN99     F1@EOF
+169900140410      *
+170000140410      *
+170100140410     C                     ENDIF
+170200140410      *
+170300140410      *
+170400140410     C                     EXSR @RDF2
+170500140410      *
+170600140410      *
+170700140410     C                     CLEARF@RD
+170800140410      *
+170900140410      *
+171000140410     C           F1@EOF    IFEQ *OFF
+171100140410     C           LOK@11    SUBSTKST@11    F1@KEY    P
+171200140410     C           'A'       CAT  F1@KEY:0  F1@KEY    P
+171300140410     C                     ENDIF
+171400140410     C           F2@EOF    IFEQ *OFF
+171500140410     C           LOK@11    ADD  1         W10050  50
+171600140410     C           W10050    SUBSTKST@21    F2@KEY    P
+171700140410     C                     ENDIF
+171800140410      *
+171900140410      *
+172000140410     C           F1@EOF    IFEQ *OFF
+172100140410     C           F1@KEY    ANDLEF2@KEY
+172200140410     C           F2@EOF    OREQ *ON
+172300140410     C                     MOVE 'R'       F@RD,1
+172400140410     C                     ELSE
+172500140410     C                     MOVE 'R'       F@RD,2
+172600140410     C                     ENDIF
+172700140410      *
+172800140410      *
+172900140410     C           F1@EOF    IFEQ *ON
+173000140410     C           F2@EOF    ANDEQ*ON
+173100140410     C                     SETON                     99
+173200140410     C                     ELSE
+173300140410     C                     SETOF                     99
+173400140410     C                     ENDIF
+173500140410      *
+173600140410      *
+173700140410     C                     ENDSR
+173800140410      *
+173900140410      *-------------------------------------------------------------------------
+174000140410     C           @RPF1     BEGSR
+174100140410      *-------------------------------------------------------------------------
+174200140410      *
+174300140410      *
+174400140410     C           F@RD,01   IFEQ 'R'
+174500140410      *
+174600140410      *
+174700140410     C                     MOVE YES       @VREC
+174800140410     C           *IN99     DOUEQ*ON
+174900140410     C           @VREC     OREQ YES
+175000140410      *
+175100140410      *
+175200140410     C                     SELEC
+175300140410     C           F1SQ      WHEQ 1
+175400140410     C                     READPDTAF1R1             N    99
+175500140410     C                     ENDSL
+175600140410      *
+175700140410      *
+175800140410     C           *IN99     CASNE*ON       @VRF1
+175900140410     C                     ENDCS
+176000140410     C                     ENDDO
+176100140410      *
+176200140410      *
+176300140410     C                     MOVE *IN99     F1@EOF
+176400140410      *
+176500140410      *
+176600140410     C                     ENDIF
+176700140410      *
+176800140410      *
+176900140410     C                     EXSR @RPF2
+177000140410      *
+177100140410      *
+177200140410     C                     CLEARF@RD
+177300140410      *
+177400140410      *
+177500140410     C           F1@EOF    IFEQ *OFF
+177600140410     C           LOK@11    SUBSTKST@11    F1@KEY    P
+177700140410     C           'A'       CAT  F1@KEY:0  F1@KEY    P
+177800140410     C                     ENDIF
+177900140410     C           F2@EOF    IFEQ *OFF
+178000140410     C           LOK@11    ADD  1         W10050  50
+178100140410     C           W10050    SUBSTKST@21    F2@KEY    P
+178200140410     C                     ENDIF
+178300140410      *
+178400140410      *
+178500140410     C           F1@EOF    IFEQ *OFF
+178600140410     C           F2@KEY    ANDLTF1@KEY
+178700140410     C           F2@EOF    OREQ *ON
+178800140410     C                     MOVE 'R'       F@RD,1
+178900140410     C                     ELSE
+179000140410     C                     MOVE 'R'       F@RD,2
+179100140410     C                     ENDIF
+179200140410      *
+179300140410      *
+179400140410     C           F1@EOF    IFEQ *ON
+179500140410     C           F2@EOF    ANDEQ*ON
+179600140410     C                     SETON                     99
+179700140410     C                     ELSE
+179800140410     C                     SETOF                     99
+179900140410     C                     ENDIF
+180000140410      *
+180100140410      *
+180200140410     C                     ENDSR
+180300140410      *
+180400140410      *-------------------------------------------------------------------------
+180500140410     C           @VRF1     BEGSR
+180600140410      *-------------------------------------------------------------------------
+180700140410      *
+180800140410      *
+180900140410     C           RHDCMC    IFNE 'A'
+181000140410     C           S1LNKD    OREQ 'Y'
+181100140410     C           RLADCN    ANDNES1ADCN
+181200140410     C           S1LNKD    OREQ 'N'
+181300140410     C           RLADCN    ANDNEN1ADCN
+181400140410     C           S1LNKD    OREQ '*'
+181500140410     C           RLADCN    ANDNES1ADCN
+181600140410     C           RLADCN    ANDNEN1ADCN
+181700140410     C                     MOVE NO        @VREC
+181800140410     C                     ELSE
+181900140410     C                     MOVE YES       @VREC
+182000140410     C                     ENDIF
+182100140410      *
+182200140410      *
+182300140410     C                     SELEC
+182400140410     C           F1SQ      WHEQ 1
+182500140410      *
+182600140410      *
+182700140410     C           S1LNKD    IFEQ 'Y'
+182800140410     C           RLADCN    ANDNES1ADCN
+182900140410     C           S1LNKD    OREQ 'N'
+183000140410     C           RLADCN    ANDNEN1ADCN
+183100140410     C                     MOVE *ON       *IN99
+183200140410     C                     ENDIF
+183300140410      *
+183400140410      *
+183500140410     C                     ENDSL
+183600140410      *
+183700140410      *
+183800140410     C                     ENDSR
+183900140410      *
+184000140410      *-------------------------------------------------------------------------
+184100140410     C           @RDF2     BEGSR
+184200140410      *-------------------------------------------------------------------------
+184300140410      *
+184400140410      *
+184500140410     C           F@RD,02   IFEQ 'R'
+184600140410      *
+184700140410      *
+184800140410     C                     MOVE YES       @VREC
+184900140410     C           *IN99     DOUEQ*ON
+185000140410     C           @VREC     OREQ YES
+185100140410      *
+185200140410      *
+185300140410     C                     SELEC
+185400140410     C           F1SQ      WHEQ 1
+185500140410     C                     READ DTAF2R1             N    99
+185600140410     C                     ENDSL
+185700140410      *
+185800140410      *
+185900140410     C           *IN99     CASNE*ON       @VRF2
+186000140410     C                     ENDCS
+186100140410     C                     ENDDO
+186200140410      *
+186300140410      *
+186400140410     C                     MOVE *IN99     F2@EOF
+186500140410      *
+186600140410      *
+186700140410     C                     ENDIF
+186800140410      *
+186900140410      *
+187000140410     C                     ENDSR
+187100140410      *
+187200140410      *-------------------------------------------------------------------------
+187300140410     C           @RPF2     BEGSR
+187400140410      *-------------------------------------------------------------------------
+187500140410      *
+187600140410      *
+187700140410     C           F@RD,02   IFEQ 'R'
+187800140410      *
+187900140410      *
+188000140410     C                     MOVE YES       @VREC
+188100140410     C           *IN99     DOUEQ*ON
+188200140410     C           @VREC     OREQ YES
+188300140410      *
+188400140410      *
+188500140410     C                     SELEC
+188600140410     C           F1SQ      WHEQ 1
+188700140410     C                     READPDTAF2R1             N    99
+188800140410     C                     ENDSL
+188900140410      *
+189000140410      *
+189100140410     C           *IN99     CASNE*ON       @VRF1
+189200140410     C                     ENDCS
+189300140410     C                     ENDDO
+189400140410      *
+189500140410      *
+189600140410     C                     MOVE *IN99     F2@EOF
+189700140410      *
+189800140410      *
+189900140410     C                     ENDIF
+190000140410      *
+190100140410      *
+190200140410     C                     ENDSR
+190300140410      *
+190400140410      *-------------------------------------------------------------------------
+190500140410     C           @VRF2     BEGSR
+190600140410      *-------------------------------------------------------------------------
+190700140410      *
+190800140410      *
+190900140410     C           RDDCMC    IFNE 'A'
+191000140410     C           S1LNKD    OREQ 'Y'
+191100140410     C           RDADCN    ANDNES1ADCN
+191200140410     C           S1LNKD    OREQ 'N'
+191300140410     C           RDADCN    ANDNEN1ADCN
+191400140410     C           S1LNKD    OREQ '*'
+191500140410     C           RDADCN    ANDNES1ADCN
+191600140410     C           RDADCN    ANDNEN1ADCN
+191700140410     C                     MOVE NO        @VREC
+191800140410     C                     ELSE
+191900140410     C                     MOVE YES       @VREC
+192000140410     C                     ENDIF
+192100140410      *
+192200140410      *
+192300140410     C                     SELEC
+192400140410     C           F1SQ      WHEQ 1
+192500140410      *
+192600140410      *
+192700140410     C           RDDCMC    IFNE 'A'
+192800140410     C           S1LNKD    OREQ 'Y'
+192900140410     C           RDADCN    ANDNES1ADCN
+193000140410     C           S1LNKD    OREQ 'N'
+193100140410     C           RDADCN    ANDNEN1ADCN
+193200140410     C                     MOVE *ON       *IN99
+193300140410     C                     ENDIF
+193400140410      *
+193500140410      *
+193600140410     C                     ENDSL
+193700140410      *
+193800140410      *
+193900140410     C                     ENDSR
+194000140410      *
+194100140410      *-------------------------------------------------------------------------
+194200140410     C           @F1OPS    BEGSR
+194300140410      *-------------------------------------------------------------------------
+194400140410      *
+194500140410      *
+194600140410     C                     CLEARX@ECBA
+194700140410      *
+194800140410      *
+194900140410     C                     SELEC
+195000140410     C           F@RD,01   WHEQ 'R'
+195100140410     C                     MOVE RHDCMN    RLDCMN
+195200140415     C                     MOVE S1ADCN    RLADCN
+195300140410     C           RLKEY1    SETLLLPREGLF1                 99
+195400140410     C           F@RD,02   WHEQ 'R'
+195500140410     C                     MOVE F2DS      F@DS
+195600140410     C           RDKEY1    CHAINSORCINFA            N99
+195700140410     C                     ENDSL
+195800140410      *
+195900140410      *
+196000140410     C           OPT       IFEQ ' 1'
+196100140410     C           OPT       OREQ 'KF'
+196200140410     C           OPT       OREQ ' 3'
+196300140410     C           F1DO      ANDEQ*ON
+196400140410     C           OPT       OREQ ' 7'
+196500140410     C           F1DO      ANDEQ*ON
+196600140410      *
+196700140410      *
+196800140410     C                     SELEC
+196900140410      ***C           F@RD,01   WHEQ 'R'
+197000140410      ***C           *IN99     ANDEQ*ON
+197100140410      ***C                     MOVE 'MSG1940' X@MI
+197200140410      ***C                     Z-ADD7         X@ECBA
+197300140410      *
+197400140424      * Record already linked
+197500140410     C           F@RD,02   WHEQ 'R'
+197600140410     C           *IN99     ANDEQ*OFF
+197700140410     C           RDADCN    ANDNEN1ADCN
+197800140410     C                     MOVE 'MSG1942' X@MI
+197900140410     C                     Z-ADD7         X@ECBA
+198000140410      *
+198100140424      * Record does not exist
+198200140410     C           F@RD,02   WHEQ 'R'
+198300140410     C           *IN99     ANDEQ*ON
+198400140410     C                     MOVE 'MSG1547' X@MI
+198500140410     C                     Z-ADD7         X@ECBA
+198600140410     C                     ENDSL
+198700140410      *
+198800140410      *
+198900140410     C                     ELSE
+199000140410      *
+199100140424      * Record is not linked
+199200140410     C                     SELEC
+199300140410     C           F@RD,01   WHEQ 'R'
+199400140410     C           *IN99     ANDEQ*OFF
+199500140410     C           OPT       ANDEQ' 4'
+199600140410     C                     MOVE 'MSG1941' X@MI
+199700140410     C                     Z-ADD7         X@ECBA
+199800140410      *
+199900140424      * Record is already linked
+200000140410     C           F@RD,02   WHEQ 'R'
+200100140410     C           *IN99     ANDEQ*OFF
+200200140410     C           RDADCN    ANDNES1ADCN
+200300140410     C           OPT       ANDEQ' 4'
+200400140410     C                     MOVE 'MSG1943' X@MI
+200500140410     C                     Z-ADD7         X@ECBA
+200600140410      *
+200700140424      * Record does not exist
+200800140415     C           F@RD,02   WHEQ 'R'
+200900140410     C           *IN99     ANDEQ*ON
+201000140410     C                     MOVE 'MSG1547' X@MI
+201100140410     C                     Z-ADD7         X@ECBA
+201101140415     C                     OTHER
+201200140410      *
+201300140410      *
+201400140410      ***C           ......    IFEQ ......
+201500140410      ***C           OPT       IFNE '..'
+201600140410      ***C           OPT       OREQ '..'
+201700140410      ***C                     MOVE 'MSG1840' X@MI
+201800140410      ***C                     Z-ADD7         X@ECBA
+201900140410      ***C                     ENDIF
+202000140410      ***C                     ENDIF
+202100140410      *
+202200140410      *
+202300140410     C                     ENDSL
+202301140415      *
+202302140415      *
+202303140415     C                     ENDIF
+202400140410      *
+202500140410      *
+202600140410     C                     SELEC
+202700140410     C           F@RD,02   WHEQ 'R'
+202800140410     C                     MOVE F@DS      F2DS
+202900140410     C                     ENDSL
+202901140415      *
+202902140415      *
+202903140415     C                     MOVE *OFF      F1DO
+203000140410      *
+203100140410      *
+203200140410     C                     ENDSR
+203300140410      *
+203400140410      *-------------------------------------------------------------------------
+203500140410     C           @EDT01    BEGSR
+203600140410      *-------------------------------------------------------------------------
+203700140410      *
+203800140410      *
+203900140410     C                     MOVE '*ENT'    @FMT
+204000140410      *
+204100140410      *
+204200140410     C           @FMT      DOWNE*BLANKS
+204300140410      *
+204400140410      *
+204500140410     C           @FMT      IFEQ '*CRT'
+204600140410     C           @FMT      OREQ '*UPD'
+204700140410     C           @FMT      OREQ '*ENT'
+204800140410      *
+204900140410      *
+205000140410     C           @FMT      IFEQ '*ENT'
+205100140410      *
+205200140410      *
+205300140410     C                     MOVE F1DS      F@DS
+205400140410     C           1         OCUR F1DS
+205500140410     C                     MOVE F@DS      F1DS
+205600140410      *
+205700140410      *
+205800140410     C                     MOVE '5'       F@DIR
+205900140410     C                     EXSR @KYF1
+206000140410      *
+206100140410      *
+206200140410     C                     MOVE '*CRT'    @FMT
+206300140410      *
+206400140410      *
+206500140410     C                     ENDIF
+206600140410      *
+206700140410      *
+206800140410     C           @FMT      IFEQ '*CRT'
+206900140410      *
+207000140410      *
+207100140410     C           1         OCUR F1DS
+207200140410      *
+207300140410      *
+207400140410     C                     SELEC
+207500140410     C           OPT       WHEQ 'KF'
+207600140410     C                     MOVEA'00111'   *IN,45
+207700140410     C                     MOVEAEDT01A    D1
+207800140410     C                     CLEARDTAF1R1
+207900140410     C           #INKEY    OCUR F1KY
+208000140410     C                     MOVE *ON       F@DIR
+208100140410     C                     EXSR @KYF1
+208200140410     C           #CHKEY    OCUR F1KY
+208300140410      *
+208400140410      *
+208500140410     C           OPT       WHEQ ' 1'
+208600140410     C                     MOVEA'00010'   *IN,45
+208700140410     C                     MOVEAEDT01C    D1
+208800140410     C           *NOKEY    CLEARDTAF1R1
+208900140410      *
+209000140410      *
+209100140410     C           OPT       WHEQ ' 2'
+209200140410     C                     MOVEA'00010'   *IN,45
+209300140410     C                     MOVEAEDT01C    D1
+209400140410      *
+209500140410      *
+209600140410     C           OPT       WHEQ ' 3'
+209700140410     C                     MOVEA'00111'   *IN,45
+209800140410     C                     MOVEAEDT01A    D1
+209900140410      *
+210000140410      *
+210100140410     C           OPT       WHEQ ' 5'
+210200140410     C                     MOVEA'00000'   *IN,45
+210300140410     C                     MOVEAEDT01V    D1
+210400140410      *
+210500140410      *
+210600140410     C           OPT       WHEQ ' 7'
+210700140410     C                     MOVEA'00011'   *IN,45
+210800140410     C                     MOVEAEDT01A    D1
+210900140410      *
+211000140410      *
+211100140410     C                     ENDSL
+211200140410      *
+211300140410      *
+211400140410     C                     EXSR @RTF1
+211500140410      *
+211600140410      *
+211700140410     C                     Z-ADD1         D@VPF1
+211800140410      *
+211900140410      *
+212000140410     C                     ENDIF
+212100140410      *
+212200140410      *
+212300140410     C                     SELEC
+212400140410     C           @ROLL     WHEQ UP
+212500140410     C           D@VPF1    IFEQ D@MVF1
+212600140410     C                     MOVE 'CPD6A69' X@MI
+212700140410     C                     CALL 'QMHSNDPM'@SNDSM
+212800140410     C                     ELSE
+212900140410     C                     ADD  1         D@VPF1
+213000140410     C                     ENDIF
+213100140410      *
+213200140410      *
+213300140410     C           @ROLL     WHEQ DOWN
+213400140410     C           D@VPF1    IFEQ 1
+213500140410     C                     MOVE 'CPD6A66' X@MI
+213600140410     C                     CALL 'QMHSNDPM'@SNDSM
+213700140410     C                     ELSE
+213800140410     C                     SUB  1         D@VPF1
+213900140410     C                     ENDIF
+214000140410     C                     ENDSL
+214100140410      *
+214200140410      *
+214300140410     C                     SELEC
+214400140410     C           D@VPF1    WHEQ 1
+214500140410     C                     EXSR @VLP01
+214600140410      ***C           D@VPF1    WHEQ 2
+214700140410      ***C                     EXSR @VLP02
+214800140410     C                     ENDSL
+214900140410      *
+215000140410      *
+215100140410     C                     ENDIF
+215200140410      *
+215300140410      *
+215400140410     C                     SELEC
+215500140410     C           @FMT      WHEQ '*ERR'
+215600140410     C                     CLEARD@PROW
+215700140410     C                     CLEARD@PCOL
+215800140410      ***C           D1#02     WHEQ ':'
+215900140410      ***C           D@VPF1    ANDEQQ1
+216000140410      ***C                     Z-ADD7         D@PROW
+216100140410      ***C                     Z-ADD33        D@PROW
+216200140410     C                     OTHER
+216300140410     C                     Z-ADD11        D@PROW
+216400140410     C                     Z-ADD33        D@PCOL
+216500140410     C                     ENDSL
+216600140410      *
+216700140410      *
+216800140410     C                     WRITE#ERRCTL
+216900140410      *
+217000140410      *
+217100140410     C                     SELEC
+217200140410     C           D@VPF1    WHEQ 1
+217300140410     C                     EXFMTEDTPNL01
+217400140410      ***C           D@VPF1    WHEQ 2
+217500140410      ***C                     EXFMTEDTPNL01
+217600140410     C                     ENDSL
+217700140410      *
+217800140410      *
+217900140410     C                     MOVE *IN21     @CHG
+218000140410     C                     CLEARE@FKEY
+218100140410     C                     CLEAR@FMT
+218200140410     C                     SELEC
+218300140410     C           *IN07     WHEQ *ON
+218400140410     C                     MOVE DOWN      @ROLL
+218500140410     C                     MOVE '*UPD'    @FMT
+218600140410     C           *IN08     WHEQ *ON
+218700140410     C                     MOVE UP        @ROLL
+218800140410     C                     MOVE '*UPD'    @FMT
+218900140410     C                     OTHER
+219000140410     C                     CLEAR@ROLL
+219001140423     C                     ENDSL
+219100140410     C                     CALL 'QMHRMVPM'@RMVPM
+219200140410     C                     MOVEAO5099     *IN,50
+219300140410      *
+219400140410      *
+219500140410     C                     SELEC
+219600140410      *
+219700140410      *
+219800140410     C           *INKC     WHEQ *ON
+219900140415     C                     MOVE 'KC'      E@FKEY
+220000140410      *
+220100140410      *
+220200140410      ***C           *INKD     WHEQ *ON
+220300140410      ***C                     EXSR @F4L01
+220400140410      ***C                     MOVE '*UPD'    @FMT
+220500140410      *
+220600140410      *
+220700140410     C           *INKE     WHEQ *ON
+220800140410     C                     MOVE '*CRT'    @FMT
+220900140410      *
+221000140410      *
+221100140410     C           *INKL     WHEQ *ON
+221200140410      *
+221300140410      *
+221400140410     C           D@VPF1    IFGT 1
+221500140410     C                     SUB  1         D@VPF1
+221600140410     C                     MOVE '*DSP'    @FMT
+221700140410     C                     ELSE
+221800140410     C                     MOVE 'KL'      D@VPF1
+221900140410     C                     ENDIF
+222000140410      *
+222100140410      *
+222200140410     C           *IN23     WHEQ *OFF
+222300140410     C           *IN07     OREQ *ON
+222400140410     C           *IN08     OREQ *ON
+222500140410      *
+222600140410      *
+222700140410     C           OPT       IFNE ' 5'
+222800140410      *
+222900140410      *
+223000140410     C           D@VPF1    IFLE 1
+223100140410     C                     MOVE *ON       D1DO
+223200140410     C                     EXSR @VLP01
+223300140410     C                     ENDIF
+223400140410      *
+223500140410      *
+223600140410      ***C           D@VPF1    IFLE 2
+223700140410      ***C           @FMT      ANDNE*BLANKS
+223800140410      ***C           D@VVPF1   OREQ 2
+223900140410      ***C           @ROLL     ANDNEDOWN
+224000140410      ***C                     MOVE *ON       D1DP
+224100140410      ***C                     EXSR @VLP02
+224200140410      ***C                     ENDIF
+224300140410      *
+224400140410      *
+224500140410     C                     ENDIF
+224600140410      *
+224700140410      *
+224800140410     C           @FMT      IFEQ *BLANKS
+224900140410      *
+225000140424      * Details are valid, press Enter to confirm
+225200140410     C           @CHG      IFEQ YES
+225300140410     C                     MOVE 'MSG1532' X@MI
+225400140410     C                     CALL 'QMHSNDPM'@SNDPM
+225500140410     C                     MOVE '*DSP'    @FMT
+225600140410     C                     ELSE
+225700140410      *
+225800140410      *
+225900140410     C                     EXSR @UPF1
+226000140410     C           X@ECBA    IFNE *ZERO
+226100140410     C                     CALL 'QMHSNDPM'@SNDPM
+226200140410     C                     SETON                       97
+226300140410     C                     MOVE '*ERR'    @FMT
+226400140410     C                     ELSE
+226500140410     C                     ENDIF
+226600140410      *
+226700140410      *
+227100140410     C                     ENDIF
+227200140410      *
+227300140410      *
+227400140410     C                     ENDIF
+227500140410      *
+227600140410      *
+227700140410     C                     OTHER
+227800140410     C                     MOVE 'CPD6A60' X@MI
+227900140410     C                     CALL 'QMHSNDPM'@SNDSM
+228000140410     C                     MOVE '@ERR'    @FMT
+228100140410      *
+228200140410      *
+228300140410     C                     ENDSL
+228400140410      *
+228500140410      *
+228600140410     C                     ENDDO
+228700140410      *
+228800140410      *
+228900140415     C                     ENDSR
+229000140410      *
+229100140410      *-------------------------------------------------------------------------
+229200140410     C           @VLP01    BEGSR
+229300140410      *-------------------------------------------------------------------------
+229400140410      *
+229500140410      *
+229600140410      ***C           RHDCMN    IFEQ N1DCMN
+229700140410      ***C           D1DO      ANDEQ*ON
+229800140410      ***C                     MOVE 'MSG1546' X@MI
+229900140410      ***C                     CALL 'QMHSNDPM'@SNDPM
+230000140410      ***C                     SETON                       96
+230100140410      ***C                     MOVE '*ERR'    @FMT
+230200140410      ***C                     ELSE
+230300140410      *
+230400140410      *
+230500140410      ***C                     MOVE *ON       F1DO
+230600140410      ***C                     EXSR @F1OPS
+230700140410      ***C           X@ECBA    IFNE *ZERO
+230800140410      ***C           D1DO      ANDEQ*ON
+230900140410      ***C                     CALL 'QMHSNDPM'@SNDPM
+231000140410      ***C                     SETON                       97
+231100140410      ***C                     MOVE '*ERR'    @FMT
+231200140410      ***C                     ENDIF
+231300140410      *
+231400140410      *
+231500140410      ***C                     Z-ADD......    B1....
+231600140410      ***C                     MOVE ......    B1....
+231700140410      *
+231800140410      *
+231900140410      ***C                     ENDIF
+232000140410      *
+232100140410      *
+232200140410     C           @FMT      IFEQ '*ERR'
+232300140410     C                     Z-ADD1         D@VPF1
+232400140410     C                     ENDIF
+232500140410      *
+232600140410      *
+232700140410     C                     ENDSR
+232800140410      *
+232900140410      *-------------------------------------------------------------------------
+233000140410      ***C           @VLP02    BEGSR
+233100140410      *-------------------------------------------------------------------------
+233200140410      *
+233300140410      *
+233400140410      ***C           ......    .... ......
+233500140410      ***C           D1DO      ANDEQ*ON
+233600140410      ***C                     MOVE '.......' X@MI
+233700140410      ***C                     CALL 'QMHSNDPM'@SNDPM
+233800140410      ***C                     SETON                     ..
+233900140410      ***C                     MOVE '*ERR'    @FMT
+234000140410      ***C                     ENDIF
+234100140410      *
+234200140410      *
+234300140410      ***C                     Z-ADD......    B1....
+234400140410      ***C                     MOVE ......    D1....
+234500140410      *
+234600140410      *
+234700140410      ***C           @FMT      IFEQ '*ERR'
+234800140410      ***C                     Z-ADD2         D@VPF1
+234900140410      ***C                     ENDIF
+235000140410      *
+235100140410      *
+235200140410      ***C                     MOVE *OFF      D1DO
+235300140410      *
+235400140410      *
+235500140410      ***C                     ENDSR
+235600140410      *
+235700140410      *-------------------------------------------------------------------------
+235800140410     C           @EDT02    BEGSR
+235900140410      *-------------------------------------------------------------------------
+236000140410      *
+236100140410      *
+236200140410     C                     CALL 'SO1720'  SO1720
+236300140410      *
+236400140410      *
+236500140410     C                     ENDSR
+236600140410      *
+236700140410      *-------------------------------------------------------------------------
+236800140410     C           @POS01    BEGSR
+236900140410      *-------------------------------------------------------------------------
+237000140410      *
+237100140410      *
+237200140410     C                     MOVE '*ENT'    @FMT
+237300140410      *
+237400140410      *
+237500140410     C           @FMT      DOWNE*BLANKS
+237600140410      *
+237700140410      *
+237800140410     C           @FMT      IFEQ '*CRT'
+237900140410     C           @FMT      OREQ '*UPD'
+238000140410     C           @FMT      OREQ '*ENT'
+238100140410      *
+238200140410      *
+238300140410     C           @FMT      IFEQ '*ENT'
+238400140410      *
+238500140410      *
+238600140410     C                     WRITEPOSWDW01
+238700140410      *
+238800140410      *
+238900140410     C                     MOVE '*CRT'    @FMT
+239000140410      *
+239100140410      *
+239200140410     C                     ENDIF
+239300140410      *
+239400140410      *
+239500140410     C           @FMT      IFEQ '*CRT'
+239600140410      *
+239700140410      *
+239800140410     C                     ENDIF
+239900140410      *
+240000140410      *
+240100140410     C                     SELEC
+240200140410     C           @ROLL     WHEQ UP
+240300140410     C                     MOVE 'CPD6A69' X@MI
+240400140410     C                     CALL 'QMHSNDPM'@SNDSM
+240500140410      *
+240600140410      *
+240700140410     C           @ROLL     WHEQ DOWN
+240800140410     C                     MOVE 'CPD6A66' X@MI
+240900140410     C                     CALL 'QMHSNDPM'@SNDSM
+241000140410     C                     ENDSL
+241100140410      *
+241200140410      *
+241300140410     C                     EXSR @VLL01
+241400140410      *
+241500140410      *
+241600140410     C                     ENDIF
+241700140410      *
+241800140410      *
+241900140410     C                     WRITEPOSPNLEC
+242000140410     C                     EXFMTPOSPNL01
+242100140410      *
+242200140410      *
+242300140410     C                     MOVE *IN21     @CHG
+242400140410     C                     CLEARE@FKEY
+242500140410     C                     CLEAR@FMT
+242600140410      *
+242700140410      *
+242800140410     C                     SELEC
+242900140410     C           *IN07     WHEQ *ON
+243000140410     C                     MOVE DOWN      @ROLL
+243100140410     C                     MOVE '*UPD'    @FMT
+243200140410     C           *IN08     WHEQ *ON
+243300140410     C                     MOVE UP        @ROLL
+243400140410     C                     MOVE '*UPD'    @FMT
+243500140410     C                     OTHER
+243600140410     C                     CLEAR@ROLL
+243700140410     C                     ENDSL
+243800140410     C                     CALL 'QMHRMVPM'@RMVPM
+243900140410     C                     MOVEAO5099     *IN,50
+244000140410      *
+244100140410      *
+244200140410     C                     SELEC
+244300140410      *
+244400140410      *
+244500140410     C           *INKC     WHEQ *ON
+244600140410     C                     MOVE 'KC'      E@FKEY
+244700140410      *
+244800140410      *
+244900140410     C           *INKE     WHEQ *ON
+245000140410     C                     MOVE '*CRT'    @FMT
+245100140410      *
+245200140410      *
+245300140410     C           *INKL     WHEQ *ON
+245400140410     C                     MOVE 'KL'      @FMT
+245500140410      *
+245600140410      *
+245700140410     C           *IN23     WHEQ *OFF
+245800140410     C           *IN07     OREQ *ON
+245900140410     C           *IN08     OREQ *ON
+246000140410      *
+246100140410      *
+246200140410     C                     MOVE *ON       D1DO
+246300140410     C                     EXSR @VLL01
+246400140410      *
+246500140410      *
+246600140410     C           @FMT      IFEQ *BLANKS
+246700140410      *
+246800140424      * Details are valid, press Enter to confirm
+246900140410     C           @CHG      IFEQ YES
+247000140410     C                     MOVE 'MSG1532' X@MI
+247100140410     C                     CALL 'QMHSNDPM'@SNDPM
+247200140410     C                     MOVE '*DSP'    @FMT
+247300140410     C                     ELSE
+247400140410      *
+247500140410      *
+247600140410     C           P1SDRF    IFEQ N1SDRF
+247700140410     C           P1ISBN    ANDNEN1ISBN
+247800140410     C           #LOKEY    OCUR F1KY
+247900140410     C                     MOVE P1ISBN    F2ISBN
+248000140410     C                     CLEARF2DSQN
+248100140410     C                     ELSE
+248200140410     C           #LOKEY    OCUR F1KY
+248300140410     C                     MOVE P1SDRF    F1SDRF
+248400140410     C                     MOVE P1DCMN    F1DCMN
+248500140410     C                     MOVE P1ISBN    F2ISBN
+248600140410     C                     CLEARF2DSQN
+248700140410     C                     ENDIF
+248800140410      *
+248900140410      *
+249000140410     C                     ENDIF
+249100140410      *
+249200140410      *
+249300140410     C                     ENDIF
+249400140410      *
+249500140410      *
+249600140410     C                     OTHER
+249700140410     C                     MOVE 'CPD6A60' X@MI
+249800140410     C                     CALL 'QMHSNDPM'@SNDSM
+249900140410     C                     MOVE '*ERR'    @FMT
+250000140410      *
+250100140410      *
+250200140410     C                     ENDSL
+250300140410      *
+250400140410      *
+250500140410     C                     ENDDO
+250600140410      *
+250700140410      *
+250800140410     C                     ENDSR
+250900140410      *
+251000140410      *-------------------------------------------------------------------------
+251100140410     C           @VLL01    BEGSR
+251200140410      *-------------------------------------------------------------------------
+251300140410      *
+251400140410      *
+251500140410     C           P1SDRF    IFNE N1SDRF
+251600140410     C           P1DCMN    ANDNEN1DCMN
+251700140410     C                     MOVE 'A'       RDDCMC
+251800140410     C                     SELEC
+251900140410     C           S1LNKD    WHEQ 'Y'
+252000140410     C                     MOVE S1ADRF    RDADRF
+252100140410     C                     MOVE S1ADCN    RDADCN
+252200140410     C           S1LNKD    WHEQ 'N'
+252300140410     C                     CLEARRDADRF
+252400140410     C                     CLEARRDADCN
+252500140410     C                     ENDSL
+252600140410     C                     MOVE P1SDRF    RDSDRF
+252700140410      *
+252800140410      *
+252900140410     C           RDKEY5    SETLLSORCINLG
+253000140410     C           RDKEY6    READESORCINLG            N    99
+253100140410      *
+253200140410      *
+253300140410     C           *IN99     IFEQ *OFF
+253400140410     C                     MOVE RDSDRF    P1SDRF
+253500140410     C                     MOVE RDDCMN    P1DCMN
+253600140410      *
+253700140410      *
+253800140410     C                     ELSE
+253900140410     C                     MOVE 'A'       RHDCMC
+254000140410      *
+254100140410      *
+254200140410     C                     SELEC
+254300140410     C           S1LNKD    WHEQ 'Y'
+254400140410     C                     MOVE S1ADRF    RLADRF
+254500140410     C                     MOVE S1ADCN    RLADCN
+254600140410     C           S1LNKD    WHEQ 'N'
+254700140410     C                     CLEARRLADRF
+254800140410     C                     CLEARRLADCN
+254900140410     C                     ENDSL
+255000140410     C                     MOVE P1SDRF    RLSDRF
+255100140410      *
+255200140410      *
+255300140410     C           RLKEY3    SETLLLPREGLJ1             99
+255400140410     C           RLKEY4    READELPREGLJ1            N    99
+255500140410      *
+255600140410      *
+255700140410     C           *IN99     IFEQ *OFF
+255800140410     C                     MOVE RHDCMN    P1DCMN
+255900140410     C                     MOVE RHSDRF    P1SDRF
+256000140410     C                     ENDIF
+256100140410      *
+256200140410      *
+256300140410     C                     ENDIF
+256400140410      *
+256500140410      *
+256600140410     C                     ENDIF
+256700140410      *
+256800140410      *
+256900140410     C           P1DCMN    IFNE N1DCMN
+257000140410     C           P1SDRF    ANDNEN1SDRF
+257100140410     C                     MOVE P1DCMN    RDDCMN
+257200140410     C           RDKEY2    CHAINSORCINLA            N99
+257300140410      *
+257400140410      *
+257500140410     C           *IN99     IFEQ *OFF
+257600140410     C                     MOVE RHSDRF    P1SDRF
+257700140415     C                     ELSE
+257800140410      *
+257900140410      *
+257901140415     C                     MOVE P1DCMN    RHDCMN
+257902140415     C           RHKEY1    CHAINLPDCMNL1            N99
+257903140415     C           *IN99     IFEQ *OFF
+257904140415     C                     MOVE RHSDRF    P1SDRF
+257905140415     C                     ENDIF
+257906140415      *
+257907140415      *
+258000140410     C                     ENDIF
+258100140410      *
+258200140410      *
+258300140410     C                     ENDIF
+258400140410      *
+258500140410      *
+258600140410     C                     MOVE *OFF      D1DO
+258700140410      *
+258800140410      *
+258900140410      *
+259000140410     C                     ENDSR
+259100140410      *
+259200140410      *-------------------------------------------------------------------------
+259300140410     C           @SBS01    BEGSR
+259400140410      *-------------------------------------------------------------------------
+259500140410      *
+259600140410      *
+259700140410     C                     MOVE '*ENT'    @FMT
+259800140410      *
+259900140410      *
+260000140410     C           @FMT      DOWNE*BLANKS
+260100140410      *
+260200140410      *
+260300140410     C           @FMT      IFEQ '*CRT'
+260400140410     C           @FMT      OREQ '*UPD'
+260500140410     C           @FMT      OREQ '*ENT'
+260600140410      *
+260700140410      *
+260800140410     C           @FMT      IFEQ '*ENT'
+260900140410      *
+261000140410      *
+261100140410     C                     WRITESBSWDW01
+261200140410      *
+261300140410      *
+261400140410     C                     MOVE '*CRT'    @FMT
+261500140410      *
+261600140410      *
+261700140410     C                     ENDIF
+261800140410      *
+261900140410      *
+262000140410     C           @FMT      IFEQ '*CRT'
+262100140410      *
+262200140410      *
+262300140410     C                     MOVE '8'       F@DIR
+262400140410     C                     EXSR @KYF1
+262500140410      *
+262600140410      *
+262700140410     C                     ENDIF
+262800140410      *
+262900140410      *
+263000140410     C                     SELEC
+263100140410     C           @ROLL     WHEQ UP
+263200140410     C                     MOVE 'CPD6A69' X@MI
+263300140410     C                     CALL 'QMHSNDPM'@SNDSM
+263400140410      *
+263500140410      *
+263600140410     C           @ROLL     WHEQ DOWN
+263700140410     C                     MOVE 'CPD6A66' X@MI
+263800140410     C                     CALL 'QMHSNDPM'@SNDSM
+263900140410     C                     ENDSL
+264000140410      *
+264100140410      *
+264200140410     C                     EXSR @VLS01
+264300140410      *
+264400140410      *
+264500140410     C                     ENDIF
+264600140410      *
+264700140410      *
+264800140410     C                     WRITESBSPNLEC
+264900140410     C                     EXFMTSBSPNL01
+265000140410      *
+265100140410      *
+265200140410     C                     MOVE *IN21     @CHG
+265300140410     C                     CLEARE@FKEY
+265400140410     C                     CLEAR@FMT
+265500140410      *
+265600140410      *
+265700140410     C                     SELEC
+265800140410     C           *IN07     WHEQ *ON
+265900140410     C                     MOVE DOWN      @ROLL
+266000140410     C                     MOVE '*UPD'    @FMT
+266100140410     C           *IN08     WHEQ *ON
+266200140410     C                     MOVE UP        @ROLL
+266300140410     C                     MOVE '*UPD'    @FMT
+266400140410     C                     OTHER
+266500140410     C                     CLEAR@ROLL
+266600140410     C                     ENDSL
+266700140410     C                     CALL 'QMHRMVPM'@RMVPM
+266800140410     C                     MOVEAO5099     *IN,50
+266900140410      *
+267000140410      *
+267100140410     C                     SELEC
+267200140410      *
+267300140410      *
+267400140410     C           *INKC     WHEQ *ON
+267500140410     C                     MOVE '8'       F@DIR
+267600140410     C                     EXSR @KYF1
+267700140410     C                     MOVE 'KC'      E@FKEY
+267800140410      *
+267900140410      *
+268000140410     C           *INKE     WHEQ *ON
+268100140410     C                     MOVE '*CRT'    @FMT
+268200140410      *
+268300140410      *
+268400140410     C           *INKL     WHEQ *ON
+268500140410     C                     MOVE '8'       F@DIR
+268600140410     C                     EXSR @KYF1
+268700140410     C                     MOVE 'KL'      @FMT
+268800140410      *
+268900140410      *
+269000140410     C           *IN23     WHEQ *OFF
+269100140410     C           *IN07     OREQ *ON
+269200140410     C           *IN08     OREQ *ON
+269300140410      *
+269400140410      *
+269500140410     C                     MOVE *ON       D1DO
+269600140410     C                     EXSR @VLS01
+269700140410      *
+269800140410      *
+269900140410     C           @FMT      IFEQ *BLANKS
+270000140410      *
+270100140424      * Details are valid, press Enter to continue
+270200140410     C           @CHG      IFEQ YES
+270300140410     C                     MOVE 'MSG1532' X@MI
+270400140410     C                     CALL 'QMHSNDPM'@SNDPM
+270500140410     C                     MOVE '*DSP'    @FMT
+270600140410     C                     ELSE
+270700140410      *
+270800140410      *
+270900140410     C                     MOVE '7'       F@DIR
+271000140410     C                     EXSR @KYF1
+271100140410      *
+271200140410      *
+271300140410     C                     ENDIF
+271400140410      *
+271500140410      *
+271600140410     C                     ENDIF
+271700140410      *
+271800140410      *
+271900140410     C                     OTHER
+272000140410     C                     MOVE 'CPD6A60' X@MI
+272100140410     C                     CALL 'QMHSNDPM'@SNDSM
+272200140410     C                     MOVE '*ERR'    @FMT
+272300140410      *
+272400140410      *
+272500140410     C                     ENDSL
+272600140410      *
+272700140410      *
+272800140410     C                     ENDDO
+272900140410      *
+273000140410      *
+273100140410     C                     ENDSR
+273200140410      *
+273300140410      *-------------------------------------------------------------------------
+273400140410     C           @VLS01    BEGSR
+273500140410      *-------------------------------------------------------------------------
+273600140410      *
+273700140424      * Invalid option for show linked records
+273800140410     C           S1LNKD    IFNE 'Y'
+273900140410     C           S1LNKD    ANDNE'N'
+274000140410     C           S1LNKD    ANDNE'*'
+274100140410     C           D1DO      ANDEQ*ON
+274200140410     C                     MOVE 'MSG1846' X@MI
+274300140410     C                     CALL 'QMHSNDPM'@SNDPM
+274400140410     C                     SETON                       97
+274500140410     C                     MOVE '*ERR'    @FMT
+274600140410     C                     ENDIF
+274700140410      *
+274800140424      * Invalid option for show expanded details
+274900140410     C           S1EXPD    IFNE 'Y'
+275000140410     C           S1EXPD    ANDNE'N'
+275100140410     C           D1DO      ANDEQ*ON
+275200140410     C                     MOVE 'MSG1848' X@MI
+275300140410     C                     CALL 'QMHSNDPM'@SNDPM
+275400140410     C                     SETON                       95
+275500140410     C                     MOVE '*ERR'    @FMT
+275600140410     C                     ENDIF
+275700140410      *
+275800140410      *
+275900140410     C                     MOVE *OFF      D1DO
+276000140410      *
+276100140410      *
+276200140410     C                     ENDSR
+276300140410      *
+276400140410      *-------------------------------------------------------------------------
+276500140410     C           @RTF1     BEGSR
+276600140410      *-------------------------------------------------------------------------
+276700140410      *
+276800140410      *
+276900140410     C           1         OCUR F@DS
+277000140410      *
+277100140410      *
+277200140410      ***C           F1KEY1    CHAINDTAF1R1             N99
+277300140410     C                     SETOF                         99
+277400140410      *
+277500140410      *
+277600140410      *
+277700140410     C           *IN99     IFEQ *ON
+277800140410     C           *IN99     OREQ *OFF
+277900140410     C           RHDLTD    ANDNE*BLANKS
+278000140410     C           *NOKEY    CLEARDTAF1R1
+278100140410      *
+278200140410      *
+278300140410      ***C                     MOVE ......    ......
+278400140410      *
+278500140424      * Record does not exist
+278600140410     C                     MOVE 'MSG1374' X@MI
+278700140410     C                     Z-ADD7         X@ECBA
+278800140410      *
+278900140410      *
+279000140410     C                     ELSE
+279100140410      *
+279200140410      *
+279300140410     C                     ENDIF
+279400140410      *
+279500140410      *
+279600140410     C                     MOVELF1DS      F@DS      P
+279700140410     C           3         OCUR F1DS
+279800140410      *
+279900140410      *
+280000140410      ***C                     MOVELF@DS      F1DS      P
+280100140410      ***C           ......    IFNE *ZEROS
+280200140410      ***C                     RESETX@ID
+280300140410      ***C                     MOVEL......    X@ID
+280400140410      ***C                     CALL 'QWCCVTDT'@CVTFD
+280500140410      ***C                     MOVELX@OD      .....
+280600140410      ***C                     ENDIF
+280700140410      *
+280800140410      *
+280900140410     C                     MOVELF1DS      F@DS      P
+281000140410     C           2         OCUR F1DS
+281100140410     C                     MOVELF@DS      F1DS      P
+281200140410      *
+281300140410      *
+281400140410      ***C                     MOVE ......    B1....
+281500140410      *
+281600140410      *
+281700140410      ***C                     MOVE ......    ...,01
+281800140410      *
+281900140410      *
+282000140410     C                     ENDSR
+282100140410      *
+282200140410      *-------------------------------------------------------------------------
+282300140410     C           @DTDTS    BEGSR
+282400140410      *-------------------------------------------------------------------------
+282500140410      *
+282600140410      *
+282700140410     C                     MOVEL'*YMD'    X@ODF     P
+282800140410     C                     CALL 'QWCCVTDT'@CVTDT
+282900140410      *
+283000140410      *
+283100140410     C                     RESET@DT
+283200140410      *
+283300140410      *
+283400140410     C           X@ECBA    IFEQ *ZERO
+283500140410     C           X@ODC     ADD  19        DT@Y             00CC
+283600140410     C                     MULT 100       DT@Y             CC00
+283700140410     C                     ADD  X@OD1     DT@Y             CCYY
+283800140410     C                     Z-ADDX@OD2     DT@M             CCYYMM
+283900140410     C                     Z-ADDX@OD3     DT@D             CCYYMMDD
+284000140410     C           X@ODT     DIV  10000     DT@H             CCYYMMDDHH
+284100140410     C           X@ODT     DIV  100       DT@MI            CCYYMMDDHHMM
+284200140410     C                     Z-ADDX@ODT     DT@S             CCYYMMDDHHMMSS
+284300140410     C           X@ODU     MULT 1000      DT@U             CCYYMMDDHHMMSSUUUUUU
+284400140410     C                     ENDIF
+284500140410      *
+284600140410      *
+284700140410     C                     ENDSR
+284800140410      *
+284900140410      *-------------------------------------------------------------------------
+285000140410     C           @DTSDT    BEGSR
+285100140410      *-------------------------------------------------------------------------
+285200140410      *
+285300140410      *
+285400140410     C           DT@Y      DIV  100       WK0020  20
+285500140410     C                     MVR            X@OD1            .YY
+285600140410     C           WK0020    SUB  19        X@ODC            CYY
+285700140410     C                     Z-ADDDT@M      X@OD2            CCYYMM
+285800140410     C                     Z-ADDDT@D      X@OD3            CCYYMMDD
+285900140410     C           DT@H      MULT 10000     WK0060  60
+286000140410     C                     Z-ADDWK0060    X@ODT            HH
+286100140410     C           DT@MI     MULT 100       WK0060
+286200140410     C                     ADD  WK0060    X@ODT            HHMM
+286300140410     C                     ADD  DT@S      X@ODT            HHMMSS
+286400140410     C                     Z-ADDDT@U      X@ODU            UUUUUU
+286500140410      *
+286600140410      *
+286700140410     C                     MOVELX@OD      X@ID
+286800140410      *
+286900140410      *
+287000140410     C                     MOVEL'*YMD'    X@IDF     P
+287100140410     C                     CALL 'QWCCVTDT'@CVTDT
+287200140410     C           X@ECBA    IFNE *ZERO
+287300140410     C                     RESETX@OD
+287400140410     C                     ENDIF
+287500140410      *
+287600140410      *
+287700140410     C                     ENDSR
+287800140410      *
+287900140410      *-------------------------------------------------------------------------
+288000140410     C           @UPF1     BEGSR
+288100140410      *-------------------------------------------------------------------------
+288200140410      *
+288300140410      *
+288400140410      ***C                     Z-ADD....,01   ......
+288500140410      *
+288600140410      *
+288700140410     C           1         OCUR F@DS
+288800140410     C                     MOVELF1DS      F@DS      P
+288900140410      *
+289000140410      *
+289100140410      ***C           ......    IFNE *ZERO
+289200140410      ***C                     RESETX@ID
+289300140410      ***C                     MOVEL......    X@ID
+289400140410      ***C                     CALL 'QWCCVTDT'@CVTDT
+289500140410      ***C                     MOVELX@OD      ......
+289600140410      ***C                     ENDIF
+289700140410      *
+289800140410      *
+289900140410     C           OPT       IFEQ ' 1'
+290000140410     C           OPT       OREQ 'KF'
+290100140410     C           OPT       OREQ ' 3'
+290200140410      *
+290300140410      *
+290400140410     C                     MOVE S@USER    RHCUSR
+290500140410     C                     MOVE S@PGM     RHCPGM
+290600140410     C                     MOVEL'*CURRENT'X@IDF
+290700140410     C                     EXSR @DTDTS
+290800140410     C                     MOVE @DT       RHCDTS
+290900140410     C                     MOVE S@USER    RHEUSR
+291000140410     C                     MOVE S@PGM     RHEPGM
+291100140410     C                     MOVE @DT       RHEDTS
+291200140410      *
+291300140410      *
+291400140410      ***C                     WRITEDTAF1R1
+291500140410      *
+291600140410      *
+291700140410     C                     ELSE
+291800140410      *
+291900140410      *
+292000140410     C           1         OCUR F1DS
+292100140410     C           F@DS      IFNE F1DS
+292200140410      *
+292300140410      *
+292400140415      ***C           F1KEY1    CHAINDTAF1R1              99
+292500140410     C           *IN99     IFEQ *OFF
+292600140410      *
+292700140410      *
+292800140410     C           3         OCUR F1DS
+292900140410     C           2         OCUR F@DS
+293000140410     C                     MOVELF1DS      F@DS
+293100140410     C           1         OCUR F1DS
+293200140410      *
+293300140410      *
+293400140410     C           F1DS      IFNE F@DS
+293500140410      *
+293600140410      *
+293700140410     C           1         OCUR F@DS
+293800140410     C           2         OCUR F1DS
+293900140410     C                     MOVELF@DS      F1DS
+294000140410     C           2         OCUR F@DS
+294100140410     C                     MOVELF1DS      F@DS
+294200140410      *
+294300140410      *
+294400140410     C                     EXSR @RTF1
+294500140410      *
+294600140410      *
+294700140410     C           2         OCUR F@DS
+294800140410     C           2         OCUR F1DS
+294900140410     C                     MOVELF@DS      F1DS      P
+295000140410      *
+295100140424      * Record changed since last retrieval.
+295200140410     C                     MOVE 'MSG1842' X@MI
+295300140410     C                     Z-ADD7         X@ECBA
+295400140410      *
+295500140410      *
+295600140410     C                     ELSE
+295700140410     C           2         OCUR F1DS
+295800140410      *
+295900140410      *
+296000140410     C                     MOVE S@USER    RHEUSR
+296100140410     C                     MOVE S@PGM     RHEPGM
+296200140410      *
+296300140410      *
+296400140410     C                     MOVEL'*CURRENT'X@IDF
+296500140410     C                     EXSR @DTDTS
+296600140410     C                     MOVE @DT       RHEDTS
+296700140410      *
+296800140410      *
+296900140410      ***C                     UPDATEDTAF1R1
+297000140410      *
+297100140410      *
+297200140410     C                     ENDIF
+297201140415      *
+297202140424      * Record no longer exists for update
+297203140415     C                     ELSE
+297204140415     C                     MOVE 'MSG1924' X@MI
+297205140415     C                     Z-ADD7         X@ECBA
+297300140410      *
+297400140410      *
+297500140410     C                     ENDIF
+297600140410      *
+297700140410      *
+297800140410     C                     ENDIF
+297801140415      *
+297802140415      *
+297803140415     C                     ENDIF
+297900140410      *
+298000140410      *
+298100140410     C           1         OCUR F@DS
+298200140410      *
+298300140410      * Commit if no keys passed, otherwise caller performs commit
+298400140410      ***C           E@SUPN    IFEQ N1SUPN
+298500140410      ***C           E@SORT    ANDEQN1SORT
+298600140415     C                     COMIT
+298700140410      ***C                     ENDIF
+298800140410      *
+298900140410      *
+299000140410     C                     ENDSR
+299100140410      *
+299200140410      *-------------------------------------------------------------------------
+299300140410     C           @DLF1     BEGSR
+299400140410      *-------------------------------------------------------------------------
+299500140410      *
+299600140410      *
+299700140410     C                     EXSR @RTF1
+299800140410     C           X@ECBA    IFEQ *ZERO
+299900140410      *
+300000140424      * Deleting record from file
+300100140410     C                     MOVE 'EXM0001' X@MI
+300200140410     C                     Z-ADD27        X@ECBA
+300300140410     C                     MOVEL'*EXT'    X@PMQ     P
+300400140415     C                     MOVEL'*STATUS' X@MT      P
+300500140410     C                     MOVE FNM@11    F@FNAM
+300600140410     C                     MOVE FLB@11    F@FLIB
+300700140410     C                     MOVELIDF@      X@MDIT
+300800140410     C                     CALL 'QMHSNDPM'@SNDPM
+300900140415     C                     RESETX@PMQ
+301000140410     C                     RESETX@MT
+301100140410      *
+301200140410      *
+301300140410      ***C           F1KEY1    DELETDTAF1R1              99
+301301140415      *
+301302140415      *
+301303140415     C                     ENDIF
+301400140410      *
+301500140410      *
+301600140410     C                     ENDSR
+301700140410      *
+301800140410      *-------------------------------------------------------------------------
+301900140410     C           @LNF1     BEGSR
+302000140410      *-------------------------------------------------------------------------
+302100140410      *
+302200140410      *
+302300140410     C           RLKEY1    CHAINLPREGLF1            N99
+302400140410     C                     MOVE RLDS      F@DS
+302500140410     C           1         OCUR RLDS
+302600140410     C                     MOVE F@DS      RLDS
+302700140410     C           2         OCUR RLDS
+302800140410     C                     MOVE F@DS      RLDS
+302900140410      *
+303000140410      *
+303100140410     C                     MOVE F1DS      F@DS
+303200140410     C           RHKEY1    CHAINLPDCMNF1            N99
+303300140410     C                     MOVE RHSDRF    RLSDRF
+303400140410     C                     MOVE RHSUPN    RLSUPN
+303500140410      *
+303600140410      *
+303700140410     C                     MOVE RLADCN    RHDCMN
+303800140410     C           RHKEY1    CHAINLPDCMNF1            N99
+303900140410     C                     MOVE RHSDRF    RLADRF
+304000140410     C                     CLEARRLALCT
+304100140410      *
+304200140410      *
+304300140410     C                     MOVE F@DS      F1DS
+304400140410      *
+304500140410      *
+304600140410     C                     MOVE RLDCMN    RDDCMN
+304700140410     C           RDKEY2    CHAINSORCINFA             99
+304800140410     C           *IN99     DOWEQ*OFF
+304900140410      *
+305000140410      *
+305100140410     C                     SELEC
+305200140410     C           RDADCN    WHEQ N1ADCN
+305300140410     C           OPT       ANDEQ' 1'
+305400140410     C                     MOVE RLADCN    RDADCN
+305500140410     C                     MOVE RLADRF    RDADRF
+305600140410     C                     MOVE RHBCHN    RDBCHN
+305700140410     C           RDADCN    WHEQ RLADCN
+305800140410     C           OPT       ANDEQ' 4'
+305900140410     C                     CLEARRDADCN
+306000140410     C                     CLEARRDADRF
+306100140410     C                     CLEARRDBCHN
+306200140410     C           RDADCN    WHNE RLADCN
+306300140410     C                     MOVE 'S'       RLALCT
+306400140410     C                     ENDSL
+306500140410      *
+306600140410      *
+306700140410     C           RDADCN    IFEQ RLADCN
+306800140410     C           RDADCN    OREQ N1ADCN
+306900140410     C                     MOVE S@USER    RDEUSR
+307000140410     C                     MOVE S@PGM     RDEPGM
+307100140410     C                     MOVEL'*CURRENT'X@IDF
+307200140410     C                     EXSR @DTDTS
+307300140410     C                     MOVE @DT       RDEDTS
+307400140410     C                     ENDIF
+307500140410      *
+307600140410      *
+307700140410     C                     UPDATSORCINFA
+307800140410      *
+307900140410      *
+308000140410     C           RDKEY2    READESORCINFA                 99
+308100140410     C                     ENDDO
+308200140410      *
+308300140410      *
+308400140410     C           1         OCUR RLDS
+308500140410     C           RLKEY1    CHAINLPREGLF1             99
+308600140410     C           2         OCUR RLDS
+308700140410      *
+308800140410      *
+308900140410     C                     SELEC
+309000140410     C           *IN99     WHEQ *OFF
+309100140410     C           OPT       ANDEQ' 4'
+309200140410     C                     DELETLPREGLF1
+309300140410     C           *IN99     WHEQ *ON
+309400140410     C           OPT       ANDEQ' 1'
+309500140410     C                     MOVE S@USER    RLCUSR
+309600140410     C                     MOVE S@PGM     RLCPGM
+309700140410     C                     MOVE '*CURRENT'X@IDF
+309800140410     C                     EXSR @DTDTS
+309900140410     C                     MOVE @DT       RLCDTS
+310000140410     C                     MOVE S@USER    RLEUSR
+310100140410     C                     MOVE S@PGM     RLEPGM
+310200140410     C                     MOVE @DT       RLEDTS
+310300140410     C                     WRITELPREGLF1
+310400140410     C           *IN99     WHEQ *OFF
+310500140410     C           OPT       ANDEQ' 1'
+310600140410     C                     MOVE S@USER    RLEUSR
+310700140410     C                     MOVE S@PGM     RLEPGM
+310800140410     C                     MOVE '*CURRENT'X@IDF
+310900140410     C                     EXSR @DTDTS
+311000140410     C                     MOVE @DT       RLEDTS
+311100140410     C                     UPDATLPREGLF1
+311200140410     C                     ENDSL
+311300140410      *
+311400140410      *
+311500140410     C           1         OCUR RLDS
+311600140410     C           RLKEY2    CHAINLPREGLF1             99
+311700140410     C           2         OCUR RLDS
+311800140410      *
+311900140410      *
+312000140410     C                     SELEC
+312100140410     C           *IN99     WHEQ *ON
+312200140410     C           OPT       ANDEQ' 4'
+312300140410     C                     CLEARRLADCN
+312400140410     C                     CLEARRLADRF
+312500140410     C                     MOVE S@USER    RLCUSR
+312600140410     C                     MOVE S@PGM     RLCPGM
+312700140410     C                     MOVE '*CURRENT'X@IDF
+312800140410     C                     EXSR @DTDTS
+312900140410     C                     MOVE @DT       RLCDTS
+313000140410     C                     MOVE S@USER    RLEUSR
+313100140410     C                     MOVE S@PGM     RLEPGM
+313200140410     C                     MOVE @DT       RLEDTS
+313300140410     C                     WRITELPREGLF1
+313400140410     C           OPT       WHEQ '1'
+313500140410     C           *IN99     ANDEQ*OFF
+313600140410     C                     DELETLPREGLF1
+313700140410     C                     ENDSL
+313800140410      *
+313900140410      *
+314000140410     C                     ENDSR
+314100140410      *
+314200140410      *-------------------------------------------------------------------------
+314300140410     C           @LNF2     BEGSR
+314400140410      *-------------------------------------------------------------------------
+314500140410      *
+314600140410      *
+314700140410     C           RLKEY1    CHAINLPREGLF1            N99
+314800140410     C                     MOVE RLDS      F@DS
+314900140410     C           1         OCUR RLDS
+315000140410     C                     MOVE F@DS      RLDS
+315100140410     C           2         OCUR RLDS
+315200140410     C                     MOVE F@DS      RLDS
+315300140410      *
+315400140410      *
+315500140410     C                     MOVE RLADCN    RHDCMN
+315600140410     C           RHKEY1    CHAINLPDCMNF1            N99
+315700140410     C                     MOVE RHSDRF    RLADRF
+315800140410      *
+315900140410      *
+316000140410     C           RDKEY1    CHAINSORCINFA             99
+316100140410     C           *IN99     IFEQ *ON
+316200140410      *
+316300140410      *
+316400140410     C                     SELEC
+316500140410     C           RDADCN    WHEQ N1ADCN
+316600140410     C           OPT       ANDEQ' 1'
+316700140410     C                     MOVE RLADCN    RDADCN
+316800140410     C                     MOVE RLADRF    RDADRF
+316900140410     C           RDADCN    WHEQ RLADCN
+317000140410     C           OPT       ANDEQ' 4'
+317100140410     C                     CLEARRDADCN
+317200140410     C                     CLEARRDADRF
+317300140410     C                     ENDSL
+317400140410      *
+317500140410      *
+317600140410     C           RDADCN    IFEQ RLADCN
+317700140410     C           RDADCN    OREQ N1ADCN
+317800140410     C                     MOVE S@USER    RDEUSR
+317900140410     C                     MOVE S@PGM     RDEPGM
+318000140410     C                     MOVEL'*CURRENT'X@IDF
+318100140410     C                     EXSR @DTDTS
+318200140410     C                     MOVE @DT       RDEDTS
+318300140410     C                     ENDIF
+318400140410      *
+318500140410      *
+318600140410     C                     UPDATSORCINFA
+318700140410     C                     ENDIF
+318800140410      *
+318900140410      *
+319000140410     C                     MOVE RLDCMN    RHDCMN
+319100140410     C           RHKEY1    CHAINLPDCMNF1            N99
+319200140410     C           *IN99     IFEQ *OFF
+319300140410     C                     MOVE RHSUPN    RLSUPN
+319400140410     C                     MOVE RHSDRF    RLSDRF
+319500140410      *
+319600140424      * Summing up, please wait
+319700140410     C                     MOVE 'MSG1952' X@MI
+319800140410     C                     MOVELRLSDRF    X@MDIT
+319900140410     C                     MOVEL'*STATUS' X@MT      P
+320000140410     C                     MOVEL'*EXT'    X@PMQ     P
+320100140410     C                     CALL 'QMHSNDPM'@SNDPM
+320200140410     C                     RESETX@MT
+320300140410     C                     RESETX@PMQ
+320400140410      *
+320500140410      *
+320600140410     C                     MOVE *OFF      W1001C  1
+320700140410     C                     MOVE *OFF      W2001C  1
+320800140410      *
+320900140410      *
+321000140410     C           RDKEY2    CHAINSORCINFA            N99
+321100140410     C           *IN99     DOWEQ*OFF
+321200140410      *
+321300140410      *
+321400140410     C                     SELEC
+321500140410     C           RDADCN    WHEQ N1ADCN
+321600140410     C           RLALCT    ANDNE'S'
+321700140410     C                     MOVE 'P'       RLALCT
+321800140410     C                     MOVE *ON       W2001C
+321900140410     C           RDADCN    WHEQ N1ADCN
+322000140410     C                     MOVE *ON       W2001C
+322100140410     C           RDADCN    WHNE RLADCN
+322200140410     C                     MOVE 'S'       RLALCT
+322300140410     C                     OTHER
+322400140410     C                     MOVE *ON       W1001C
+322401140415     C                     ENDSL
+322500140410      *
+322600140410      *
+322700140410     C           RDKEY2    READESORCINFA            N    99
+322800140410     C                     ENDDO
+322900140410      *
+323000140410      *
+323100140410     C           1         OCUR RLDS
+323200140410     C           RLKEY1    CHAINLPREGLF1             99
+323300140410     C           2         OCUR RLDS
+323400140410      *
+323500140410      *
+323600140410     C                     SELEC
+323700140410     C           *IN99     WHEQ *OFF
+323800140410     C           W1001C    ANDEQ*OFF
+323900140415     C                     DELETLPREGLF1
+324000140410     C           *IN99     WHEQ *ON
+324100140410     C           W1001C    ANDEQ*ON
+324200140410     C                     MOVE S@USER    RLCUSR
+324300140410     C                     MOVE S@PGM     RLCPGM
+324400140410     C                     MOVEL'*CURRENT'X@IDF
+324500140410     C                     EXSR @DTDTS
+324600140410     C                     MOVE @DT       RLCDTS
+324700140410     C                     MOVE S@USER    RLEUSR
+324800140410     C                     MOVE S@PGM     RLEPGM
+324900140410     C                     MOVE @DT       RLEDTS
+325000140410     C                     WRITELPREGLF1
+325100140410     C                     ENDSL
+325200140410      *
+325300140410      *
+325400140410     C           1         OCUR RLDS
+325500140410     C                     CLEARRLADCN
+325600140410     C           RLKEY1    CHAINLPREGLF1             99
+325700140410     C           2         OCUR RLDS
+325800140410      *
+325900140410      *
+326000140410     C                     SELEC
+326100140410     C           *IN99     WHEQ *OFF
+326200140410     C           W2001C    ANDEQ*OFF
+326300140410     C                     DELETLPREGLF1
+326400140410     C           *IN99     WHEQ *ON
+326500140410     C           W2001C    ANDEQ*ON
+326600140410     C                     MOVE S@USER    RLCUSR
+326700140410     C                     MOVE S@PGM     RLCPGM
+326800140410     C                     MOVEL'*CURRENT'X@IDF
+326900140410     C                     EXSR @DTDTS
+327000140410     C                     MOVE @DT       RLCDTS
+327100140410     C                     MOVE S@USER    RLEUSR
+327200140410     C                     MOVE S@PGM     RLEPGM
+327300140410     C                     MOVE @DT       RLEDTS
+327400140410     C                     WRITELPREGLF1
+327500140410     C                     ENDSL
+327600140410      *
+327700140410      *
+327800140410     C                     ENDIF
+327900140410      *
+328000140410      *
+328100140410     C                     ENDSR
+328200140410      *
+328300140410      *-------------------------------------------------------------------------
+328400140410     C           @RCLF1    BEGSR
+328500140410      *-------------------------------------------------------------------------
+328600140410      *
+328700140410      *
+328800140410     C                     MOVE S1ADCN    RHDCMN
+328900140410     C           RHKEY1    CHAINLPDCMNF1             99
+329000140410      *
+329100140410      *
+329200140410     C                     SELEC
+329300140410     C           *IN99     WHEQ *OFF
+329400140410     C           RHDCMC    ANDNE'I'
+329500140410     C                     UNLCKLPDCMNL1
+329600140410      *
+329700140410      *
+329800140410     C           *IN99     WHEQ *OFF
+329900140410      *
+330000140424      * re-calculating totals, please wait
+330100140410     C                     MOVE 'MSG1944' X@MI
+330200140410     C                     MOVEL'*STATUS' X@MT      P
+330300140410     C                     MOVEL'*EXT'    X@PMQ     P
+330400140410     C                     CALL 'QMHSNDPM'@SNDPM
+330500140410     C                     RESETX@MT
+330600140410     C                     RESETX@PMQ
+330700140410      *
+330800140410      *
+330900140410     C                     CLEARRHTGDQ
+331000140410     C                     CLEARRHTGDV
+331100140410     C                     CLEARRHTDSV
+331200140410     C                     CLEARRHTVAV
+331300140410      *
+331400140410      *
+331500140410     C                     CLEARRHDGDQ
+331600140410     C                     CLEARRHDGDV
+331700140410     C                     CLEARRHDDSV
+331800140410     C                     CLEARRHDVAV
+331900140410      *
+332000140410      *
+332100140410     C                     MOVE RHDCMN    RDADCN
+332200140410      *
+332300140410      *
+332400140410     C           RDKEY3    CHAINSORCINFI             99
+332500140410     C           *IN99     DOWEQ*OFF
+332600140410      *
+332700140410      *
+332800140410     C                     ADD  RDRCPQ    RHTGDQ
+332900140410     C           RDRCPQ    MULT RDRCPR    W1TGDV 112
+333000140410     C                     ADD  W1TGDV    RHTGDV
+333100140410     C                     ADD  RDRCDV    RHTDSV
+333200140410     C                     ADD  RDRCVV    RHTVAV
+333300140410      *
+333400140410      *
+333500140410     C                     ADD  RDDCQT    RHDGDQ
+333600140410     C           RDDCQT    MULT RDSOPR    W1DGDV 112
+333700140410     C                     ADD  W1DGDV    RHDGDV
+333800140410     C                     ADD  RDDSCV    RHDDSV
+333900140410     C                     ADD  RDVATV    RHDVAV
+334000140410      *
+334100140410      *
+334200140410     C           RDKEY3    READESORCINFI                 99
+334300140410     C                     ENDDO
+334400140410      *
+334500140410      *
+334600140410     C                     MOVE S@USER    RHEUSR
+334700140410     C                     MOVE S@PGM     RHEPGM
+334800140410     C                     MOVEL'*CURRENT'X@IDF
+334900140410     C                     EXSR @DTDTS
+335000140410     C                     MOVE @DT       RHEDTS
+335100140410     C                     UPDATLPDCMNF1
+335200140410      *
+335300140410      *
+335400140415     C                     ENDSL
+335500140410      *
+335600140410      *
+335700140410     C                     ENDSR
+335800140410      *
+335900140410      *-------------------------------------------------------------------------
+336000140410     C           @LNK01    BEGSR
+336100140410      *-------------------------------------------------------------------------
+336200140410      *
+336300140410      *
+336400140410     C                     SELEC
+336500140410     C           F@RD,1    WHEQ 'R'
+336600140410     C                     MOVE RHDCMN    RLDCMN
+336700140415     C                     MOVE S1ADCN    RLADCN
+336800140410     C                     EXSR @LNF1
+336900140410     C           F@RD,2    WHEQ 'R'
+337000140410     C                     MOVE RDDCMN    RLDCMN
+337100140415     C                     MOVE S1ADCN    RLADCN
+337200140410     C                     EXSR @LNF2
+337300140415     C                     ENDSL
+337301140415      *
+337302140415      *
+337303140415     C                     ENDSR
+337400140410      *
+337500140410      *-------------------------------------------------------------------------
+337600140410     C           @CND01    BEGSR
+337700140410      *-------------------------------------------------------------------------
+337800140410      *
+337900140410      *
+338000140410     C                     CLEARKD1
+338100140410     C                     Z-ADD0         W2
+338200140410      *
+338300140410      *
+338400140410     C           C1OPT     IFEQ ' 4'
+338500140410     C                     ADD  1         W2
+338600140410     C                     MOVE F1KP      KD1,W2
+338700140410     C                     ENDIF
+338800140410      *
+338900140410      *
+339000140410     C           E1        DO   50        W1
+339100140410     C                     MOVE KY1,W1    OPTIND
+339200140410     C           OPT       IFEQ ' 4'
+339300140410     C                     ADD  1         W2
+339400140410     C                     MOVE KP1,W1    KD1,W2
+339500140410     C                     ENDIF
+339600140410     C                     ENDDO
+339700140410      *
+339800140410      *
+339900140410     C                     MOVE '*CRT'    @FMT
+340000140410      *
+340100140410      *
+340200140410     C           @FMT      DOWNE*BLANKS
+340300140410      *
+340400140410      *
+340500140410     C           @FMT      IFEQ '*UPD'
+340600140410     C           @FMT      OREQ '*CRT'
+340700140410      *
+340800140410      *
+340900140410     C           @FMT      IFEQ '*CRT'
+341000140410     C                     Z-ADD0         I1
+341100140410     C                     Z-ADD0         O1I1
+341200140410     C                     ENDIF
+341300140410      *
+341400140410      *
+341500140410     C                     SETOF                     26
+341600140410     C                     WRITECNDPNL01
+341700140410      *
+341800140410      *
+341900140410     C           1         OCUR F1DS
+342000140410      *
+342100140410      *
+342200140410     C                     SELEC
+342300140410     C           @ROLL     WHEQ UP
+342400140410      *
+342500140410      *
+342600140410     C           D@MOB     IFEQ BOTTOM
+342700140410     C                     MOVE 'CPD6A69' X@MI
+342800140410     C                     CALL 'QMHSNDPM'@SNDSM
+342900140410     C                     Z-ADDO1I1      I1
+343000140410     C                     ELSE
+343100140410     C                     Z-ADDI1        O1I1
+343200140410     C                     ENDIF
+343300140410      *
+343400140410      *
+343500140410     C           D@MOB     WHEQ DOWN
+343600140410      *
+343700140410      *
+343800140410     C           O1I1      SUB  D@RR1D    I1
+343900140410     C           I1        IFLT 0
+344000140410     C                     MOVE 'CPD6A66' X@MI
+344100140410     C                     CALL 'QMHSNDPM'@SNDSM
+344200140410     C                     Z-ADD0         I1
+344300140410     C                     ENDIF
+344400140410     C                     Z-ADDI1        O1I1
+344500140410      *
+344600140410      *
+344700140410     C                     OTHER
+344800140410      *
+344900140410      *
+345000140410     C                     ENDSL
+345100140410      *
+345200140410      *
+345300140410     C                     SETOF                     28
+345400140410     C                     Z-ADD0         D@RR1
+345500140410      *
+345600140410      *
+345700140410     C           I1        DOWLTW2
+345800140410     C           D@RR1     ANDLTD@RR1D
+345900140410      *
+346000140410      *
+346100140410     C                     CLEARDTAF1R1
+346200140410     C                     ADD  1         I1
+346300140410     C                     MOVE KD1,I1    F1KP
+346400140410     C                     MOVE *ON       F@DIR
+346500140410     C                     EXSR @KYF1
+346600140415      ***C           F1KEY1     CHAINDTAF1F1             N99
+346700140410      *
+346800140410      *
+346900140410     C                     EXSR @FSF1
+347000140410      *
+347100140410      *
+347200140410     C                     ADD  1         D@RR1
+347300140410     C                     WRITECNDSFL01
+347400140410      *
+347500140410      *
+347600140410     C                     ENDDO
+347700140410      *
+347800140410      *
+347900140410     C           I1        IFGE W2
+348000140410     C                     MOVE BOTTOM    D@MOB
+348100140410     C                     Z-ADDO1I1      I1
+348200140410     C                     ELSE
+348300140410     C                     MOVE MORE      D@MOB
+348400140410     C                     ENDIF
+348500140410      *
+348600140410      *
+348700140410     C                     ENDIF
+348800140410      *
+348900140410      *
+349000140410     C                     SETON                     26
+349100140410     C                     MOVE D@MOB     *IN20
+349200140410      *
+349300140410      *
+349400140410     C                     WRITE#ERRCTL
+349500140410     C                     WRITECNDFTR01
+349600140415     C                     EXFMTCNDPNL01
+349700140410      *
+349800140410      *
+349900140410     C                     MOVE *IN21     @CHG
+350000140410     C                     CLEARE@FKEY
+350100140410     C                     CLEAR@FMT
+350200140410     C                     SELEC
+350300140410     C           *IN07     WHEQ *ON
+350400140410     C                     MOVE DOWN      @ROLL
+350500140410     C                     MOVE '*UPD'    @FMT
+350600140410     C           *IN08     WHEQ *ON
+350700140410     C                     MOVE UP        @ROLL
+350800140410     C                     MOVE '*UPD'    @FMT
+350900140410     C                     OTHER
+351000140410     C                     CLEAR@ROLL
+351100140410     C                     ENDSL
+351200140410     C                     CALL 'QMHRMVPM'@RMVPM
+351300140410     C                     MOVEAO5099     *IN,50
+351400140410      *
+351500140410      *
+351600140410     C                     SELEC
+351700140410      *
+351800140410      *
+351900140410     C           *INKC     WHEQ *ON
+352000140410     C                     MOVE 'KC'      E@FKEY
+352100140410      *
+352200140410      *
+352300140410     C           *INKE     WHEQ *ON
+352400140410     C                     MOVE '*CRT'    @FMT
+352500140410      *
+352600140410      *
+352700140410     C           *INKL     WHEQ *ON
+352800140410     C                     MOVE 'KL'      E@FKEY
+352900140410      *
+353000140410      *
+353100140410     C           *IN23     WHEQ *OFF
+353200140410     C           *IN07     OREQ *ON
+353300140410     C           *IN08     OREQ *ON
+353400140410      *
+353500140410      *
+353600140410     C           @FMT      IFEQ *BLANKS
+353700140410     C           @CHG      IFEQ YES
+353800140410     C                     MOVE '*DSP'    @FMT
+353900140410      *
+354000140410      *
+354100140410     C                     ELSE
+354200140410      *
+354300140410      *
+354400140410     C           1         DO   W2        W1
+354500140410     C                     MOVE KD1,W1    F1KP
+354600140410     C                     MOVE *ON       F@DIR
+354700140410     C                     EXSR @KYF1
+354800140410     C                     EXSR @DLF1
+354900140410     C                     Z-ADD1         W3
+355000140410     C           F1KP      LOKUPKP1,W1                   99
+355100140410     C           *IN99     IFEQ *ON
+355200140415     C                     MOVE *LOVAL    KP1,W3
+355300140410     C                     MOVE *LOVAL    KY1,W3
+355400140410     C                     ENDIF
+355500140410     C                     ENDDO
+355600140410      *
+355700140410      * Commit if no keys passed, otherwise caller performs commit.
+355800140410      ***C           E@SUPN    IFEQ N1SUPN
+355900140410      ***C           E@SORT    ANDEQN1SORT
+356000140415     C                     COMIT
+356100140410      ***C                     ENDIF
+356200140410      *
+356300140410      *
+356400140410     C                     ENDIF
+356500140410      *
+356600140410      *
+356700140410     C                     ENDIF
+356800140410      *
+356900140410      *
+357000140410     C                     OTHER
+357100140415     C                     MOVE 'CPD6A60' X@MI
+357200140410     C                     CALL 'QMHSNDPM'@SNDSM
+357300140410     C                     MOVE '*ERR'    @FMT
+357400140410      *
+357500140410      *
+357600140410     C                     ENDSL
+357700140410      *
+357800140410      *
+357900140410     C                     ENDDO
+358000140410      *
+358100140410      *
+358200140410     C                     ENDSR
+358300140410      *
+358400140410      *-------------------------------------------------------------------------
+358500140410     C           @F4L01    BEGSR
+358600140410      *-------------------------------------------------------------------------
+358700140410      *
+358800140410      *
+358900140415     C                     CLEARX@ECBA
+359000140410      *
+359100140410      *
+359200140410     C           D@ROCL    DIV  256       D@PROW
+359300140410     C                     MVR            D@PCOL
+359400140410      *
+359500140410      *
+359600140410     C                     SELEC
+359700140423     C           D@CRCD    WHEQ 'LSTPNL01'
+359701140423      *
+359702140423      *                                    l
+359703140423     C                     SELEC
+359704140423     C           D@CFLD    WHEQ 'S1ADCN'
+359705140423     C           S1#01     ANDNE':'
+359706140423     C                     CALL 'SOQQQQ'               98
+359707140423     C                     MOVE S1ADCN    S1ADCN
+359709140423      *
+359710140423      *
+359711140423     C                     OTHER
+359712140423     C                     MOVE 'CPD6806' X@MI
+359713140423     C                     CALL 'QMHSNDPM'@SNDSM
+359714140423     C                     ENDSL
+359800140410      *
+359900140410      *
+360004140423     C           D@CRCD    WHEQ 'LSPNL01'
+360203140423      *
+360204140423      *
+360205140423     C                     SELEC
+360206140423     C           D@CFLD    WHEQ 'S1SUPN'
+360207140423     C           S1#01     ANDNE':'
+360300140423     C                     CALL 'EQ2100'  EQ2100       98
+360400140410     C           X@SUPN    IFNE *ZEROS
+360500140410     C                     MOVE X@SUPN    S1SUPN
+360600140410     C                     ENDIF
+360700140410      *
+360800140410      *
+360900140410     C                     OTHER
+361000140410     C                     MOVE 'CPD6806' X@MI
+361100140410     C                     CALL 'QMHSNDPM'@SNDSM
+361200140410     C                     ENDSL
+361300140410      *
+361400140410      *
+361500140410     C                     OTHER
+361600140410     C                     MOVE 'CPD6806' X@MI
+361700140410     C                     CALL 'QMHSNDPM'@SNDSM
+361800140410     C                     ENDSL
+361900140410      *
+362000140410      *
+362100140410     C                     ENDSR
+362200140410      *
+362300140410      *-------------------------------------------------------------------------
+362400140410     C           @RTSU     BEGSR
+362500140410      *-------------------------------------------------------------------------
+362600140410      *
+362700140410      *
+362800140410     C                     CLEARX@ECBA
+362900140410      *
+363000140423      * Invalid supplier
+363100140410     C           SUKEY1    CHAINMTSUPPF              99
+363200140410     C           *IN99     IFEQ *ON
+363300140410     C                     MOVE 'MSG1351' X@MI
+363400140410     C                     Z-ADD7         X@ECBA
+363500140410     C                     CLEARSUDS
+363600140410     C                     ENDIF
+363700140410      *
+363800140410      *
+363900140410     C                     ENDSR
+364000140410      *
+364100140410      *-------------------------------------------------------------------------
+364200140410     C           @RTRH     BEGSR
+364300140410      *-------------------------------------------------------------------------
+364400140410      *
+364500140410      *
+364600140410     C                     CLEARX@ECBA
+364700140410      *
+364800140410      *
+364900140410     C           RHKEY1    CHAINLPDCMNF1            N99
+365000140410     C           *IN99     IFEQ *ON
+365100140410     C           *IN99     OREQ *OFF
+365200140410     C           RHDLTD    ANDNE*BLANKS
+365300140410      *
+365400140423      * Purchase ledger reciepts registration is invalid
+365500140410     C                     SELEC
+365600140410     C           *IN99     WHEQ *ON
+365700140410     C                     MOVE 'MSG1831' X@MI
+365800140410      *
+365900140423      * Purchase ledger reciepts registration is unavalable
+366000140410     C                     OTHER
+366100140410     C                     MOVE 'MSG1832' X@MI
+366200140410     C                     ENDSL
+366300140410      *
+366400140410      *
+366500140410     C                     Z-ADD7         X@ECBA
+366600140410     C                     CLEARF1DS
+366700140410     C                     ENDIF
+366800140410      *
+366900140410      *
+367000140410     C                     ENDSR
+367100140410      *
+367200140410      *-------------------------------------------------------------------------
+367300140410     C           @RTIS     BEGSR
+367400140410      *-------------------------------------------------------------------------
+367500140410      *
+367600140410      *
+367700140410     C                     CLEARX@ECBA
+367800140410      *
+367900140410      *
+368000140410     C                     CALL 'M11ISBN' @M11IS
+368100140410     C           X@EFLG    IFNE *BLANKS
+368200140410      *
+368300140410      *
+368400140410     C                     SELEC
+368500140410     C           X@EFLG    WHEQ 'P'
+368600140410     C                     MOVE 'MSG1110' X@MI
+368700140410     C           X@EFLG    WHEQ 'I'
+368800140410     C                     MOVE 'MSG1111' X@MI
+368900140410     C           X@EFLG    WHEQ 'E'
+369000140410     C                     MOVE 'MSG1112' X@MI
+369100140410     C                     ENDSL
+369200140410      *
+369300140410      *
+369400140410     C                     Z-ADD7         X@ECBA
+369500140410      *
+369600140410      *
+369700140410     C                     ENDIF
+369800140410      *
+369900140410      *
+370000140415     C                     ENDSR
+370100140410      *
+370200140410      *-------------------------------------------------------------------------
+370300140410     C           @RTBL     BEGSR
+370400140410      *-------------------------------------------------------------------------
+370500140410      *
+370600140410      *
+370700140410     C                     CLEARX@ECBA
+370800140410      *
+370900140410      *
+371000140410     C           BLKEY1    CHAINMTBIBLF              99
+371100140410      *
+371200140424      * No bibliographic record found
+371300140410     C           *IN99     IFEQ *ON
+371400140410     C                     MOVE 'MSG1812' X@MI
+371500140410     C                     Z-ADD7         X@ECBA
+371600140410     C                     CLEARBLDS
+371700140410      *
+371800140410      *
+371900140410     C                     ELSE
+372000140410      *
+372100140410      *
+372200140410     C                     MOVE EISBN1    EISBN3
+372300140410     C                     MOVE 'T'       GTLTP0
+372400140410     C                     EXSR @RTTI
+372500140410     C           X@ECBA    IFEQ *ZERO
+372600140410     C                     MOVE EISBN1    EISBN0
+372700140410     C                     MOVE 'A'       GCTTP0
+372800140410     C                     EXSR @RTAU
+372900140410     C                     ENDIF
+373000140410      *
+373100140410      *
+373200140410     C                     ENDIF
+373300140410      *
+373400140410      *
+373500140410     C                     ENDSR
+373600140410      *
+373700140410      *-------------------------------------------------------------------------
+373800140410     C           @RTTI     BEGSR
+373900140410      *-------------------------------------------------------------------------
+374000140410      *
+374100140410      *
+374200140410     C                     CLEARX@ECBA
+374300140410      *
+374400140410      *
+374500140410     C           TIKEY2    CHAINMTTITLF              99
+374600140410      *
+374700140424      * No title details found for bibliographic record
+374800140410     C           *IN99     IFEQ *ON
+374900140410     C                     MOVE 'MSG1811' X@MI
+375000140410     C                     Z-ADD7         X@ECBA
+375100140410     C                     CLEARTIDS
+375200140410     C                     CLEARW1TITL
+375300140410      *
+375400140410      *
+375500140410     C                     ELSE
+375600140410      *
+375700140410      *
+375800140410     C                     CLEARW1TITL
+375900140410      *
+376000140410      *
+376100140410     C           *IN99     DOWEQ*OFF
+376200140410     C           W1TITL    CAT  DTITL0:0  W1TITL
+376300140410     C           TIKEY2    READEMTTITLF                  99
+376400140410     C                     ENDDO
+376500140410      *
+376600140410      *
+376700140410     C                     ENDIF
+376800140410      *
+376900140410      *
+377000140410     C                     ENDSR
+377100140410      *
+377200140410      *-------------------------------------------------------------------------
+377300140410     C           @RTAU     BEGSR
+377400140410      *-------------------------------------------------------------------------
+377500140410      *
+377600140410      *
+377700140410     C                     CLEARX@ECBA
+377800140410      *
+377900140410      *
+378000140410     C           AUKEY2    CHAINMTAUTHF              99
+378100140410      *
+378200140424      * No Author details found for bibliographic record
+378300140410     C           *IN99     IFEQ *ON
+378400140410     C                     MOVE 'MSG1810' X@MI
+378500140410     C                     Z-ADD7         X@ECBA
+378600140410     C                     CLEARAUDS
+378700140410     C                     CLEARW1AUTH
+378800140410      *
+378900140410      *
+379000140410     C                     ELSE
+379100140410      *
+379200140410      *
+379300140410     C                     CLEARW1AUTH
+379400140410      *
+379500140410      *
+379600140410     C           *IN99     DOWEQ*OFF
+379700140410     C           W1AUTH    CAT  EAUTN0:0  W1AUTH
+379800140410     C           AUKEY2    READEMTAUTHF                  99
+379900140410     C                     ENDDO
+380000140410      *
+380100140410      *
+380200140410     C                     ENDIF
+380300140410      *
+380400140410      *
+380500140410     C                     ENDSR
+380600140410      *
+380700140410      *-------------------------------------------------------------------------
+380800140410     C           @RTST     BEGSR
+380900140410      *-------------------------------------------------------------------------
+381000140410      *
+381100140410      *
+381200140415     C                     CLEARX@ECBA
+381300140410      *
+381400140410      *
+381500140410     C           STKEY1    CHAINSOORTIF              99
+381600140410      *
+381700140423      * Supplier order has not associated title details.
+381800140410     C           *IN99     IFEQ *ON
+381900140410     C                     MOVE 'MSG1503' X@MI
+382000140410     C                     Z-ADD7         X@ECBA
+382100140410     C                     CLEARSTDS
+382200140410     C                     ENDIF
+382300140410      *
+382400140410      *
+382500140410     C                     ENDSR
+382600140410      *
+382700140410      *-------------------------------------------------------------------------
+382800140410     C           @RTTR     BEGSR
+382900140410      *-------------------------------------------------------------------------
+383000140410      *
+383100140410      *
+383200140410     C                     CLEARX@ECBA
+383300140410      *
+383400140410      *
+383500140410     C           TRKEY1    CHAINSORCTAF1             99
+383600140410      *
+383700140410      *
+383800140410     C           *IN99     IFEQ *ON
+383900140410     C                     MOVE TRISBN    EISBN1
+384000140410     C                     EXSR @RTBL
+384100140410     C           X@ECBA    IFEQ *ZERO
+384200140410     C                     MOVELW1AUTH    TRAUTH    P
+384300140410     C                     MOVELW1TITL    TRTITL    P
+384400140410      *
+384500140410      *
+384600140410     C                     ELSE
+384700140410     C                     EXSR @RTST
+384800140410     C           X@ECBA    IFEQ *ZERO
+384900140410     C                     MOVELEAUTF3    TRAUTH    P
+385000140410     C                     MOVELDTITF4    TRTITL    P
+385001140424     C                     ENDIF
+385002140424      *
+385003140424      *
+385004140424     C                     ENDIF
+385100140410      *
+385200140424      * Error retrieving bibliographic data for supplier
+385300140424     C           X@ECBA    IFNE *ZERO
+385400140410     C                     MOVE 'MSG1826' X@MI
+385500140410     C                     Z-ADD7         X@ECBA
+385600140410     C                     CLEARTRDS
+385700140410     C                     ENDIF
+385701140424      *
+385702140424      *
+385900140410     C                     ENDIF
+386000140410      *
+386100140410      *
+386200140410     C                     ENDSR
+386300140410      *
+386400140410      *-------------------------------------------------------------------------
+386500140410     C           @RTDT     BEGSR
+386600140410      *-------------------------------------------------------------------------
+386700140410      *
+386800140410      *
+386900140410     C                     CLEARX@ECBA
+387000140410      *
+387100140410      *
+387200140410     C           DTKEY1    CHAINMTDCMTF1             99
+387300140410      *
+387400140410      *
+387500140410     C           *IN99     IFEQ *ON
+387600140410     C           *IN99     OREQ *OFF
+387700140410     C           DTDLTD    ANDNE*BLANKS
+387800140410      *
+387900140424      * Document type is invalid
+388000140410     C                     SELEC
+388100140410     C           *IN99     WHEQ *ON
+388200140410     C                     MOVE 'MSG1865' X@MI
+388300140410      *
+388400140424      * Document type is unavailable
+388500140410     C                     OTHER
+388600140410     C                     MOVE 'MSG1857' X@MI
+388700140410     C                     ENDSL
+388800140410      *
+388900140410      *
+389000140410     C                     Z-ADD7         X@ECBA
+389100140410     C                     CLEARDTDS
+389200140410     C                     ENDIF
+389300140410      *
+389400140410      *
+389500140410     C                     ENDSR
+389600140410      *
+389700140410      *
+389800140410      *-------------------------------------------------------------------------
+389900140410     C           *INZSR    BEGSR
+390000140410      *-------------------------------------------------------------------------
+390100140410      *
+390200140410      *
+390300140410     C           *LIKE     DEFN *IN       D@MOB
+390400140410     C           *LIKE     DEFN *IN       @VREC
+390500140410     C           *LIKE     DEFN *IN       @CHG
+390600140410     C                     MOVE E@FKEY    E@FKEY  2
+390700140410     C           *LIKE     DEFN OPT       E@OPT
+390800140410     C                     MOVE *BLANKS   @FMT    4
+390900140410     C                     MOVE *BLANKS   @ROLL   5
+391000140410     C           *LIKE     DEFN *IN       F@DIR
+391100140410     C                     Z-ADD0         I       50
+391200140410     C                     MOVEL'*'       PGMQ
+391300140410     C           *NAMVAR   DEFN *LDA      #LDA
+391400140410     C                     IN   #LDA
+391500140410      *
+391600140410      *
+391700140410     C                     Z-ADD0         D@RR1   40
+391800140410     C           *LIKE     DEFN I         E1
+391900140410     C           *LIKE     DEFN F@KY      C1KY
+392000140410     C           *LIKE     DEFN OPT       C1OPT
+392100140410     C           *LIKE     DEFN SV9297    C19297
+392200140410     C           *LIKE     DEFN *IN       F1DO
+392300140410     C           *LIKE     DEFN *IN       D1DO
+392400140410     C           *LIKE     DEFN *IN       C1DO
+392500140410     C           *LIKE     DEFN I         F1SQ
+392600140410     C           *LIKE     DEFN I         F1V
+392700140410     C                     MOVE *BLANKS   @MODE  10
+392800140423     C           *LIKE     DEFN I         D@VPF1
+392900140410     C           *LIKE     DEFN I         I1
+393000140410     C           *LIKE     DEFN I         O1I1
+393100140410     C           *LIKE     DEFN I         W1
+393200140410     C           *LIKE     DEFN I         W2
+393300140410     C           *LIKE     DEFN I         W3
+393301140415      *
+393302140415      *
+393303140415     C           *LIKE     DEFN *IN       F1@EOF
+393304140415     C           *LIKE     DEFN *IN       F2@EOF
+393400140410      *
+393500140410      *
+393600140410     C           *LIKE     DEFN S1ADCN    E@ADCN
+393700140410     C           *LIKE     DEFN S1ADCN    E@DCMN
+393800140410     C           *LIKE     DEFN RDISBN    E@ISBN
+393900140410     C           *LIKE     DEFN RDDSQN    E@DSQN
+394000140410     C           *LIKE     DEFN S1LNKD    E@LNKD
+394100140410     C           *LIKE     DEFN S1LNKD    E@OTLN
+394200140410     C           *LIKE     DEFN S1EXPD    E@EXPD
+394300140410     C           *LIKE     DEFN S1SUPN    E@SUPN
+394400140410      *
+394500140410      *
+394600140410     C           *LIKE     DEFN S1ADCN    M1ADCN
+394700140410     C           *LIKE     DEFN S1LNKD    M1LNKD
+394800140410     C           *LIKE     DEFN S1EXPD    M1EXPD
+394900140410     C           *LIKE     DEFN S1SUPN    M1SUPN
+395000140410      *
+395100140410      *
+395200140410     C           *LIKE     DEFN S1ADCN    N1ADCN
+395300140410     C           *LIKE     DEFN RHSDRF    N1SDRF
+395400140410     C           *LIKE     DEFN RHDCMN    N1DCMN
+395500140410     C           *LIKE     DEFN S1LNKD    N1LNKD
+395600140410     C                     MOVE '*'       N1LNKD
+395700140410     C           *LIKE     DEFN S1EXPD    N1EXPD
+395800140415     C                     MOVE 'Y'       N1EXPD
+395900140410     C           *LIKE     DEFN S1SUPN    N1SUPN
+396000140410     C           *LIKE     DEFN RDISBN    N1ISBN
+396100140410      *
+396200140410      *
+396300140410      ***C           *LIKE     DEFN ......    B1....
+396400140410      *
+396500140410      *
+396600140410      ***C           *LIKE     DEFN I1        P.
+396700140410      ***C           *LIKE     DEFN I1        I.
+396800140410      ***C           *LIKE     DEFN W3        W.
+396900140410      *
+397000140410      *
+397100140410     C           *LIKE     DEFN E@OPT     X@OPT
+397200140410     C           *LIKE     DEFN E@FKEY    X@FKEY
+397300140410      *
+397400140410      *
+397500140410     C           *LIKE     DEFN RDDSCV    W1DSCV+02
+397600140410     C           *LIKE     DEFN TRTITL    W1TITL
+397700140410     C           *LIKE     DEFN TRTITL    W1AUTH
+397800140410     C           *LIKE     DEFN F@RDDS    W1RD
+397900140410      *
+398000140410      *
+398100140410      ***C           *LIKE     DEFN ......    T1....
+398200140410      *
+398300140410      *
+398400140410     C           *LIKE     DEFN RLADRF    S1ADRF
+398500140410     C           *LIKE     DEFN KST@11    F1@KEY
+398600140410     C           *LIKE     DEFN KST@21    F2@KEY
+398700140410      *
+398800140410      *
+398900140410     C                     MOVEA*ALL'.'   S1
+399000140410     C           E@ADCN    IFNE N1ADCN
+399100140410     C                     MOVE ':'       S1,01
+399200140410     C                     ENDIF
+399300140410      *
+399400140410      *
+399500140410     C           @SNDPM    PLIST
+399600140410     C                     PARM           X@MI    7
+399700140410     C                     PARM C@PMFN    X@QMFN 20
+399800140410     C                     PARM           X@MDIT256
+399900140410     C                     PARM           X@LOMD
+400000140410     C                     PARM           X@MT   10
+400100140410     C                     PARM           X@PMQ  10
+400200140410     C                     PARM           X@PSC
+400300140410     C                     PARM           X@MK
+400400140410     C                     PARM           X@EC
+400500140410      *
+400600140410      *
+400700140410     C           @SNDSM    PLIST
+400800140410     C                     PARM           X@MI
+400900140410     C                     PARM C@SMFN    X@QMFN
+401000140410     C                     PARM           X@MDIT
+401100140410     C                     PARM           X@LOMD
+401200140410     C                     PARM           X@MT
+401300140410     C                     PARM           X@PMQ
+401400140410     C                     PARM           X@PSC
+401500140410     C                     PARM           X@MK
+401600140410     C                     PARM           X@EC
+401700140410      *
+401800140410      *
+401900140410     C                     MOVEL'*DIAG   'X@MT      P
+402000140410     C                     MOVEL'*'       X@PMQ     P
+402100140410      *
+402200140410      *
+402300140410     C           @CVTDT    PLIST
+402400140410     C                     PARM           X@IDF  10
+402500140410     C                     PARM           X@ID
+402600140410     C                     PARM           X@ODF  10
+402700140410     C                     PARM           X@OD
+402800140410     C                     PARM           X@EC
+402900140410      *
+403000140410      *
+403100140410     C           @CVTFD    PLIST
+403200140410     C                     PARM '*YYMD'   X@IDF
+403300140410     C                     PARM           X@ID
+403400140410     C                     PARM '*JOB'    X@ODF
+403500140410     C                     PARM           X@OD
+403600140410     C                     PARM           X@EC
+403700140410      *
+403800140410      *
+403900140410     C           @CVTDD    PLIST
+404000140410     C                     PARM '*JOB'    X@IDF
+404100140410     C                     PARM           X@ID
+404200140410     C                     PARM '*YYMD'   X@ODF
+404300140410     C                     PARM           X@OD
+404400140410     C                     PARM           X@EC
+404500140410      *
+404600140410      *
+404700140410     C           @RMVPM    PLIST
+404800140410     C                     PARM '*'       X@PMQ
+404900140410     C                     PARM           X@PSC
+405000140410     C                     PARM *BLANKS   X@MKTR  4
+405100140410     C                     PARM '*ALL    'X@MTR  10
+405200140410     C                     PARM           X@EC
+405300140410      *
+405400140410      *
+405500140410     C           *LIKE     DEFN RDISBN    X@ISBN
+405600140410     C                     MOVE X@EFLG    X@EFLG  1
+405700140410     C           @M11IS    PLIST
+405800140410     C                     PARM           X@ISBN
+405900140410     C                     PARM           X@EFLG
+406000140410      *
+406100140410      *
+406200140415     C           *LIKE     DEFN RHBCHN    X@BCHN
+406300140415     C           *LIKE     DEFN RHSUPN    X@SUPN
+406400140415     C           *LIKE     DEFN RHDCMT    X@DCMT
+406500140410     C           *LIKE     DEFN RHSTTS    X@STTS
+406600140410     C           *LIKE     DEFN RHDCMN    X@DCMN
+406700140410     C           SO1710    PLIST
+406800140410     C                     PARM OPT       X@OPT
+406900140410     C           E@FKEY    PARM *BLANKS   X@FKEY
+407000140410     C                     PARM           X@BCHN
+407100140410     C                     PARM           X@SUPN
+407200140410     C                     PARM           X@DCMT
+407300140410     C                     PARM           X@STTS
+407400140415     C                     PARM RDDCMN    X@DCMN
+407500140410     C           E@EC      PARM           X@EC
+407600140410      *
+407700140410      *
+407800140410     C           *LIKE     DEFN RDDSQN    X@DSQN
+407900140410     C           SO1720    PLIST
+408000140410     C                     PARM OPT       X@OPT
+408100140410     C           E@FKEY    PARM *BLANKS   X@FKEY
+408200140410     C                     PARM           X@PNL  10
+408300140410     C                     PARM           X@SUPN
+408400140410     C                     PARM RDDCMN    X@DCMN
+408500140410     C                     PARM RDISBN    X@ISBN
+408600140410     C                     PARM RDDSQN    X@DSQN
+408700140410     C           E@EC      PARM           X@EC
+408800140410      *
+408900140410      *
+408901140415     C           EQ2100    PLIST
+409000140415     C                     PARM 'I'       X@001C  1
+409100140410     C                     PARM *ZEROS    X@SUPN
+409200140410     C                     PARM *ZEROS    X@ISBN
+409300140415     C                     PARM *ZEROS    X@SORT  1
+409400140415     C                     PARM *ZEROS    X@SPON  70
+409500140415     C                     PARM *ZEROS    X@INVN  70
+409600140410      *
+409700140410      *
+409800140410     C           F1KEY1    KLIST
+409900140415     C                     KFLD           RHDCMN
+410000140410     C           F1R@K1    KLIST
+410100140410     C                     KFLD           F1ADRF
+410200140410     C                     KFLD           F1ADCN
+410300140410     C                     KFLD           F1SDRF
+410400140410     C                     KFLD           F1DCMN
+410500140410     C           F2KEY1    KLIST
+410600140410     C                     KFLD           RDDCMN
+410700140410     C                     KFLD           RDISBN
+410800140410     C                     KFLD           RDDSQN
+410900140410     C           F2R@K1    KLIST
+411000140410     C                     KFLD           F1DCMC
+411100140410     C                     KFLD           F1ADRF
+411200140410     C                     KFLD           F1ADCN
+411300140410     C                     KFLD           F1SDRF
+411400140410     C                     KFLD           F1DCMN
+411500140410     C                     KFLD           F2ISBN
+411600140410     C                     KFLD           F2DSQN
+411700140410      *
+411800140410      *
+411900140410     C           RDKA1     KLIST
+412000140410     C                     KFLD           RDDCMN
+412100140410     C                     KFLD           RDISBN
+412200140410     C                     KFLD           RDDSQN
+412300140410     C           RDK41     KLIST
+412400140410     C                     KFLD           RDISBN
+412500140410     C           RDKE1     KLIST
+412600140410     C                     KFLD           RDSDRF
+412700140410     C                     KFLD           RDISBN
+412800140410     C                     KFLD           RDDSQN
+412900140410     C                     KFLD           RDDCMN
+413000140410      *
+413100140410      *
+413200140410     C           RHK71     KLIST
+413300140410     C                     KFLD           RHSDRF
+413400140410     C                     KFLD           RHDCMN
+413500140410     C           RHKI1     KLIST
+413600140410     C                     KFLD           RHDCMN
+413700140410      *
+413800140410      *
+413900140410     C           RDKEY1    KLIST
+414000140410     C                     KFLD           RDDCMN
+414100140410     C                     KFLD           RDISBN
+414200140410     C                     KFLD           RDDSQN
+414300140410     C           RDKEY2    KLIST
+414400140410     C                     KFLD           RDDCMN
+414500140410     C           RDKEY3    KLIST
+414600140410     C                     KFLD           RDADCN
+414700140410     C           RDKEY4    KLIST
+414800140410     C                     KFLD           RDDCMC
+414900140410     C                     KFLD           RDSDRF
+415000140410     C           RDKEY5    KLIST
+415100140410     C                     KFLD           RDDCMC
+415200140410     C                     KFLD           RDADRF
+415300140410     C                     KFLD           RDADCN
+415400140410     C                     KFLD           RDSDRF
+415500140410     C           RDKEY6    KLIST
+415600140410     C                     KFLD           RDDCMC
+415700140410     C                     KFLD           RDADRF
+415800140410     C                     KFLD           RDADCN
+415900140410     C           RLKEY1    KLIST
+416000140410     C                     KFLD           RLDCMN
+416100140410     C                     KFLD           RLADCN
+416200140410     C           RLKEY2    KLIST
+416300140410     C                     KFLD           RLDCMN
+416400140410     C           RLKEY3    KLIST
+416500140410     C                     KFLD           RLADRF
+416600140410     C                     KFLD           RLADCN
+416700140410     C                     KFLD           RLSDRF
+416800140410     C           RLKEY4    KLIST
+416900140410     C                     KFLD           RLADRF
+417000140410     C                     KFLD           RLADCN
+417100140410      *
+417200140410      *
+417300140410     C           SUKEY1    KLIST
+417400140410     C                     KFLD           ESUPN4
+417500140410      *
+417600140410      *
+417700140410     C           RHKEY1    KLIST
+417800140410     C                     KFLD           RHDCMN
+417900140410     C           RHKEY2    KLIST
+418000140410     C                     KFLD           RHDCMC
+418100140410     C                     KFLD           RHSDRF
+418200140410      *
+418300140410      *
+418400140410     C           TRKEY1    KLIST
+418500140410     C                     KFLD           TRDCMN
+418600140410     C                     KFLD           TRISBN
+418700140410     C                     KFLD           TRDSQN
+418800140410      *
+418900140410      *
+419000140410     C           BLKEY1    KLIST
+419100140410     C                     KFLD           EISBN1
+419200140410      *
+419300140410      *
+419400140410     C           TIKEY2    KLIST
+419500140410     C                     KFLD           EISBN3
+419600140410     C                     KFLD           GTLTP0
+419700140410      *
+419800140410      *
+419900140410     C           DTKEY1    KLIST
+420000140410     C                     KFLD           DTDCMT
+420100140410      *
+420200140410      *
+420300140410     C           AUKEY2    KLIST
+420400140410     C                     KFLD           EISBN0
+420500140410     C                     KFLD           GCTTP0
+420600140410      *
+420700140410      *
+420800140410     C           STKEY1    KLIST
+420900140410     C                     KFLD           EISBR0
+421000140410     C                     KFLD           FSORT3
+421100140410     C                     KFLD           ESPON2
+421200140410      *
+421300140410      *
+421400140410     C                     ENDSR

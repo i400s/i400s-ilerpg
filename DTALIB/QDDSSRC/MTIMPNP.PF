@@ -1,0 +1,24 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140904                R MTIMPNF
+000111140406      *
+000113140904                  IPIMPN    R               REFFLD(IMPN)
+000114140923                  IPISBP    R               REFFLD(ISBP)
+000115140904                  IPIPNM    R               REFFLD(IPNM)
+000116140905                  IPADR1    R               REFFLD(ADR1)
+000117140905                  IPADR2    R               REFFLD(ADR2)
+000118140905                  IPADR3    R               REFFLD(ADR3)
+000119140905                  IPADR4    R               REFFLD(ADR4)
+000120140827      *
+000121140904                  IPSKSN    R               REFFLD(SKSN)
+000122140904                  IPDLTD    R               REFFLD(DLTD)
+000123140827      *
+000124140904                  IPCUSR    R               REFFLD(CUSR)
+000125140904                  IPCPGM    R               REFFLD(CPGM)
+000126140904                  IPCDTS    R               REFFLD(CDTS)
+000127140904                  IPEUSR    R               REFFLD(EUSR)
+000128140904                  IPEPGM    R               REFFLD(EPGM)
+000129140904                  IPEDTS    R               REFFLD(EDTS)
+000130140827      *                                                          *
+000131140904                K IPIMPN

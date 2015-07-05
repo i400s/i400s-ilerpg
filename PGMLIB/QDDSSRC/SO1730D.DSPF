@@ -1,0 +1,345 @@
+000100140322      * ________________________________________________________________________
+000101140410      * !"£$%^&*()_+{}:@~<>?
+000200140327      * |Description  :  Standard template
+000300140327      * |Programmer   :  Jonathan Wilson
+000400140327      * |Date Created :  31/10/1994
+000500140327      * |-----------------------------------------------------------------------
+000600140327      * |MODIFICATIONS
+000700140327      * |-----------------------------------------------------------------------
+000800140327      * |By          :
+000900140327      * |Date        :
+001000140327      * |Scan        :
+001100140327      * |Description :
+001200140322      * ------------------------------------------------------------------------
+001300140322                                            DSPSIZ(24 80 *DS3)
+001400140322
+001500140322                                            REF(*LIBL/SORCINP SORCINF)
+001600140322                                            PRINT
+001700140322                                            ALTHELP
+001800140322                                            ALTPAGEUP
+001900140322                                            ALTPAGEDWN
+002000140322                                            CF02
+002100140322                                            CF03
+002200140322                                            CF04
+002300140322                                            CF05
+002400140322                                            CF06
+002500140322                                            CF09
+002600140322                                            CF10
+002700140322                                            CF11
+002800140322                                            CF12
+002900140322                                            CF13
+003000140322                                            CF14
+003100140322                                            CF15
+003200140322                                            CF16
+003300140322                                            CF17
+003400140322                                            CF18
+003500140322                                            CF19
+003600140322                                            CF20
+003700140322                                            CF21
+003800140322                                            CF22
+003900140322                                            CF23
+004000140322                                            CF24(23)
+004100140322                                            HELP
+004200140322                                            VLDCMDKEY(23)
+004300140322                                            ROLLDOWN(07)
+004400140322                                            ROLLUP(08)
+004500140322
+004600140322                R LSTSFL01                   SFL
+004700140322                                            TEXT('List subfile record')
+004800140322        28                                  SFLNXTCHG
+004900140322                  F@RDDS         5   H
+005000140322                  RDSDRF    R        H
+005100140322                  RDDCMN    R        H
+005200140322                  RDISBN    R        H
+005300140322                  RDDSQN    R        H
+005400140322                  RDSUPN    R        H
+005500140322                  RDDCMC    R        H
+005600140327                  RHDCMC    R        H      REFFLD(LPDCMNF/RHDCMC *LIBL/LPDCMNP)
+005700140322                  SV0106         6A  H      TEXT('Save field')
+005800140322       N01
+005900140322      O 01N02     OPT            2A  B 11  2
+006000140322       N01                                  DSPATR(UL)
+006100140322        01                                  DSPATR(PR)
+006200140322        97                                  DSPATR(RI)
+006300140322        97                                  DSPATR(PC)
+006400140327        01 02                          11  4'(No records to display)'
+006500140322       N01N03     RHSDRF    R        B 11  6REFFLD(LPDCMNF/RHSDRF *LIBL/LPDCMNP)
+006600140322        02                                  DSPATR(UL)
+006700140322       N02                                  DSPATR(PR)
+006800140322        96                                  DSPATR(RI)
+006900140322        96                                  DSPATR(PC)
+007000140322       N01N02 03
+007100140322       N06 04     D1NORG         1     11  6
+007200140322       N01N02 03
+007300140327       N06 04     D1SDRF    R        O 11  8REFFLD(RDSDRF)
+007400140322       N01N03     RHDCMN    R        B 11 18REFFLD(LPDCMNF/RHDCMN *LIBL/LPDCMNP)
+007500140322        02                                  DSPATR(UL)
+007600140322       N02                                  DSPATR(PR)
+007700140322        96                                  DSPATR(RI)
+007800140322        96                                  DSPATR(PC)
+007900140322       N01N02 03
+008000140327       N06 04     D1DCMN    R        O 11 20REFFLD(RDDCMN)
+008100140322        03N01N02
+008200140327        06        D1ATTT    R   50   O 11 20REFFLD(JMREF2/ATTT *LIBL/JMREF2)
+008300140322       N02N01N03  RHSUPN    R        O 11 28REFFLD(LPDCMNF/RHSUPN *LIBL/LPDCMNP)
+008400140322       N01N02N06
+008500140322        03        D1ISBN    R        O 11 29REFFLD(RDISBN)
+008600140322       N01N02N03
+008700140322        06        DSONM0    R        O 11 36REFFLD(MTSUPPF/DSONM0 *LIBL/MTSUPPP)
+008701140409        03N01N02
+008702140409       N06        D1ONLN        12A  O 11 40
+008703140409       N01N02N03
+008704140409       N06        RHRCDT    R        O 11 43REFFLD(LPDCMNF/RHRCDT *LIBL/LPDCMNP)
+008705140409        03N01N02
+008706140409       N06        RDDCQT    R        O 11 53
+008707140409       N01N02N03
+008708140409       N06        D1DCTV    R        O 11 55REFFLD(RDSOPR)
+008709140409       N01N02 03  D1DCMV    R        O 11 60REFFLD(RDSOPR)
+008710140409       N01N02N03
+008711140409       N06        RLADRF    R        O 11 70REFFLD(RDADRF)
+008712140409        03N01N02
+008713140409       N06        RDADRF    R        O 11 70
+008714140409        03N01N02
+008715140409        06        RDCATG    R        O 11 71
+008716140409        03N01N02
+008717140409        06        RDBIND    R        O 11 75
+008718140409
+008800140322
+008900140322      * ------------------------------------------------------------------------
+009000140322
+009100140322                R LSTPNL01                  SFLCTL(LSTSFL01)
+009200140322                                            SFLSIZ(0011)
+009300140322                                            SFLPAG(0011)
+009400140322                                            TEXT('List control record')
+009500140322                                            CHANGE(21)
+009600140322                                            KEEP
+009700140322                                            RTNCSRLOC(&D@CRCD &D@CFLD &D@CPSN)
+009800140322                                            CSRLOC(D@PROW D@PCOL)
+009900140322                                            OVERLAY
+010000140322        26                                  SFLDSP
+010100140322        26                                  SFLDSPCTL
+010200140322       N26                                  SFLCLR
+010300140322        20                                  SFLEND(*MORE)
+010301140327                  D@PROW         3S 0H
+010302140327                  D@PCOL         3S 0H
+010303140327                  D@CRCD        10A  H
+010304140327                  D@CFLD        10A  H
+010305140327                  D@CPSN         4S 0H
+010306140425                  S1DCMC    R        H      REFFLD(RDDCMC)
+010307140327                  S@PGM         10A  O  1  2
+010308140327                                        1 25'Work with supplier reciept links'
+010309140327                                            DSPATR(HI)
+010400140327                  VCOID         14A  O  1 67
+010401140327                                        3  2'Receipt number  .'
+010402140327                  S1#01          1A  O  3 20
+010403140327                  S1ADCN    R        B  3 22REFFLD(RDADCN)
+010404140327        45                                  DSPATR(UL)
+010405140327       N45                                  DSPATR(PR)
+010406140327        91                                  DSPATR(RI)
+010407140327        91                                  DSPATR(PC)
+010408140327                  RHSDRF    R        O  3 34REFFLD(LPDCMNF/RHSDRF *LIBL/LPDCMNP)
+010409140414                  D1DMCD    R        O  3 46REFFLD(MTDCMTF/DTDMCD *LIBL/MTDCMTP)
+010410140327                                        4  4'Supplier Number :'
+010411140327                  RHSUPN    R        O  4 24REFFLD(LPDCMNF/RHSUPN *LIBL/LPDCMNP)
+010412140327                  D1SONM    R        O  4 36REFFLD(MTSUPPF/DSONM0 *LIBL/MTSUPPP)
+010413140327        46                              5  2'Supplier number .'
+010414140327        46        S1#02          1A  O  5 20
+010415140327        46        S1SUPN    R        B  5 22REFFLD(RDSUPN)
+010416140327        46                                  DSPATR(UL)
+010417140327       N46                                  DSPATR(PR)
+010418140327        90                                  DSPATR(RI)
+010419140327        90                                  DSPATR(PC)
+010420140327        46        DSONM0    R        O  5 34REFFLD(MTSUPPF/DSONM0 *LIBL/MTSUPPP)
+010421140327                                        6  2'Type options, press Enter'
+010422140423                                            COLOR(BLU)
+010423140327       N09N10N11                        7  3'1-Link   2=Change   4=Unlink   5=V-
+010424140327                                            iew'
+010425140423                                            COLOR(BLU)
+010426140327       N09N10 11                        7  4'5=View'
+010427140423                                            COLOR(BLU)
+010428140327       N06                              9  2'    Reference   Rct No.   Sup no. -
+010429140327                                                    rct dte.                  A-
+010430140327                                            ss.ref    '
+010432140327                                            DSPATR(HI)
+010433140327                                        9  2'    Reference   Rct No.   Sup no. -
+010434140327                                            Name      '
+010435140327                                            DSPATR(HI)
+010436140327       N06                             10  2'Opt                               -
+010437140327                                                                         Value -
+010438140327                                                      '
+010439140423                                            DSPATR(HI)
+010440140327                                       10  2'Opt   ISBN       Title/Auther     -
+010441140327                                                                               -
+010442140327                                            Cat/Bnd   '
+010443140327                                            DSPATR(HI)
+010444140327
+010445140327      *-------------------------------------------------------------------------
+010446140327
+010447140327                R LSTFTR01
+010448140327                                            TEXT('List footer record')
+010449140327                                            OVERLAY
+010450140425       N06                             23  2'F3=Exit    F5=Refresh   F11=View2 -
+010451140327                                              F12=Cancel   F16=Position to   F1-
+010452140327                                            7=Subset'
+010453140327                                            COLOR(BLU)
+010454140425        06                             23  2'F3=Exit    F5=Refresh   F11=View1 -
+010455140327                                              F12=Cancel   F16=Position to   F1-
+010456140327                                            7=Subset'
+010457140423                                            COLOR(BLU)
+010458140327
+010459140327      *-------------------------------------------------------------------------
+010460140327
+010461140327                R CNDSFL01                  SFL
+010462140327                                            TEXT('List subfile record')
+010463140327      * 28                                  SFLNXTCGH
+010464140327      * Check above, I think its because it must have at least one input or both
+010465140327      * and I think this requirement became more stringent.
+010466140327                  SV0106         6A  H      TEXT('Save *IN01-06')
+010467140327                  RDBCHN    R        H
+010468140327                  RDSUPN    R        H
+010469140327                  RDDCMT    R        H
+010470140327                  RDDCMN    R        H
+010471140327                  RDISBN    R        O 11  2
+010472140327
+010473140327      *-------------------------------------------------------------------------
+010474140327
+010475140327                R CNDPNL01                  SFLCTL(CNDSFL01)
+010476140327                                            SFLSIZ(11)
+010477140327                                            SFLPAG(11)
+010478140327                                            TEXT('List control record')
+010479140327                                            CHANGE(21)
+010480140327                                            OVERLAY
+010481140327        26                                  SFLDSP
+010482140327        26                                  SFLDSPCTL
+010483140327       N26                                  SFLCLR
+010484140327        20                                  SFLEND(*MORE)
+010485140327                                        6  2'Press Enter to confirm your choice-
+010486140327                                            s for 4=Delete.'
+010487140423                                            COLOR(BLU)
+010488140327                                        7  2'Press F3=Exit to return to change -
+010489140327                                            your choices'
+010490140423                                            COLOR(BLU)
+010491140327                  S@PGM     R        O  1  2REFFLD(S@PGM *SRC)
+010492140327                  VCOID     R        O  1 67REFFLD(VCOID *SRC)
+010493140327
+010494140327      *-------------------------------------------------------------------------
+010495140327
+010496140327                R CNDFTR01
+010497140327                                            TEXT('List footer record')
+010498140327                                            OVERLAY
+010499140327                                        1  2'F3=Exit   F5=Refresh   F12=Cancel'
+010500140327                                            COLOR(BLU)
+010501140327
+010502140327      *-------------------------------------------------------------------------
+010503140327
+010504140327                R EDTPNL01
+010505140327                                            TEXT('Edit panel1')
+010506140327                                            ASSUME
+010507140327                                            KEEP
+010508140327                                            CHANGE(21)
+010509140327                                            OVERLAY
+010510140327                  S@PGM     R        O  1  2REFFLD(S@PGM *SRC)
+010511140327                                        1 24'Work with........................'
+010512140327                                            DSPATR(HI)
+010513140327                  VCOID     R        O  1 67REFFLD(VCOID *SRC)
+010514140327                                        3  2'Type choices, press Enter.'
+010515140327                                        5  2' . . . . . . . . . . . . . .'
+010516140327                  D1#01          1A  O  5 31
+010517140327                                       23  2'F3=Exit   F5=Refresh   F12=Cancel'
+010518140327                                            COLOR(BLU)
+010519140327
+010520140327      *-------------------------------------------------------------------------
+010521140327
+010522140327                R POSWDW01                  WINDOW(*DFT 10 38)
+010523140327
+010524140327      *-------------------------------------------------------------------------
+010525140327
+010526140327                R POSPNL01
+010527140327                                            WINDOW(POSWDW01)
+010528140327                                            OVERLAY
+010529140327                                        1 15'Position to'
+010530140327                                            DSPATR(HI)
+010531140327                                        2  1'Type choices, press Enter.'
+010532140423                                            COLOR(BLU)
+010533140327                                        4  1'Supplier reference .'
+010534140327                  P1SDRF    R        B  4 24REFFLD(RDSDRF)
+010535140327                                        5  1'Reciept number . . .'
+010536140327                  P1DCMN    R        B  5 24REFFLD(RDDCMN)
+010537140327                                        6  1'ISBN . . . . . . . .'
+010538140327                  P1ISBN    R        B  6 24REFFLD(RDISBN)
+010539140327                                        8  1'F3=Exit   f5=Refresh'
+010540140423                                            COLOR(BLU)
+010541140327
+010542140327      *-------------------------------------------------------------------------
+010543140327
+010544140327                R POSPNLES                  SFL
+010545140327                                            SFLMSGRCD(09)
+010546140327                  MSGKEY                    SFLMSGKEY
+010547140327                  PGMQ                      SFLPGMQ
+010548140327                R POSPNLEC                  SFLCTL(POSPNLES)
+010549140327                                            WINDOW(POSWDW01)
+010550140327                                            SFLDSP
+010551140327                                            SFLDSPCTL
+010552140327                                            SFLINZ
+010553140327        99
+010554140327      ON99                                  SFLEND
+010555140327                                            SFLSIZ(0099)
+010556140327                                            SFLPAG(0001)
+010557140327                  PGMQ                      SFLPGMQ
+010558140327
+010559140327      *-------------------------------------------------------------------------
+010560140327
+010561140327                R SBSWDW01
+010562140327                                            WINDOW(*DFT 10 69)
+010563140327                R SBSPNL01
+010564140327                                            WINDOW(SBSWDW01)
+010565140327                                            OVERLAY
+010566140327                                        1 25'Subset/Sequence records'
+010567140327                                            DSPATR(HI)
+010568140327                                        2  1'Type choices, press Enter.'
+010569140423                                            COLOR(BLU)
+010570140327                                        4  1'Linked records . . .'
+010571140327                  S1LNKD         1A  B  4 24
+010572140327        97                                  DSPATR(RI)
+010573140327        97                                  DSPATR(PC)
+010574140327                                        4 33'Y=Yes, N=No'
+010575140327                                        5  1'Expanded details . .'
+010576140327                  S1EXPD         1A  B  5 24
+010577140327        95                                  DSPATR(RI)
+010578140327        95                                  DSPATR(PC)
+010579140327                                        5 33'Y=Yes, N=No'
+010580140327                                        8  1'F3=Exit   F5=Refresh   F12=Cancel'
+010581140423                                            COLOR(BLU)
+010582140327
+010583140327      *-------------------------------------------------------------------------
+010584140327
+010585140327                R SBSPNLES                  SFL
+010586140327                                            SFLMSGRCD(09)
+010587140327                  MSGKEY                    SFLMSGKEY
+010588140327                  PGMQ                      SFLPGMQ
+010589140327                R SBSPNLEC                  SFLCTL(SBSPNLES)
+010590140327                                            WINDOW(SBSWDW01)
+010591140327                                            SFLDSP
+010592140327                                            SFLDSPCTL
+010593140327                                            SFLINZ
+010594140327        99
+010595140327      ON99                                  SFLEND
+010596140327                                            SFLSIZ(0099)
+010597140327                                            SFLPAG(0001)
+010598140327                  PGMQ                      SFLPGMQ
+010599140327
+010600140327      *-------------------------------------------------------------------------
+010601140327
+010602140327                R #ERRSFL                   SFL
+010603140327                                            SFLMSGRCD(24)
+010604140327                  MSGKEY                    SFLMSGKEY
+010605140327                  PGMQ                      SFLPGMQ
+010606140327                R #ERRCTL                   SFLCTL(#ERRSFL)
+010607140327                                            SFLDSP
+010608140327                                            SFLDSPCTL
+010609140327                                            SFLINZ
+010610140327        99
+010611140327      ON99                                  SFLEND
+010612140327                                            SFLSIZ(0099)
+010613140327                                            SFLPAG(0001)
+010614140327                  PGMQ                      SFLPGMQ

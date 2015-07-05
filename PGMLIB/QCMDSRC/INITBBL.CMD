@@ -1,0 +1,5 @@
+000100140917             CMD        PROMPT('INIT BBL')
+000101140927
+000102140927             PARM       KWD(OPTION) TYPE(*CHAR) LEN(10) RSTD(*YES) DFT(*START) VALUES(*START +
+000103140927                          *END) PROMPT('Initialisation option')
+000104140917

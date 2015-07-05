@@ -1,0 +1,14 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140414                R SOORTIF
+000111140406      *
+000112140414                  EISBR0    R               REFFLD(ISBN)
+000113140415                  FSORT3    R               REFFLD(SORT)
+000114140414                  ESPON2    R               REFFLD(SPON)
+000115140414                  EAUTF3    R               REFFLD(AUTN)
+000116140414                  DTITF4    R               REFFLD(TITL)
+000117140406      *
+000118140414                K EISBR0
+000119140415                K FSORT3
+000120140414                K ESPON2

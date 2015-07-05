@@ -1,0 +1,43 @@
+000002140406                                            REF(*LIBL/JMREF2 JMREF2)
+000003140411                                            UNIQUE
+000004140406      *
+000100140406                R SORCINF
+000101140406      *
+000200140406                  RDSUPN    R               REFFLD(SUPN)
+000300140406                  RDDCMN    R               REFFLD(DCMN)
+000400140406                  RDDSQN    R               REFFLD(DSQN)
+000500140406                  RDSDRF    R               REFFLD(SDRF)
+000600140406                  RDISBN    R               REFFLD(ISBN)
+000700140406                  RDDCMC    R               REFFLD(DCMC)
+000900140406                  RDBCHN    R               REFFLD(BCHN)
+001000140406                  RDDCMT    R               REFFLD(DCMT)
+001001140406                  RDADCN    R               REFFLD(ADCN)
+001002140409                  RDADRF    R               REFFLD(ADRF)
+001003140409                  RDDCQT    R               REFFLD(DCQT)
+001004140409                  RDSOPR    R               REFFLD(SOPR)
+001005140409                  RDDSCV    R               REFFLD(DSCV)
+001006140409                  RDVATV    R               REFFLD(VATV)
+001007140411                  RDRCPQ    R               REFFLD(RCPQ)
+001008140411                  RDRCPR    R               REFFLD(RCPR)
+001009140411                  RDRCDV    R               REFFLD(RCDV)
+001010140411                  RDRCVV    R               REFFLD(RCVV)
+001011140409                  RDVATA    R               REFFLD(VATA)
+001012140409                  RDSPON    R               REFFLD(SPON)
+001013140409                  RDSPOL    R               REFFLD(SPOL)
+001014140409                  RDCATG    R               REFFLD(CATG)
+001015140409                  RDBIND    R               REFFLD(BIND)
+001016140416                  RDSORT    R               REFFLD(SORT)
+001017140409      *
+001018140409                  RDCUSR    R               REFFLD(CUSR)
+001019140409                  RDCPGM    R               REFFLD(CPGM)
+001020140409                  RDCDTS    R               REFFLD(CDTS)
+001021140411                  RDEUSR    R               REFFLD(EUSR)
+001022140411                  RDEPGM    R               REFFLD(EPGM)
+001023140411                  RDEDTS    R               REFFLD(EDTS)
+001024140409
+001025140406      *
+001100140322                K RDSUPN
+001200140322                K RDDCMN
+001300140322                K RDDSQN
+001400140322
+001500140322

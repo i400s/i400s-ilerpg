@@ -1,0 +1,15 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140414                R MTTITLF
+000111140406      *
+000112140414                  EISBN3    R               REFFLD(ISBN)
+000113140926                  TITAGC    R               REFFLD(TAGC)
+000114140928                  DSEQN0    R               REFFLD(DSEQN0)
+000115140928                  TIDSQN    R               REFFLD(TIDSQN)
+000116140414                  DTITL0    R               REFFLD(TITL)
+000117140406      *
+000118140414                K EISBN3
+000119140926                K TITAGC
+000120140925                K DSEQN0
+000121140925                K TIDSQN

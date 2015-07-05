@@ -1,0 +1,20 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140414                R MTDCMTF
+000111140406      *
+000112140414                  DTDCMT    R               REFFLD(DCMT)
+000113140414                  DTDLTD    R               REFFLD(DLTD)
+000114140414                  DTDMCD    R               REFFLD(DMCD)
+000115140414                  DTDCMD    R               REFFLD(DCMD)
+000116140414      *
+000117140414                  DTCUSR    R               REFFLD(CUSR)
+000118140414                  DTCPGM    R               REFFLD(CPGM)
+000119140414                  DTCDTS    R               REFFLD(CDTS)
+000120140414                  DTEUSR    R               REFFLD(EUSR)
+000121140414                  DTEPGM    R               REFFLD(EPGM)
+000122140414                  DTEDTS    R               REFFLD(EDTS)
+000123140414
+000124140406      *
+000125140414                K DTDCMT
+000126140414                K DTDLTD

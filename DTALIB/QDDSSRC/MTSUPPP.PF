@@ -1,0 +1,20 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140406                R MTSUPPF
+000111140406      *
+000113140414                  ESUPN4    R               REFFLD(SUPN)
+000114140414                  DSONM4    R               REFFLD(SONM)
+000115140414                  DSONM0    R               REFFLD(SONM)
+000117140827      *
+000118140827                  ESSKSN    R               REFFLD(SKSN)
+000119140827                  ESDLTD    R               REFFLD(DLTD)
+000120140827      *
+000121140827                  ESCUSR    R               REFFLD(CUSR)
+000122140827                  ESCPGM    R               REFFLD(CPGM)
+000123140827                  ESCDTS    R               REFFLD(CDTS)
+000124140827                  ESEUSR    R               REFFLD(EUSR)
+000125140827                  ESEPGM    R               REFFLD(EPGM)
+000126140827                  ESEDTS    R               REFFLD(EDTS)
+000127140827      *                                                          *
+000128140414                K ESUPN4

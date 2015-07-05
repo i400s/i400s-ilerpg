@@ -1,0 +1,14 @@
+000107140406                                            REF(*LIBL/JMREF2 JMREF2)
+000108140414                                            UNIQUE
+000109140406      *
+000110140414                R SORCTAF
+000111140406      *
+000112140414                  TRDCMN    R               REFFLD(DCMN)
+000113140414                  TRISBN    R               REFFLD(ISBN)
+000114140414                  TRDSQN    R               REFFLD(DSQN)
+000115140414                  TRAUTH    R               REFFLD(AUTN)
+000116140414                  TRTITL    R               REFFLD(TITL)
+000117140406      *
+000118140414                K TRDCMN
+000119140414                K TRISBN
+000120140414                K TRDSQN

@@ -1,0 +1,244 @@
+000001140410      *   @
+000102140406                R JMREF2
+000104140410      *
+000105140409                  SUPN           7P 0
+000106140406                                            TEXT('Supplier number')
+000107140817                                            EDTWRD('0       ')
+000108140406      *
+000109140409                  DCMN           7P 0
+000110140406                                            TEXT('Document number')
+000111140406                                            EDTWRD('0       ')
+000112140411      *
+000113140411                  SPON      R               REFFLD(DCMN)
+000114140411                                            TEXT('Supplier order number')
+000116140411      *
+000117140411                  DCMT           1A
+000118140411                                            TEXT('Document type')
+000119140411      *
+000120140411                  SORT      R               REFFLD(DCMT)
+000121140411                                            TEXT('Suplier order type')
+000122140406      *
+000123140418                  DSQN           5P 0
+000124140406                                            TEXT('Duplicate sequence number')
+000125140418                                            EDTWRD('0     ')
+000126140406      *
+000127140409                  ISBN          10A
+000128140409                                            TEXT('ISBN')
+000129140406      *
+000130140409                  ADCN           7P 0
+000131140406                                            TEXT('Associated document number')
+000132140406                                            EDTWRD('0       ')
+000133140406      *
+000134140409                  BCHN           7P 0
+000135140406                                            TEXT('Batch number')
+000136140406                                            EDTWRD('0       ')
+000137140406      *
+000138140409      *           SOPR           7P 0
+000139140409      *                                     TEXT('Sales order no')
+000140140409      *                                     EDTWRD('0       ')
+000141140406      *
+000142140406
+000143140415                  SDRF          11A
+000144140406                                            TEXT('Supplier document reference')
+000145140409      *
+000146140409
+000147140415                  ADRF          11A
+000148140409                                            TEXT('Associated document ref')
+000149140406      *
+000150140411                  ALCT           1A
+000151140411                                            TEXT('Allocated type')
+000152140411      *
+000153140409                  DCMC           1A
+000154140406                                            TEXT('Document code')
+000155140406      *
+000156140411                  SONM          30A
+000157140411                                            TEXT('Suppler name')
+000158140406      *
+000159140414                  DMCD           4A
+000160140414                                            TEXT('Document code short descripti-
+000161140414                                            on')
+000162140414      *
+000163140414                  DCMD          10A
+000164140414                                            TEXT('Document code medium descript-
+000165140414                                            ion')
+000166140406      *
+000167140409                  ATTT          30A
+000168140406                                            TEXT('Author/Title')
+000169140406      *
+000170140411                  DCQT           4P 0
+000171140409                                            TEXT('Document quantity')
+000172140411                                            EDTWRD(' ,  0')
+000173140411      *
+000174140411                  SOPR           7P 2
+000175140409                                            TEXT('Supplier order price')
+000176140411                                            EDTWRD('  ,  0.  ')
+000177140411      *
+000178140411                  DSCV           7P 2
+000179140409                                            TEXT('Discount value')
+000180140411                                            EDTWRD('  ,  0.  ')
+000181140411      *
+000182140411                  VATV           7P 2
+000183140409                                            TEXT('Vat value')
+000184140411                                            EDTWRD('  ,  0.  ')
+000185140411      *
+000186140411                  RCPQ      R               REFFLD(DCQT)
+000187140411                                            TEXT('Receipt quantity')
+000188140411      *
+000189140411                  RCPR      R               REFFLD(SOPR)
+000190140411                                            TEXT('Receipt price')
+000191140411      *
+000192140411                  RCDV      R               REFFLD(DSCV)
+000193140411                                            TEXT('Receipt discount value')
+000194140411      *
+000195140411                  RCVV      R               REFFLD(VATV)
+000196140411                                            TEXT('Receipt vat value')
+000197140411      *
+000198140411                  VATA           7P 2
+000199140409                                            TEXT('Vat value')
+000200140411                                            EDTWRD('  ,  0.  ')
+000203140411      *
+000204140418                  SPOL           5P 0
+000205140409                                            TEXT('Supplier order line number')
+000206140423                                            EDTWRD('    0')
+000207140411      *
+000208140411                  RCDT           8P 0
+000209140409                                            TEXT('Receipt date')
+000210140409                                            EDTWRD('0    /  /  ')
+000211140411      *
+000212140411                  TGDQ      R   +2          REFFLD(DCQT)
+000213140411                                            TEXT('Total goods qty recieved')
+000214140411                                            EDTWRD('   ,  0')
+000215140411      *
+000216140411                  TGDV      R   +4          REFFLD(SOPR)
+000217140411                                            TEXT('Total goods value recieved')
+000218140411                                            EDTWRD('   ,   ,  0.  ')
+000219140411      *
+000220140411                  TDSV      R   +4          REFFLD(DSCV)
+000221140411                                            TEXT('Total discount value recieved-
+000222140411                                            ')
+000223140411                                            EDTWRD('   ,   ,  0.  ')
+000224140411      *
+000225140411                  TVAV      R   +4          REFFLD(VATV)
+000226140411                                            TEXT('Total vat vale recieved')
+000227140411                                            EDTWRD('   ,   ,  0.  ')
+000228140411      *
+000229140411                  DGDQ      R   +2          REFFLD(DCQT)
+000230140411                                            TEXT('Total order goods quantity')
+000231140411                                            EDTWRD('   ,  0')
+000232140411      *
+000233140411                  DGDV      R   +4          REFFLD(SOPR)
+000234140411                                            TEXT('Total order goods value')
+000235140411                                            EDTWRD('   ,   ,  0.  ')
+000236140411      *
+000237140411                  DDSV      R   +4          REFFLD(DSCV)
+000238140411                                            TEXT('Total order discount value')
+000239140411                                            EDTWRD('   ,   ,  0.  ')
+000240140411      *
+000241140411                  DVAV      R   +4          REFFLD(VATV)
+000242140411                                            TEXT('Total order vat value')
+000243140411                                            EDTWRD('   ,   ,  0.  ')
+000244140411      *
+000245140409                  CATG           4A
+000246140409                                            TEXT('Category')
+000247140411      *
+000248140409                  BIND           4A
+000249140409                                            TEXT('Binding')
+000250140411      *
+000251140411                  TLTP           1A
+000252140411                                            TEXT('Title type')
+000256140414      *
+000257140418                  SEQN           5P 0
+000258140411                                            TEXT('Sequence number')
+000259140927                                            EDTWRD('0     ')
+000260140411      *
+000261140411                  TITL          30A
+000262140411                                            TEXT('Title')
+000263140927                  FTTL         540A
+000264140914                                            TEXT('Full title')
+000267140928                  DSEQN0    R    3          REFFLD(SEQN *SRC)
+000268140928                  TIDSQN    R    3          REFFLD(DSQN *SRC)
+000269140411      *
+000270140411                  CTTP           1A
+000271140411                                            TEXT('Author type')
+000272140411      *
+000273140411                  AUTN          30A
+000274140411                                            TEXT('Author name')
+000275140927                  FATN         540A
+000276140914                                            TEXT('Full author name')
+000277140928      *
+000279140928                  AUSEQN    R    3          REFFLD(SEQN *SRC)
+000280140928                  AUDSQN    R    2          REFFLD(DSQN *SRC)
+000281140817      *
+000282140827      *           STIT          10A
+000283140827      *                                     TEXT('Search Title')
+000284140817      *
+000285140928                  CI             1A         TEXT('Continuation indicator')
+000286140928      *
+000287140928      *
+000288140923                  IMPN           8P 0
+000289140817                                            TEXT('Imprint number')
+000290140923                                            EDTWRD('0        ')
+000291140923                  ISBP           8A         TEXT('ISBN Imprint prefix')
+000292140904      *
+000293140904                  IPNM          40A
+000294140904                                            TEXT('Imprint name')
+000295140904                  ADR1          40A
+000296140904                                            TEXT('Address 01')
+000297140904                  ADR2          40A
+000298140904                                            TEXT('Address 02')
+000299140904                  ADR3          40A
+000300140904                                            TEXT('Address 03')
+000301140904                  ADR4          40A
+000302140904                                            TEXT('Address 04')
+000303140904      *
+000304140904      *
+000305140828                  STTS           1A         TEXT('Status')
+000306140831      *
+000307140831      *
+000308140831                  PBDT            L
+000309140831                                            TEXT('Published date')
+000310140831                                            DATFMT(*ISO)
+000311140831                  RPDT            L
+000312140831                                            TEXT('Reprint date')
+000313140831                                            DATFMT(*ISO)
+000314140926      *
+000315140926      *
+000316140926                  SDSC          10A         TEXT('Short description')
+000317140926                  DSCR          30A         TEXT('Description')
+000318140926      *
+000319140926      *
+000320140926                  TAGC           3P 0       TEXT('Marc tag code')
+000321140926                                            EDTWRD('0   ')
+000322140926                  TGIR           1A         TEXT('Tag is repeatable')
+000323140926                  TGTP           2A         TEXT('Tag type')
+000324140414      *
+000325140414      *
+000326140414      *
+000327140416      *
+000328140828                  SKSN          10A
+000329140828                                            TEXT('Search key, sequence name')
+000330140828      *
+000331140828                  DLTD           1A
+000332140828                                            TEXT('Deleted flag')
+000333140828      *
+000334140828      *
+000335140828      *
+000336140411      *
+000337140409                  CUSR          10A
+000338140409                                            TEXT('Created by user')
+000339140411      *
+000340140409                  CPGM          10A
+000341140409                                            TEXT('Created by program')
+000342140411      *
+000343140409                  CDTS            Z
+000344140409                                            TEXT('Created date/timestamp')
+000345140411      *
+000346140409                  EUSR          10A
+000347140409                                            TEXT('Edited by user')
+000348140411      *
+000349140409                  EPGM          10A
+000350140409                                            TEXT('Edited by program')
+000351140411      *
+000352140409                  EDTS            Z
+000353140409                                            TEXT('Edited date/timestamp')
+000354140411      *

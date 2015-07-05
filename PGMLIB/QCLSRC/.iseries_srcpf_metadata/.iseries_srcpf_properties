@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iSeriesSrcpfMetaData version="5.0">
+<properties com.ibm.etools.iseries.perspective.srcpf-ccsid="37" com.ibm.etools.iseries.perspective.srcpf-dbcs="false" com.ibm.etools.iseries.perspective.srcpf-description="CL source." com.ibm.etools.iseries.perspective.srcpf-record-length="112">
+<cachedProperties/>
+</properties>
+<isvproperties>
+<cachedProperties/>
+</isvproperties>
+</iSeriesSrcpfMetaData>
