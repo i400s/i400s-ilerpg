@@ -2382,7 +2382,7 @@
 228930141012     C           P02CRR    ANDLT50
 228931141010     C                     Z-ADDP02CRR    D@RR
 228932141012     C           D@RR      CHAINS2SFL02C             99
-228940141012     C                     ENDIF
+228940150707      ***C                     ENDIF
 228941141012B3   C           S2TAGC    IFNE *ZERO
 228942141012     C           P02CRR    ADD  1         P02CRN
 228943141010     C                     Z-ADD2         D@PTF
