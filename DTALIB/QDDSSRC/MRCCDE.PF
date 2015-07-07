@@ -1,0 +1,21 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+                                            UNIQUE
+      *
+                R MRCCDEF
+      *
+                  MTTAGC    R               REFFLD(TAGC)
+                  MTTGIR    R               REFFLD(TGIR)
+                  MTTGTP    R               REFFLD(TGTP)
+                  MTSDSC    R               REFFLD(SDSC)
+                  MTDSCR    R               REFFLD(DSCR)
+
+                  MTDLTD    R               REFFLD(DLTD)
+      *
+                  MTCUSR    R               REFFLD(CUSR)
+                  MTCPGM    R               REFFLD(CPGM)
+                  MTCDTS    R               REFFLD(CDTS)
+                  MTEUSR    R               REFFLD(EUSR)
+                  MTEPGM    R               REFFLD(EPGM)
+                  MTEDTS    R               REFFLD(EDTS)
+      *
+                K MTTAGC

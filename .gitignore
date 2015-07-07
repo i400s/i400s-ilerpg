@@ -1,0 +1,14 @@
+# The folowing works at WDSC7* however later versions may increase or change the root directory structure.
+#
+# Ignoring these files means they will not be saved/restored by git so that your current settings will not be changed.
+#
+# Ignore the directory .metadata in root which is used by eclipse/WDSC to store settings (display, layout, etc.)
+/.metadata/
+# Ignore the RemoteSystems* directories in root (used by WDSC to store connection and remote file details)
+/RemoteSystems*/
+# Ignore .settings (directory), .iseries_project_properties (file), .project (file) only if they are one level up.
+/*/.settings/
+/*/.iseries_project_properties
+/*/.project
+
+

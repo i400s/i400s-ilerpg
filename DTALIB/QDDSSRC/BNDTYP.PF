@@ -1,0 +1,20 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+                                            UNIQUE
+      *
+                R BNDTYPF
+      *
+                  BNBIND    R               REFFLD(BIND)
+                  BNSDSC    R               REFFLD(SDSC)
+                  BNDSCR    R               REFFLD(DSCR)
+
+                  BNDLTD    R               REFFLD(DLTD)
+      *
+                  BNCUSR    R               REFFLD(CUSR)
+                  BNCPGM    R               REFFLD(CPGM)
+                  BNCDTS    R               REFFLD(CDTS)
+                  BNEUSR    R               REFFLD(EUSR)
+                  BNEPGM    R               REFFLD(EPGM)
+                  BNEDTS    R               REFFLD(EDTS)
+
+      *
+                K BNBIND

@@ -1,0 +1,24 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+                                            UNIQUE
+      *
+                R MTIMPNF
+      *
+                  IPIMPN    R               REFFLD(IMPN)
+                  IPISBP    R               REFFLD(ISBP)
+                  IPIPNM    R               REFFLD(IPNM)
+                  IPADR1    R               REFFLD(ADR1)
+                  IPADR2    R               REFFLD(ADR2)
+                  IPADR3    R               REFFLD(ADR3)
+                  IPADR4    R               REFFLD(ADR4)
+      *
+                  IPSKSN    R               REFFLD(SKSN)
+                  IPDLTD    R               REFFLD(DLTD)
+      *
+                  IPCUSR    R               REFFLD(CUSR)
+                  IPCPGM    R               REFFLD(CPGM)
+                  IPCDTS    R               REFFLD(CDTS)
+                  IPEUSR    R               REFFLD(EUSR)
+                  IPEPGM    R               REFFLD(EPGM)
+                  IPEDTS    R               REFFLD(EDTS)
+      *                                                          *
+                K IPIMPN

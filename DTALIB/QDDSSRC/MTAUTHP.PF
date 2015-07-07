@@ -1,0 +1,16 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+                                            UNIQUE
+      *
+                R MTAUTHF
+      *
+                  AUISBN    R               REFFLD(ISBN)
+                  AUTAGC    R               REFFLD(TAGC)
+                  AUSEQN    R               REFFLD(AUSEQN)
+                  AUDSQN    R               REFFLD(AUDSQN)
+
+                  AUAUTN    R               REFFLD(AUTN)
+      *
+                K AUISBN
+                K AUTAGC
+                K AUSEQN
+                K AUDSQN

@@ -1,0 +1,20 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+                                            UNIQUE
+      *
+                R MTSUPPF
+      *
+                  ESUPN4    R               REFFLD(SUPN)
+                  DSONM4    R               REFFLD(SONM)
+                  DSONM0    R               REFFLD(SONM)
+      *
+                  ESSKSN    R               REFFLD(SKSN)
+                  ESDLTD    R               REFFLD(DLTD)
+      *
+                  ESCUSR    R               REFFLD(CUSR)
+                  ESCPGM    R               REFFLD(CPGM)
+                  ESCDTS    R               REFFLD(CDTS)
+                  ESEUSR    R               REFFLD(EUSR)
+                  ESEPGM    R               REFFLD(EPGM)
+                  ESEDTS    R               REFFLD(EDTS)
+      *                                                          *
+                K ESUPN4

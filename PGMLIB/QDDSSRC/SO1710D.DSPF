@@ -1,0 +1,849 @@
+      * ________________________________________________________________________
+      * !"£$%^&*()_+{}:@~<>?
+      * |Description  :  Standard template
+      * |Programmer   :  Jonathan Wilson
+      * |Date Created :  31/10/1994
+      * |-----------------------------------------------------------------------
+      * |MODIFICATIONS
+      * |-----------------------------------------------------------------------
+      * |By          :   Jonathan Wilson
+      * |Date        :   28/07/2014
+      * |Scan        :
+      * |Description :   Bibliographic maintenance
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            REF(*LIBL/MTBIBLP MTBIBLF)
+
+                                            DSPSIZ(24 80 *DS3)
+                                            PRINT
+                                            ALTHELP
+                                            ALTPAGEUP
+                                            ALTPAGEDWN
+                                            CF02
+                                            CF03
+                                            CF04
+                                            CF05
+                                            CF06
+                                            CF09
+                                            CF10
+                                            CF11
+                                            CF12
+                                            CF13
+                                            CF14
+                                            CF15
+                                            CF16
+                                            CF17
+                                            CF18
+                                            CF19
+                                            CF20
+                                            CF21
+                                            CF22
+                                            CF23
+                                            CF24
+                                            HELP
+
+      * 22     : *ON=Valid function key pressed, *OFF=Enter pressed
+      * 23     : *ON=Rollup
+      * 24     : *ON=RollDown
+                                            VLDCMDKEY(22)
+                                            ROLLUP(23)
+                                            ROLLDOWN(24)
+      *
+      *-------------------------------------------------------------------------
+                R S1SFL01                   SFL
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List subfile record')
+      * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
+        21                                  SFLNXTCHG
+
+
+      * 01     : *OFF=Control (UL), *ON=Detail (PR)
+      * 02     : *OFF=Detail records to display, *ON='(No records to display)'
+      * 03-04  : *VAR=Condition fields, based on "view" (BinFmt, 00=V1, 01=V2..11=V4)
+      * 05     : *RES=If 03-04 is not enough
+      * 06-08  : *VAR=Condition fields, based on "mode" (BinFmt, ..111=M8), (edit, view, etc.)
+      * 09     : *RES=If 06-08 is not enough
+      * 10-19  : *VAR=Condition fields
+      *  10    :  *OFF=Allow option, *ON=Protect option
+      *  11-19 :  *VAR=Suggested use is to condition PR/UL of "control" fields individually
+      *  11-19 :  *VAR=Suggested use is to condition output of "detail" fields.
+      * 20     : *RES=If 10-19 is not enough
+                  S10120        20A  H      TEXT('Save field, *IN01-20')
+
+
+      * 97-88  : *VAR=Condition errors
+      *  97    :  *ON=S1OPT in error
+      *  96    :  *ON=BLISBN in error
+      *  95-88 :  *RES=Additional 'key' fields in error
+                  S18897        10A  H      TEXT('Save field, *IN88-97')
+
+
+                  S1OPT          2A  B 11  2
+       N10                                  DSPATR(UL)
+        10                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+        97                                  DSPATR(PC)
+
+      *
+      * 'Keys'
+                  BLISBN    R        B 11  6
+       N01                                  DSPATR(UL)
+        01                                  DSPATR(PR)
+        96                                  DSPATR(RI)
+        96                                  DSPATR(PC)
+      *
+      * 'Records'
+        01N02     BLSKSN    R        O 11 17
+        01N02     S1DLTD    R    4   O 11 28REFFLD(BLDLTD)
+        01N02     BLSUPN    R        O 11 33
+        01N02     BLIMPN    R        O 11 41
+        01N02
+       N03N04     S1FTTL    R   31   O 11 50REFFLD(JMREF2/FTTL *LIBL/JMREF2)
+        01N02
+       N03 04     S1FATN    R   31   O 11 50REFFLD(JMREF2/FATN *LIBL/JMREF2)
+      *
+      * 'No records to display'
+        01 02                          12  4'(No records to display)'
+       N01 02                          13  4'(No records to display)'
+
+      *
+      *-------------------------------------------------------------------------
+                R C1PNL01                   SFLCTL(S1SFL01)
+      *-------------------------------------------------------------------------
+      *
+      *
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                            SFLSIZ(0010)
+                                            SFLPAG(0010)
+                                            TEXT('List control record')
+                                            KEEP
+                                            RTNCSRLOC(&D@CRCD &D@CFLD &D@CPSN)
+                                            CSRLOC(D@PROW D@PCOL)
+                                            SFLCSRRRN(&D@SCRR)
+                                            OVERLAY
+
+      * 02     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+       N02                                  SFLDSP
+       N02                                  SFLDSPCTL
+        02                                  SFLCLR
+      * 25     : *OFF=More..., *ON=Bottom
+        25                                  SFLEND(*MORE)
+      * 01     : *OFF=All 'subset' fields (UL), *ON=All 'subset' fields (PR)
+      * 10-19  : *VAR=Condition fields
+      *  10    :  *RES=If 11-19 is not enough (Use 20 first to save confusion)
+      *  11-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "subset/key" individual fields
+      *  20    :  *RES=If 11-19 is not enough
+                  C10120        20A  H      TEXT('Save field, *IN01-20')
+
+
+      * 97-88  : *VAR=Condition errors
+      *  97    :  *ON=C1SKSN in error
+      *  96    :  *ON=C1SUPN in error
+      *  95    :  *ON=C1IMPN in error
+      *  94-88 :  *RES=Additional 'subset' fields in error
+                  C18897        10A  H      TEXT('Save field, *IN88-97')
+
+
+                  D@PROW         3S 0H
+                  D@PCOL         3S 0H
+                  D@CRCD        10A  H
+                  D@CFLD        10A  H
+                  D@CPSN         4S 0H
+                  D@SCRR         5S 0H
+                  S@PGM         10A  O  1  2
+                  @MODE          8A  O  1 13
+                                        1 25'Work with bibliographic records'
+                                             DSPATR(HI)
+                  VCOID         10A  O  1 71
+                                        2 71DATE(*JOB *YY) EDTCDE(Y)
+                                        3  2'Search key  . . .'
+                  C1#01          1A  O  3 20
+                  C1SKSN    R        B  3 22REFFLD(BLSKSN)
+       N01N11                               DSPATR(UL)
+        01
+      O 11                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+        97                                  DSPATR(PC)
+                                        3 34'Name, generic*, *ALL, *BLANKS'
+                                        4  2'Supplier  . . . .'
+                  C1#02          1A  O  4 20
+                  C1SUPN    R        B  4 22REFFLD(BLSUPN)
+       N01N12                               DSPATR(UL)
+        01
+      O 12                                  DSPATR(PR)
+        96                                  DSPATR(RI)
+        96                                  DSPATR(PC)
+                  DSONM4    R        O  4 34REFFLD(MTSUPPF/DSONM4 *LIBL/MTSUPPP)
+                                        5  2'Imprint . . . . .'
+                  C1#03          1A  O  5 20
+                  C1IMPN    R        B  5 22REFFLD(BLIMPN)
+       N01N13                               DSPATR(UL)
+        01
+      O 13                                  DSPATR(PR)
+        95                                  DSPATR(RI)
+        95                                  DSPATR(PC)
+                  IPISBP    R        O  5 34REFFLD(MTIMPNF/IPISBP *LIBL/MTIMPNP)
+                  C1IPNM    R   38   O  5 43REFFLD(MTIMPNF/IPIPNM *LIBL/MTIMPNP)
+                                        7  2'Type options, press Enter'
+                                            COLOR(BLU)
+      * 06-08  : *VAR=Condition fields, based on "mode" (BinFmt, ..111=M8), (edit, view, etc.)
+       N06N07N08                        8  3'1=Create   2=Change   3=Copy    4=-
+                                            Delete    5=View    7=Rename'
+                                            COLOR(BLU)
+       N06N07 08                        8  3'5=View'
+                                            COLOR(BLU)
+       N06 07N08                        8  3'5=View, /=Select'
+                                            COLOR(BLU)
+      * 03-04  : *VAR=Condition fields, based on "view" (BinFmt, 00=V1, 01=V2..11=V4)
+       N03N04                          10  2'Opt ISBN       SchKey     *Dlt Sup-
+                                            No   ImpNo    Title                -
+                                                      '
+                                            DSPATR(HI)
+       N03 04                          10  2'Opt ISBN       SchKey     *Dlt Sup-
+                                            No   ImpNo    Author               -
+                                                      '
+                                            DSPATR(HI)
+
+      *
+      *-------------------------------------------------------------------------
+                R C1FTR01
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List footer record')
+                                            OVERLAY
+       N06N07N08
+       N03N04                          22  2'F3=Exit      F5=Refresh   F6=Creat-
+                                            e    F11=View1    F12=Cancel   F16=-
+                                            Position '
+                                            COLOR(BLU)
+       N06N07N08
+       N03N04                          23  2'F17=Subset                        -
+                                                                               -
+                                                     '
+                                            COLOR(BLU)
+       N06N07N08
+       N03 04                          22  2'F3=Exit      F5=Refresh   F6=Creat-
+                                            e    F11=View2    F12=Cancel   F16=-
+                                            Position '
+                                            COLOR(BLU)
+       N06N07N08
+       N03 04                          23  2'F17=Subset                        -
+                                                                               -
+                                                     '
+                                            COLOR(BLU)
+      *
+      *-------------------------------------------------------------------------
+                R D1HDR00
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('D1 header')
+                                            RTNCSRLOC(&D@CRCD &D@CFLD &D@CPSN)
+      ***                                       CSRLOC(D@PROW D@PCOL)
+
+
+                  D@PROW    R        H      REFFLD(D@PROW *SRC)
+                  D@PCOL    R        H      REFFLD(D@PCOL *SRC)
+                  D@CRCD    R        H      REFFLD(D@CRCD *SRC)
+                  D@CFLD    R        H      REFFLD(D@CFLD *SRC)
+                  D@CPSN    R        H      REFFLD(D@CPSN *SRC)
+
+
+      * 01     : *OFF=All 'key' fields (UL), *ON=All 'key' fields (PR)
+      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+      * 10-19  : *VAR=Condition fields
+      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+      * 20     : *RES=If 10-19 is not enough
+                  P00#01        20A  H      TEXT('Save field, *IN01-20')
+                  P00#88        10A  H      TEXT('Save field, *IN88-97')
+                  S@PGM     R        O  1  2REFFLD(S@PGM *SRC)
+                  @MODE     R        O  1 13REFFLD(@MODE *SRC)
+                                        1 24'Maintain bibliographic record'
+                                            DSPATR(HI)
+                  VCOID     R        O  1 70REFFLD(VCOID *SRC)
+                                        2 70DATE(*JOB *YY) EDTCDE(Y)
+
+      *
+      *-------------------------------------------------------------------------
+                R D1PNL01A
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('D1 panel 01')
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                            OVERLAY
+                  P01A60        38A  H      TEXT('Save field, *IN60-97')
+      *
+      *
+                                        3  2'Type choices, press Enter.'
+      *
+      *
+                                        5  2'ISBN . . . . . . . . . . . .'
+                  D1#01          1A  O  5 31
+                  BLISBN    R        B  5 33
+       N01N10                               DSPATR(UL)
+        01
+      O 10                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+       N01N10 97                            DSPATR(PC)
+                  D1DLTD    R    4A  O  5 47REFFLD(BLDLTD)
+      *
+      *
+                                        6  2'  Last edited information  . :'
+                  BLEUSR    R        O  6 35REFFLD(BLEUSR)
+                  BLEDTS    R     Z  O  6 46REFFLD(BLEDTS)
+      *
+      *
+
+                                        7  2'Supplier . . . . . . . . . .'
+                  D1#02          1A  O  7 31
+                  BLSUPN    R        B  7 33
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        96                                  DSPATR(RI)
+       N02    96                            DSPATR(PC)
+                  DSONM4    R        O  7 47REFFLD(MTSUPPF/DSONM4 *LIBL/MTSUPPP)
+      *
+      *
+                                        8  2'Imprint  . . . . . . . . . .'
+                  D1#03          1A  O  8 31
+                  BLIMPN    R        B  8 33
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        95                                  DSPATR(RI)
+       N02    95                            DSPATR(PC)
+                  IPISBP    R        O  8 47REFFLD(MTIMPNF/IPISBP *LIBL/MTIMPNP)
+      *
+      *
+                                        9  2'  Name . . . . . . . . . . . :'
+                  IPIPNM    R        O  9 35REFFLD(MTIMPNF/IPIPNM *LIBL/MTIMPNP)
+      *
+      *
+                                       10  2'130 Title  . . . . . . . . .'
+                  D1#04          1A  O 10 31
+                  D1FTTL    R  540   B 10 33REFFLD(JMREF2/FTTL *LIBL/JMREF2)
+                                            CHECK(LC)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        94                                  DSPATR(RI)
+       N02    94                            DSPATR(PC)
+                                       17 14'Cntd'
+                  D1#05          1A  O 17 19
+                  D1CI01    R        B 17 21REFFLD(JMREF2/CI *LIBL/JMREF2)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        93                                  DSPATR(RI)
+       N02    93                            DSPATR(PC)
+                                       17 24'Search key :'
+                  BLSKSN    R        O 17 37
+                                       17 48'Binding'
+                  D1#06          1A  O 17 56
+                  BLBIND    R        B 17 58
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        92                                  DSPATR(RI)
+       N02    92                            DSPATR(PC)
+                  BNSDSC    R        O 17 63REFFLD(BNDTYPF/BNSDSC *LIBL/BNDTYP)
+      *
+      *
+                                       18  2'100 Author . . . . . . . . .'
+                  D1#07          1A  O 18 31
+                  D1FATN    R  240   B 18 33REFFLD(JMREF2/FATN *LIBL/JMREF2)
+                                            CHECK(LC)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        91                                  DSPATR(RI)
+       N02    91                            DSPATR(PC)
+                                       21 34'Cntd'
+                  D1#08          1A  O 21 39
+                  D1CI02    R        B 21 41REFFLD(JMREF2/CI *LIBL/JMREF2)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        90                                  DSPATR(RI)
+       N02    90                            DSPATR(PC)
+      *
+      *-------------------------------------------------------------------------
+                R D1PNL02A
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('D1 panel 02')
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                            OVERLAY
+                  P02A60        38A  H      TEXT('Save field, *IN60-97')
+                                        3  2'Published date . . . . . . .'
+                  D1#09          1A  O  3 31
+                  BLPBDT    R        B  3 33
+                                            DATFMT(*JOB)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+       N02    97                            DSPATR(PC)
+      *
+      *
+                                        4  2'Reprint date . . . . . . . .'
+                  D1#10          1A  O  4 31
+                  BLRPDT    R        B  4 33
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        96                                  DSPATR(RI)
+       N02    96                            DSPATR(PC)
+                  D1RPDT        10A  B  4 50
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        95                                  DSPATR(RI)
+       N02    95                            DSPATR(PC)
+      *
+      *-------------------------------------------------------------------------
+                R S2SFL02B                  SFL
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List subfile record')
+      * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
+        21                                  SFLNXTCHG
+      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+      * 09     : *OFF=Unhandled, *ON=(PC) if first, or only, record on page with no errors.
+      * 10-19  : *VAR=Condition fields
+      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+      * 20     : *RES=If 10-19 is not enough
+                  S02B01        20A  H      TEXT('Save field, *IN01-20')
+                  S02B80        18A  H      TEXT('Save field, *IN80-97')
+      *
+      *
+                  S2NEF          1A  H      TEXT('No error found')
+                  S2I09          1A  H      TEXT('(no)error found on page')
+                  S2CHG          1A  H      TEXT('Changed state')
+      *
+      *
+                  S2TAGC    R        B  6  4REFFLD(MTTITLF/TITAGC *LIBL/MTTITLP)
+       N02N10                               DSPATR(UL)
+        02
+      O 10                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+       N02N10 97
+      ON02N10 09                            DSPATR(PC)
+        97                                  CHECK(ER)
+                  MTSDSC    R        O  6  8REFFLD(MRCCDEF/MTSDSC *LIBL/MRCCDE)
+                  S2SEQN    R        B  6 20REFFLD(MTTITLF/DSEQN0 *LIBL/MTTITLP)
+                                            EDTWRD('0   ')
+       N02N10                               DSPATR(UL)
+        02
+      O 10                                  DSPATR(PR)
+        96                                  DSPATR(RI)
+       N02N10 96                            DSPATR(PC)
+        96                                  CHECK(ER)
+                                        6 25'. . .'
+                  D1#11          1A  O  6 31
+                  S2FTTL    R  420   B  6 35REFFLD(JMREF2/FTTL *LIBL/JMREF2)
+                                            CHECK(LC)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        95                                  DSPATR(RI)
+       N02    95
+      ON02    09                            DSPATR(PC)
+        95                                  CHECK(ER)
+                                       11 56'Cntd'
+                  D1#12          1A  O 11 61
+                  S2CI      R        B 11 63REFFLD(JMREF2/CI *LIBL/JMREF2)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        94                                  DSPATR(RI)
+       N02    94                            DSPATR(PC)
+        94                                  CHECK(ER)
+                  S2EOF          3A  O 11 77
+                                            DSPATR(HI)
+
+      *
+      *-------------------------------------------------------------------------
+                R C2PNL02B                  SFLCTL(S2SFL02B)
+      *-------------------------------------------------------------------------
+      *
+      *
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                            SFLSIZ(50)
+                                            SFLPAG(0001)
+                                            TEXT('List control record')
+      ***                                      KEEP
+                                            SFLCSRRRN(&P02BSR)
+                                            OVERLAY
+
+      * 03     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+       N03                                  SFLDSP
+       N03                                  SFLDSPCTL
+        03                                  SFLCLR
+                  P02BSC         5S 0H      SFLSCROLL
+                  P02BRN         4S 0H      SFLRCDNBR
+                  P02BSR         5S 0H
+                  P02BRR         5S 0H
+                  P02BSP         5S 0H
+
+
+                  P02B60        38A  H      TEXT('Save field, *IN60-97')
+                                        5  2'Title(s), Tag, Seq. :'
+      *
+      *-------------------------------------------------------------------------
+                R S2SFL02C                  SFL
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List subfile record')
+      * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
+        21                                  SFLNXTCHG
+      * 01     : *OFF=All 'key' fields (UL), *ON=All 'key' fields (PR)
+      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+      * 09     : *OFF=Unhandled, *ON=(PC) if first, or only, record on page with no errors.
+      * 10-19  : *VAR=Condition fields
+      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+      * 20     : *RES=If 10-19 is not enough
+                  S02C01        20A  H      TEXT('Save field, *IN01-20')
+                  S02C80        18A  H      TEXT('Save field, *IN80-97')
+      *
+      *
+                  S2NEF          1A  H      TEXT('No error found')
+                  S2I09          1A  H      TEXT('(no)error found on page')
+                  S2CHG          1A  H      TEXT('Changed state')
+      *
+      *
+                  S2TAGC    R        B 13  4REFFLD(MTAUTHF/AUTAGC *LIBL/MTAUTHP)
+       N02N10                               DSPATR(UL)
+        02
+      O 10                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+       N02N10 97
+      ON02N10 09                            DSPATR(PC)
+        97                                  CHECK(ER)
+                  MTSDSC    R        O 13  8REFFLD(MRCCDEF/MTSDSC *LIBL/MRCCDE)
+                  S2SEQN    R        B 13 20REFFLD(MTAUTHF/AUSEQN *LIBL/MTAUTHP)
+                                            EDTWRD('0   ')
+       N02N10                               DSPATR(UL)
+        02
+      O 10                                  DSPATR(PR)
+        96                                  DSPATR(RI)
+       N02N10 96                            DSPATR(PC)
+        96                                  CHECK(ER)
+                                       13 25'. . .'
+                  D1#13          1A  O 13 31
+                  S2FATN    R  240   B 13 35REFFLD(JMREF2/FATN *LIBL/JMREF2)
+                                            CHECK(LC)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        95                                  DSPATR(RI)
+       N02    95
+      ON02    09                            DSPATR(PC)
+        95                                  CHECK(ER)
+                                       16 36'Cntd'
+                  D1#14          1A  O 16 41
+                  S2CI      R        B 16 43REFFLD(JMREF2/CI *LIBL/JMREF2)
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        94                                  DSPATR(RI)
+       N02    94                            DSPATR(PC)
+        94                                  CHECK(ER)
+                  S2EOF          3A  O 16 77
+                                            DSPATR(HI)
+
+      *
+      *-------------------------------------------------------------------------
+                R C2PNL02C                  SFLCTL(S2SFL02C)
+      *-------------------------------------------------------------------------
+      *
+      *
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                            SFLSIZ(0050)
+                                            SFLPAG(0002)
+                                            TEXT('List control record')
+      ***                                      KEEP
+                                            SFLCSRRRN(&P02CSR)
+                                            OVERLAY
+
+      * 03     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+       N03                                  SFLDSP
+       N03                                  SFLDSPCTL
+        03                                  SFLCLR
+                  P02CSC         5S 0H      SFLSCROLL
+                  P02CRN         4S 0H      SFLRCDNBR
+                  P02CSR         5S 0H
+                  P02CRR         5S 0H
+                  P02CSP         5S 0H
+
+
+                  P02C60        38A  H      TEXT('Save field, *IN60-97')
+                                       12  2'Author(s), Tag, Seq. :'
+      *
+      *-------------------------------------------------------------------------
+                R D1PNL02D
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('D1 panel 02')
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                            OVERLAY
+      * 01     : *OFF=All 'key' fields (UL), *ON=All 'key' fields (PR)
+      * 02     : *OFF=Detail fields (UL), *ON=Detail fields (PR)
+      * 10-19  : *VAR=Condition fields
+      *  10-19 :  *VAR=Suggested use, condition (*OFF=UL, *ON=PR) of "key" fields individually
+      * 20     : *RES=If 10-19 is not enough
+                  P02D60        38A  H      TEXT('Save field, *IN60-97')
+                                       21  2'Just stuff to prove  . . . .'
+                  D1#15          1A  O 21 31
+                  D1RPDD        10A  B 21 33
+       N02                                  DSPATR(UL)
+        02                                  DSPATR(PR)
+        97                                  DSPATR(RI)
+       N02    97                            DSPATR(PC)
+      *
+      *-------------------------------------------------------------------------
+                R D1FTR00
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List footer record')
+                                            OVERLAY
+      *
+      *
+      * 25     : *OFF=More..., *ON=Bottom
+       N25                             22 73'More...'
+                                            DSPATR(HI)
+        25                             22 74'Bottom'
+                                            DSPATR(HI)
+                                       23  2'F3=Exit   F5=Refresh   F12=Cancel'
+                                            COLOR(BLU)
+
+
+      *
+      *-------------------------------------------------------------------------
+                R S1SFL02                   SFL
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List subfile record')
+        01N02     BLISBN    R        O  8  2
+        01N02     BLSKSN    R        O  8 13
+        01N02     S1DLTD    R        O  8 24REFFLD(S1DLTD *SRC)
+        01N02     BLSUPN    R        O  8 29
+        01N02     BLIMPN    R        O  8 37
+        01N02     S1FTTL    R        O  8 45REFFLD(S1FTTL *SRC)
+        01N02     S1FATN    R        O  8 45REFFLD(S1FATN *SRC)
+
+
+        02                              9  4'(No records to display)'
+
+      *
+      *-------------------------------------------------------------------------
+                R C1PNL02                   SFLCTL(S1SFL02)
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            SFLSIZ(14)
+                                            SFLPAG(14)
+                                            TEXT('List control record')
+                                            OVERLAY
+      * 02     : *OFF=SFLDSP/SFLDSPCTL, *ON=SFLCLR
+       N02                                  SFLDSP
+       N02                                  SFLDSPCTL
+        02                                  SFLCLR
+      * 25     : *OFF=More..., *ON=Bottom
+        25                                  SFLEND(*MORE)
+                  S@PGM     R        O  1  2REFFLD(S@PGM *SRC)
+                  @MODE     R        O  1 13REFFLD(@MODE *SRC)
+                                        1 25'Work with bibliographic records'
+                                             DSPATR(HI)
+                  VCOID     R        O  1 71REFFLD(VCOID *SRC)
+                                        2 71DATE(*JOB *YY) EDTCDE(Y)
+                                        3  2'Search key  . . .'
+                  C1#01          1A  O  3 20
+                  C1SKSN    R        O  3 22REFFLD(BLSKSN)
+                                        4  2'Supplier  . . . .'
+                  C1#02          1A  O  4 20
+                  C1SUPN    R        O  4 22REFFLD(BLSUPN)
+                  DSONM4    R        O  4 34REFFLD(MTSUPPF/DSONM4 *LIBL/MTSUPPP)
+                                        5  2'Imprint . . . . .'
+                  C1#03          1A  O  5 20
+                  C1IMPN    R        O  5 22REFFLD(BLIMPN)
+                  IPIPNM    R        O  5 34REFFLD(MTIMPNF/IPIPNM *LIBL/MTIMPNP)
+                                        6  2'Press Enter to confirm your choice-
+                                            s for 4=Delete.'
+                                            COLOR(BLU)
+                                        7  2'Press F12=Exit to return to change-
+                                            your choices'
+                                            COLOR(BLU)
+
+      *
+      *-------------------------------------------------------------------------
+                R C1FTR02
+      *-------------------------------------------------------------------------
+      *
+      *
+                                            TEXT('List footer record')
+                                            OVERLAY
+                                       23  2'F3=Exit   F5=Refresh   F12=Cancel'
+                                            COLOR(BLU)
+
+      *-------------------------------------------------------------------------
+                R #ERRSFL                   SFL
+      *-------------------------------------------------------------------------
+                                            SFLMSGRCD(24)
+                  MSGKEY                    SFLMSGKEY
+                  PGMQ                      SFLPGMQ
+                R #ERRCTL                   SFLCTL(#ERRSFL)
+                                            OVERLAY
+                                            SFLDSP
+                                            SFLDSPCTL
+                                            SFLINZ
+        99
+      ON99                                  SFLEND
+                                            SFLSIZ(0099)
+                                            SFLPAG(0001)
+                  PGMQ                      SFLPGMQ
+
+
+      *-------------------------------------------------------------------------
+                R POSWDWW1                  WINDOW(*DFT 10 38)
+      *-------------------------------------------------------------------------
+
+
+      *-------------------------------------------------------------------------
+                R POSPNLD1
+      *-------------------------------------------------------------------------
+                                            WINDOW(POSWDWW1)
+                                            OVERLAY
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                        1 15'Position to'
+                                            DSPATR(HI)
+                                        2  1'Type choices, press Enter.'
+                                            COLOR(BLU)
+                                        4  1'Supplier reference .'
+      *           P1SUPN    R        B  4 24REFFLD(BLSUPN)
+                                        5  1'Reciept number . . .'
+      *           P1DCMN    R        B  5 24REFFLD(RDDCMN)
+                                        6  1'ISBN . . . . . . . .'
+                  P1ISBN    R        B  6 24REFFLD(BLISBN)
+                                        8  1'F3=Exit   f5=Refresh'
+                                            COLOR(BLU)
+
+
+      *-------------------------------------------------------------------------
+                R POSPNLS1                  SFL
+      *-------------------------------------------------------------------------
+                                            SFLMSGRCD(09)
+                  MSGKEY                    SFLMSGKEY
+                  PGMQ                      SFLPGMQ
+                R POSPNLC1                  SFLCTL(POSPNLS1)
+                                            WINDOW(POSWDWW1)
+                                            SFLDSP
+                                            SFLDSPCTL
+                                            SFLINZ
+        99
+      ON99                                  SFLEND
+                                            SFLSIZ(0099)
+                                            SFLPAG(0001)
+                  PGMQ                      SFLPGMQ
+
+
+      *-------------------------------------------------------------------------
+                R SBSWDWW1
+      *-------------------------------------------------------------------------
+                                            WINDOW(*DFT 10 69)
+
+
+      *-------------------------------------------------------------------------
+                R SBSPNLD1
+      *-------------------------------------------------------------------------
+                                            WINDOW(SBSWDWW1)
+                                            OVERLAY
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                        1 25'Subset/Sequence records'
+                                            DSPATR(HI)
+                                        2  1'Type choices, press Enter.'
+                                            COLOR(BLU)
+                                        4  1'Show deleted?  . . .'
+                  C1DLTD         1A  B  4 24
+        97                                  DSPATR(RI)
+        97                                  DSPATR(PC)
+                                        4 33'*=All, N=None, O=Only'
+                                        8  1'F3=Exit   F5=Refresh   F12=Cancel'
+                                            COLOR(BLU)
+
+
+      *-------------------------------------------------------------------------
+                R SBSPNLS1                  SFL
+      *-------------------------------------------------------------------------
+                                            SFLMSGRCD(09)
+                  MSGKEY                    SFLMSGKEY
+                  PGMQ                      SFLPGMQ
+                R SBSPNLC1                  SFLCTL(SBSPNLS1)
+                                            WINDOW(SBSWDWW1)
+                                            SFLDSP
+                                            SFLDSPCTL
+                                            SFLINZ
+        99
+      ON99                                  SFLEND
+                                            SFLSIZ(0099)
+                                            SFLPAG(0001)
+                  PGMQ                      SFLPGMQ
+
+
+      *-------------------------------------------------------------------------
+                R SSSWDWW1
+      *-------------------------------------------------------------------------
+                                            WINDOW(*DFT 12 69)
+
+
+      *-------------------------------------------------------------------------
+                R SSSPNLD1
+      *-------------------------------------------------------------------------
+                                            WINDOW(SSSWDWW1)
+                                            OVERLAY
+      * 21     : *ON=A field has changed, *OFF=No fields have changed
+                                            CHANGE(21)
+                                        1 25'Search/select generation'
+                                            DSPATR(HI)
+                                        2  1'Type choices, press Enter.'
+                                            COLOR(BLU)
+                                        4  1'Search/select text .'
+                  C1SSFN        40A  B  4 24
+        97                                  DSPATR(RI)
+        97                                  DSPATR(PC)
+                                            CHECK(LC)
+                  C1SSSQ         5  0O  5 24
+                                        6  1'Converted string   :'
+                  C2SSFN        40A  O  6 24
+                                        7  1'                  :'
+                  C3SSFN        40A  O  7 24
+                                        8  1'                  :'
+                  C4SSFN        40A  O  8 24
+                                        9  1'Generated SS data :'
+                  C1SSGT        10A  O  9 24
+                                       10  1'F3=Exit   F5=Refresh   F12=Cancel'
+                                            COLOR(BLU)
+
+
+      *-------------------------------------------------------------------------
+                R SSSPNLS1                  SFL
+      *-------------------------------------------------------------------------
+                                            SFLMSGRCD(11)
+                  MSGKEY                    SFLMSGKEY
+                  PGMQ                      SFLPGMQ
+                R SSSPNLC1                  SFLCTL(SSSPNLS1)
+                                            WINDOW(SSSWDWW1)
+                                            SFLDSP
+                                            SFLDSPCTL
+                                            SFLINZ
+        99
+      ON99                                  SFLEND
+                                            SFLSIZ(0099)
+                                            SFLPAG(0001)
+                  PGMQ                      SFLPGMQ

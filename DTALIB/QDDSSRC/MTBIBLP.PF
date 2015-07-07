@@ -1,0 +1,22 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+      *
+                R MTBIBLF
+      *
+                  BLISBN    R               REFFLD(ISBN)
+                  BLSUPN    R               REFFLD(SUPN)
+                  BLIMPN    R               REFFLD(IMPN)
+                  BLPBDT    R               REFFLD(PBDT)
+                  BLRPDT    R               REFFLD(RPDT)
+                  BLBIND    R               REFFLD(BIND)
+                  BLCATG    R               REFFLD(CATG)
+      *
+                  BLSKSN    R               REFFLD(SKSN)
+                  BLDLTD    R               REFFLD(DLTD)
+      *
+                  BLCUSR    R               REFFLD(CUSR)
+                  BLCPGM    R               REFFLD(CPGM)
+                  BLCDTS    R               REFFLD(CDTS)
+                  BLEUSR    R               REFFLD(EUSR)
+                  BLEPGM    R               REFFLD(EPGM)
+                  BLEDTS    R               REFFLD(EDTS)
+      *

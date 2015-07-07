@@ -1,0 +1,244 @@
+      *   @
+                R JMREF2
+      *
+                  SUPN           7P 0
+                                            TEXT('Supplier number')
+                                            EDTWRD('0       ')
+      *
+                  DCMN           7P 0
+                                            TEXT('Document number')
+                                            EDTWRD('0       ')
+      *
+                  SPON      R               REFFLD(DCMN)
+                                            TEXT('Supplier order number')
+      *
+                  DCMT           1A
+                                            TEXT('Document type')
+      *
+                  SORT      R               REFFLD(DCMT)
+                                            TEXT('Suplier order type')
+      *
+                  DSQN           5P 0
+                                            TEXT('Duplicate sequence number')
+                                            EDTWRD('0     ')
+      *
+                  ISBN          10A
+                                            TEXT('ISBN')
+      *
+                  ADCN           7P 0
+                                            TEXT('Associated document number')
+                                            EDTWRD('0       ')
+      *
+                  BCHN           7P 0
+                                            TEXT('Batch number')
+                                            EDTWRD('0       ')
+      *
+      *           SOPR           7P 0
+      *                                     TEXT('Sales order no')
+      *                                     EDTWRD('0       ')
+      *
+
+                  SDRF          11A
+                                            TEXT('Supplier document reference')
+      *
+
+                  ADRF          11A
+                                            TEXT('Associated document ref')
+      *
+                  ALCT           1A
+                                            TEXT('Allocated type')
+      *
+                  DCMC           1A
+                                            TEXT('Document code')
+      *
+                  SONM          30A
+                                            TEXT('Suppler name')
+      *
+                  DMCD           4A
+                                            TEXT('Document code short descripti-
+                                            on')
+      *
+                  DCMD          10A
+                                            TEXT('Document code medium descript-
+                                            ion')
+      *
+                  ATTT          30A
+                                            TEXT('Author/Title')
+      *
+                  DCQT           4P 0
+                                            TEXT('Document quantity')
+                                            EDTWRD(' ,  0')
+      *
+                  SOPR           7P 2
+                                            TEXT('Supplier order price')
+                                            EDTWRD('  ,  0.  ')
+      *
+                  DSCV           7P 2
+                                            TEXT('Discount value')
+                                            EDTWRD('  ,  0.  ')
+      *
+                  VATV           7P 2
+                                            TEXT('Vat value')
+                                            EDTWRD('  ,  0.  ')
+      *
+                  RCPQ      R               REFFLD(DCQT)
+                                            TEXT('Receipt quantity')
+      *
+                  RCPR      R               REFFLD(SOPR)
+                                            TEXT('Receipt price')
+      *
+                  RCDV      R               REFFLD(DSCV)
+                                            TEXT('Receipt discount value')
+      *
+                  RCVV      R               REFFLD(VATV)
+                                            TEXT('Receipt vat value')
+      *
+                  VATA           7P 2
+                                            TEXT('Vat value')
+                                            EDTWRD('  ,  0.  ')
+      *
+                  SPOL           5P 0
+                                            TEXT('Supplier order line number')
+                                            EDTWRD('    0')
+      *
+                  RCDT           8P 0
+                                            TEXT('Receipt date')
+                                            EDTWRD('0    /  /  ')
+      *
+                  TGDQ      R   +2          REFFLD(DCQT)
+                                            TEXT('Total goods qty recieved')
+                                            EDTWRD('   ,  0')
+      *
+                  TGDV      R   +4          REFFLD(SOPR)
+                                            TEXT('Total goods value recieved')
+                                            EDTWRD('   ,   ,  0.  ')
+      *
+                  TDSV      R   +4          REFFLD(DSCV)
+                                            TEXT('Total discount value recieved-
+                                            ')
+                                            EDTWRD('   ,   ,  0.  ')
+      *
+                  TVAV      R   +4          REFFLD(VATV)
+                                            TEXT('Total vat vale recieved')
+                                            EDTWRD('   ,   ,  0.  ')
+      *
+                  DGDQ      R   +2          REFFLD(DCQT)
+                                            TEXT('Total order goods quantity')
+                                            EDTWRD('   ,  0')
+      *
+                  DGDV      R   +4          REFFLD(SOPR)
+                                            TEXT('Total order goods value')
+                                            EDTWRD('   ,   ,  0.  ')
+      *
+                  DDSV      R   +4          REFFLD(DSCV)
+                                            TEXT('Total order discount value')
+                                            EDTWRD('   ,   ,  0.  ')
+      *
+                  DVAV      R   +4          REFFLD(VATV)
+                                            TEXT('Total order vat value')
+                                            EDTWRD('   ,   ,  0.  ')
+      *
+                  CATG           4A
+                                            TEXT('Category')
+      *
+                  BIND           4A
+                                            TEXT('Binding')
+      *
+                  TLTP           1A
+                                            TEXT('Title type')
+      *
+                  SEQN           5P 0
+                                            TEXT('Sequence number')
+                                            EDTWRD('0     ')
+      *
+                  TITL          30A
+                                            TEXT('Title')
+                  FTTL         540A
+                                            TEXT('Full title')
+                  DSEQN0    R    3          REFFLD(SEQN *SRC)
+                  TIDSQN    R    3          REFFLD(DSQN *SRC)
+      *
+                  CTTP           1A
+                                            TEXT('Author type')
+      *
+                  AUTN          30A
+                                            TEXT('Author name')
+                  FATN         540A
+                                            TEXT('Full author name')
+      *
+                  AUSEQN    R    3          REFFLD(SEQN *SRC)
+                  AUDSQN    R    2          REFFLD(DSQN *SRC)
+      *
+      *           STIT          10A
+      *                                     TEXT('Search Title')
+      *
+                  CI             1A         TEXT('Continuation indicator')
+      *
+      *
+                  IMPN           8P 0
+                                            TEXT('Imprint number')
+                                            EDTWRD('0        ')
+                  ISBP           8A         TEXT('ISBN Imprint prefix')
+      *
+                  IPNM          40A
+                                            TEXT('Imprint name')
+                  ADR1          40A
+                                            TEXT('Address 01')
+                  ADR2          40A
+                                            TEXT('Address 02')
+                  ADR3          40A
+                                            TEXT('Address 03')
+                  ADR4          40A
+                                            TEXT('Address 04')
+      *
+      *
+                  STTS           1A         TEXT('Status')
+      *
+      *
+                  PBDT            L
+                                            TEXT('Published date')
+                                            DATFMT(*ISO)
+                  RPDT            L
+                                            TEXT('Reprint date')
+                                            DATFMT(*ISO)
+      *
+      *
+                  SDSC          10A         TEXT('Short description')
+                  DSCR          30A         TEXT('Description')
+      *
+      *
+                  TAGC           3P 0       TEXT('Marc tag code')
+                                            EDTWRD('0   ')
+                  TGIR           1A         TEXT('Tag is repeatable')
+                  TGTP           2A         TEXT('Tag type')
+      *
+      *
+      *
+      *
+                  SKSN          10A
+                                            TEXT('Search key, sequence name')
+      *
+                  DLTD           1A
+                                            TEXT('Deleted flag')
+      *
+      *
+      *
+      *
+                  CUSR          10A
+                                            TEXT('Created by user')
+      *
+                  CPGM          10A
+                                            TEXT('Created by program')
+      *
+                  CDTS            Z
+                                            TEXT('Created date/timestamp')
+      *
+                  EUSR          10A
+                                            TEXT('Edited by user')
+      *
+                  EPGM          10A
+                                            TEXT('Edited by program')
+      *
+                  EDTS            Z
+                                            TEXT('Edited date/timestamp')
+      *

@@ -1,0 +1,15 @@
+                                            REF(*LIBL/JMREF2 JMREF2)
+                                            UNIQUE
+      *
+                R MTTITLF
+      *
+                  EISBN3    R               REFFLD(ISBN)
+                  TITAGC    R               REFFLD(TAGC)
+                  DSEQN0    R               REFFLD(DSEQN0)
+                  TIDSQN    R               REFFLD(TIDSQN)
+                  DTITL0    R               REFFLD(TITL)
+      *
+                K EISBN3
+                K TITAGC
+                K DSEQN0
+                K TIDSQN
