@@ -6138,14 +6138,14 @@ E1   C                   ENDIF
      C     *LIKE         DEFINE    TITAGC        F2TAGC
      C     *LIKE         DEFINE    DSEQN0        F2SEQN
      C     *LIKE         DEFINE    TIDSQN        F2DSQN
-     C     *LIKE         DEFINE    *IN           TI@CI
+     C     *LIKE         DEFINE    D1CI01        TI@CI
      C     *LIKE         DEFINE    I             TI@LTS
       *
      C     *LIKE         DEFINE    *IN           AU@EOF
      C     *LIKE         DEFINE    AUTAGC        F3TAGC
      C     *LIKE         DEFINE    AUSEQN        F3SEQN
      C     *LIKE         DEFINE    AUDSQN        F3DSQN
-     C     *LIKE         DEFINE    *IN           AU@CI
+     C     *LIKE         DEFINE    D1CI02        AU@CI
      C     *LIKE         DEFINE    I             AU@LTS
       *
       *
