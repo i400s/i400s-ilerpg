@@ -6065,7 +6065,7 @@ E1   C                   ENDIF
      C                   MOVE      *BLANKS       @FMT              4
      C     *LIKE         DEFINE    @FMT          @FMT01
      C     *LIKE         DEFINE    @FMT          @FMT02
-     C     *LIKE         DEFINE    *IN           @ROLL
+     C                   MOVE      @ROLL         @ROLL             1
      C     *LIKE         DEFINE    *IN           @VCF
      C                   MOVE      *BLANKS       KY@DIR            5
      C                   MOVEL     '*'           PGMQ
