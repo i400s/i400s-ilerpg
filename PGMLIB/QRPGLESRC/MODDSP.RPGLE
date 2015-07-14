@@ -25,7 +25,7 @@
       /free
 
         select;
-          when SflRRN / SflPage <> 0; // Not last record on subfile page.
+          when %rem(SflRRN:SflPage) <> 0; // Not last record on subfile page.
                   clear SflPageStatus;
           when SflRRN > SflPage and not EOF;
                   SflPageStatus = '-/+';
@@ -34,6 +34,8 @@
           when SflRRN > SflPage and EOF;
                   SflPageStatus = '-/ ';
           when SflRRN > SflPage;
+                  SflPageStatus = '-/+';
+          other;
                   SflPageStatus = ' / ';
         endsl;
 
