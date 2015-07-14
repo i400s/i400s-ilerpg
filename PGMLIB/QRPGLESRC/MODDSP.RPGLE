@@ -5,7 +5,8 @@
       *-------------------------------------------------------------------------
       * Procedure name: SflPageStatus
       * Purpose:        Returns a more descriptive SFLEND decorator showing
-      *                   when a previous subfile page exists.
+      *                   when a previous subfile page exists as well as the.
+      *                   current pages SFLEND status.
       * Returns:        SflPageStatus
       * Parameter:      SflRRN     => RRN of subfile record.
       * Parameter:      SflPag     => Size of a page of subfile records
@@ -20,24 +21,21 @@
       *-------------------------------------------------------------------------
 
       * Local fields
-     D SflPageStatus   S              3A
 
       /free
 
         select;
           when %rem(SflRRN:SflPage) <> 0; // Not last record on subfile page.
-                  clear SflPageStatus;
+                  return '   ';
           when SflRRN > SflPage and EOF;
-                  SflPageStatus = '-/ ';
+                  return '-/ ';
           when SflRRN > SflPage;
-                  SflPageStatus = '-/+';
+                  return '-/+';
           when eof;
-                  SflPageStatus = ' / ';
+                  return ' / ';
           other;
-                  SflPageStatus = ' /+';
+                  return ' /+';
         endsl;
-
-        return SflPageStatus;
 
       /end-free
 
