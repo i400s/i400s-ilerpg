@@ -83,6 +83,8 @@
      F                                     SFILE(S2SFL02C:D@RR)
       *
       *-------------------------------------------------------------------------
+      /include qincprsrc,moddsp
+      *-------------------------------------------------------------------------
       *
       * PK='Primary key(s)' & '0=Control, 1=Detail'
      D PK              S             11    DIM(50)
@@ -3849,28 +3851,11 @@ W2   C     X@ECBA        WHENEQ    *ZERO
       *
       *
      C                   ADD       1             D@RR
-     C     D@RR          DIV       P02CSP        J
-     C                   MVR                     J
-     C                   SELECT
-     C     J             WHENNE    *ZERO
-     C                   CLEAR                   S2EOF
-     C     AU@EOF        WHENEQ    *OFF
-     C     D@RR          ANDGT     P02CSP
-     C                   MOVE      '-/+'         S2EOF
-     C     AU@EOF        WHENEQ    *OFF
-     C                   MOVE      ' /+'         S2EOF
-     C     D@RR          WHENGT    P02CSP
-     C     S1OPT         ANDEQ     ' 5'
-     C     AU@EOF        ANDEQ     *ON
-     C                   MOVE      '-/ '         S2EOF
-     C     D@RR          WHENGT    P02CSP
-     C     S1OPT         ANDNE     ' 5'
-     C                   MOVE      '-/+'         S2EOF
-     C     S1OPT         WHENNE    ' 5'
-     C                   MOVE      ' /+'         S2EOF
-     C                   OTHER
-     C                   MOVE      ' / '         S2EOF
-     C                   ENDSL
+      *
+      *
+      /free
+       s2eof = SflPageStatus(D@RR:P02CSP:AU@EOF);
+      /end-free
       *
       *
      C     D@RR          DIV       P02CSP        K
@@ -3987,22 +3972,11 @@ E1   C                   ENDIF
      C                   ENDIF
      C     D@RR          DIV       P02CSP        J
      C                   MVR                     J
-     C                   SELECT
-     C     J             WHENNE    *ZERO
-     C                   CLEAR                   S2EOF
-     C     AU@EOF        WHENEQ    *OFF
-     C     D@RR          ANDGT     P02CSP
-     C                   MOVE      '-/+'         S2EOF
-     C     AU@EOF        WHENEQ    *OFF
-     C                   MOVE      ' /+'         S2EOF
-     C     D@RR          WHENGT    P02CSP
-     C     TI@EOF        ANDEQ     *ON
-     C                   MOVE      '-/ '         S2EOF
-     C     D@RR          WHENGT    P02CSP
-     C                   MOVE      '-/+'         S2EOF
-     C                   OTHER
-     C                   MOVE      ' / '         S2EOF
-     C                   ENDSL
+      *
+      *
+      /free
+       s2eof = SflPageStatus(D@RR:P02CSP:AU@EOF);
+      /end-free
       *
       *
      C     D@RR          DIV       P02CSP        K
