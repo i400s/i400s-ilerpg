@@ -39,7 +39,11 @@
       *
       *-------------------------------------------------------------------------
       *
-     H DEBUG DATEDIT(*DMY)
+     H debug(*yes)
+     H cvtopt(*datetime)
+     H option(*srcstmt:*nodebugio)
+     H copyright('Jonathan Wilson, i400s@hotmail.com')
+     H bnddir('SVCDSPFMT')
       *
       *-------------------------------------------------------------------------
       * Bibliographic record

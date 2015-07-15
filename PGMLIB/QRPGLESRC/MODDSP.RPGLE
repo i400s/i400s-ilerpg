@@ -1,4 +1,8 @@
      H nomain
+     H debug(*yes)
+     H cvtopt(*datetime)
+     H option(*srcstmt:*nodebugio)
+     H copyright('Jonathan Wilson, i400s@hotmail.com')
 
       /include qincprsrc,moddsp
 
