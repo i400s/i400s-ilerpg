@@ -1,10 +1,6 @@
-     H nomain
-     H debug(*yes)
-     H cvtopt(*datetime)
-     H option(*srcstmt:*nodebugio)
-     H copyright('Jonathan Wilson, i400s@hotmail.com')
-
-      /include qincprsrc,moddsp
+      /define SvcMod
+      /include qincprsrc,StdHSpec
+      /include qincprsrc,SvcDspFmt
 
       *-------------------------------------------------------------------------
       * Procedure name: SflPageStatus
@@ -16,8 +12,10 @@
       * Parameter:      SflPag     => Size of a page of subfile records
       * Parameter:      EOF        => File EOF status
       *-------------------------------------------------------------------------
-     P SflPageStatus   B                   EXPORT
-     D SflPageStatus   PI             3A
+     P DspFmt_SflPageStatus...
+     P                 B                   EXPORT
+     D DspFmt_SflPageStatus...
+     D                 PI             3A
      D  SflRRN                        5P 0 CONST
      D  SflPage                            LIKE(SflRRN)
      D                                     CONST
@@ -43,5 +41,5 @@
 
       /end-free
 
-     P SflPageStatus   E
+     P                 E
 

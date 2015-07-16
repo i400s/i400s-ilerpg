@@ -39,11 +39,8 @@
       *
       *-------------------------------------------------------------------------
       *
-     H debug(*yes)
-     H cvtopt(*datetime)
-     H option(*srcstmt:*nodebugio)
-     H copyright('Jonathan Wilson, i400s@hotmail.com')
-     H bnddir('SVCDSPFMT')
+      /define DspFmt
+      /include qincprsrc,StdHSpec
       *
       *-------------------------------------------------------------------------
       * Bibliographic record
@@ -87,7 +84,7 @@
      F                                     SFILE(S2SFL02C:D@RR)
       *
       *-------------------------------------------------------------------------
-      /include qincprsrc,moddsp
+      /include qincprsrc,svcdspfmt
       *-------------------------------------------------------------------------
       *
       * PK='Primary key(s)' & '0=Control, 1=Detail'
@@ -3858,7 +3855,7 @@ W2   C     X@ECBA        WHENEQ    *ZERO
       *
       *
       /free
-       s2eof = SflPageStatus(D@RR:P02CSP:AU@EOF);
+       s2eof = DspFmt_SflPageStatus(D@RR:P02CSP:AU@EOF);
       /end-free
       *
       *
@@ -3979,7 +3976,7 @@ E1   C                   ENDIF
       *
       *
       /free
-       s2eof = SflPageStatus(D@RR:P02CSP:AU@EOF);
+       s2eof = DspFmt_SflPageStatus(D@RR:P02CSP:AU@EOF);
       /end-free
       *
       *

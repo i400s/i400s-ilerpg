@@ -7,7 +7,8 @@
       * Parameter:      SflPag     => Size of a page of subfile records
       * Parameter:      EOF        => File EOF status
       *-------------------------------------------------------------------------
-     D SflPageStatus   PR             3A
+     D DspFmt_SflPageStatus...
+     D                 PR             3A
      D  SflRRN                        5P 0 CONST
      D  SflPage                       5P 0 CONST
      D  EOF                           1N   CONST
