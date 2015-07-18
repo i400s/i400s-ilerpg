@@ -85,6 +85,8 @@
       *
       *-------------------------------------------------------------------------
       /include qincprsrc,svcdspfmt
+      /define SO1710_WrkRcdBbl
+      /include qincprsrc,EntPgmPrc
       *-------------------------------------------------------------------------
       *
       * PK='Primary key(s)' & '0=Control, 1=Detail'
@@ -305,12 +307,12 @@
      D  X@MI                   9     15
      D  X@EC#1                16     16
      D  X@MDIT                17    272
-     D E@EC            DS
-     D  E@ECBP                 1      4B 0
-     D  E@ECBA                 5      8B 0
-     D  E@MI                   9     15
-     D  E@EC#1                16     16
-     D  E@MDIT                17    272
+     D I@EC            DS                  INZ
+     D  I@ECBP                 1      4B 0 INZ(272)
+     D  I@ECBA                 5      8B 0
+     D  I@MI                   9     15
+     D  I@EC#1                16     16
+     D  I@MDIT                17    272
      D X@ID            DS                  INZ
      D  X@IDC                  1      1  0
      D  X@IDD                  2      7  0
@@ -414,17 +416,6 @@
      D                                     Z* ')
       *
       * *ENTRY, main program start
-     C     *ENTRY        PLIST
-     C                   PARM                    E@PGM
-     C                   PARM                    E@OPT
-     C                   PARM                    E@FKY
-     C                   PARM                    E@CPC
-     C                   PARM                    E@SKSN
-     C                   PARM                    E@SUPN
-     C                   PARM                    E@IMPN
-     C                   PARM                    E@DLTD
-     C                   PARM                    E@ISBN
-     C                   PARM                    E@EC
       *
       * The runtime automatically calls *INZSR here.
       ***C EXSR *INZSR. For documentation clarity only.
@@ -437,23 +428,22 @@
      C                   EXSR      PR@KY
       *
       * If all 'PK' keys passed setup key and call edit subroutine
-     C                   SELECT
-     C     E@ISBN        WHENNE    '*ALL'
-     C                   MOVE      E@OPT         S1OPT
-     C                   MOVE      E@ISBN        BLISBN
-     C                   EXSR      @EDT01
-      *
-      * Otherwise call list subroutine
-     C                   OTHER
-     C                   EXSR      @LST01
-      *
-      *
-     C                   ENDSL
-      *
-      * *EXIT, end main program
-     C                   OUT       #LDA
-     C                   SETON                                        LR
-     C                   RETURN
+      /free
+       select;
+         when e_ISBN <> '*ALL';
+           S1OPT = e_CallerOpt;
+           BLISBN = e_ISBN;
+           exsr @EDT01;
+         other;
+           exsr @LST01;
+       endsl;
+
+       // End of main program.
+       out #LDA;
+       e_FunctionKey = I@FKY;
+       *INLR = *ON;
+       return;
+      /end-free
       *
       *-------------------------------------------------------------------------
      C     @LST01        BEGSR
@@ -695,7 +685,7 @@ E2   C                   ENDSL
       * Set/Reset display input
      C                   MOVE      *IN21         @CHG
      C                   MOVE      *IN22         @VCF
-     C                   CLEAR                   E@FKY
+     C                   CLEAR                   I@FKY
      C                   CLEAR                   @FMT
 B2   C                   SELECT
 W2   C     *IN23         WHENEQ    *ON
@@ -717,13 +707,13 @@ E2   C                   ENDSL
       *
       * Process entered option(s)
 B3   C     @FMT          IFEQ      *BLANKS
-     C     E@FKY         ANDEQ     *BLANKS
+     C     I@FKY         ANDEQ     *BLANKS
      C                   EXSR      PR@S1
 E3   C                   ENDIF
       *
       * Panel has changed, redisplay
 B3   C     @FMT          IFEQ      *BLANKS
-     C     E@FKY         ANDEQ     *BLANKS
+     C     I@FKY         ANDEQ     *BLANKS
 B4   C     @CHG          IFEQ      YES
      C                   MOVE      '*DSP'        @FMT
 E4   C                   ENDIF
@@ -748,7 +738,7 @@ B1   C                   SELECT
       *
       * F3=Exit
 W1   C     *INKC         WHENEQ    *ON
-     C                   MOVE      'KC'          E@FKY
+     C                   MOVE      'KC'          I@FKY
       *
       * F5=Refresh
 W1   C     *INKE         WHENEQ    *ON
@@ -758,7 +748,7 @@ W1   C     *INKE         WHENEQ    *ON
       *
       * F12=Cancel
 W1   C     *INKL         WHENEQ    *ON
-     C                   MOVE      'KL'          E@FKY
+     C                   MOVE      'KL'          I@FKY
       *
       * Enter, RollDown, RollUp, F4, F6, F11, F16, F17
 W1   C     @VCF          WHENNE    *ON
@@ -867,7 +857,7 @@ W2   C     *INKR         WHENEQ    *ON
 W2   C     *INKR         WHENEQ    *ON
      C     AK@I          ANDEQ     *OFF
      C                   EXSR      @SBS01
-B3   C     E@FKY         IFEQ      *BLANKS
+B3   C     I@FKY         IFEQ      *BLANKS
      C                   MOVE      '*ENT'        @FMT
 X3   C                   ELSE
      C                   MOVE      '*DSP'        @FMT
@@ -888,14 +878,14 @@ E2   C                   ENDSL
       *
       * Get and validate control
 B2   C     @FMT          IFNE      '*ERR'
-     C     E@FKY         ANDEQ     *BLANKS
+     C     I@FKY         ANDEQ     *BLANKS
      C                   MOVE      *ON           C1@CE
      C                   EXSR      VL@C1
 E2   C                   ENDIF
       *
       * Get and validate options
 B2   C     @FMT          IFNE      '*ERR'
-     C     E@FKY         ANDEQ     *BLANKS
+     C     I@FKY         ANDEQ     *BLANKS
      C                   MOVE      *ON           S1DO
      C                   EXSR      VL@S01
 E2   C                   ENDIF
@@ -916,7 +906,7 @@ E3   C                   ENDIF
 W2   C     *INKQ         WHENEQ    *ON
      C     @FMT          ANDNE     '*ERR'
      C                   EXSR      @POS01
-B3   C     E@FKY         IFEQ      *BLANKS
+B3   C     I@FKY         IFEQ      *BLANKS
      C     #LOKEY        OCCUR     F1AK
      C                   MOVE      P1ISBN        F1ISBN
      C                   MOVE      '*UPD'        @FMT
@@ -955,18 +945,20 @@ E1   C                   ENDSL
       *
       *
      C                   MOVEA     *ALL'.'       C1
-B1   C     E@SKSN        IFNE      '*ALL'
-     C                   MOVE      ':'           C1(01)
-     C                   MOVE      *ON           *IN11
-E1   C                   ENDIF
-B1   C     E@SUPN        IFNE      *ZERO
-     C                   MOVE      ':'           C1(02)
-     C                   MOVE      *ON           *IN12
-E1   C                   ENDIF
-B1   C     E@IMPN        IFNE      *ZERO
-     C                   MOVE      ':'           C1(03)
-     C                   MOVE      *ON           *IN13
-E1   C                   ENDIF
+      /free
+       if e_ShortName <> '*ALL';
+         c1(01) =':';
+         *in11 = *on;
+       endif;
+       if e_SupplierNumber <> *zero;
+         c1(02) =':';
+         *in12 = *on;
+       endif;
+       if e_ImprintNumber <> *zero;
+         c1(03) =':';
+         *in13 =*on;
+       endif;
+      /end-free
       *
       * Issue this is a subsetted list for tests not on SFLCTL
      C     C1@CE         IFEQ      *OFF
@@ -1136,7 +1128,7 @@ E1   C                   ENDDO
 W1   C     *INKF         IFEQ      *ON
       *
       * Keep creating until exit key pressed
-B2   C     E@FKY         DOWEQ     *BLANKS
+B2   C     I@FKY         DOWEQ     *BLANKS
      C                   MOVE      'KF'          S1OPT
      C                   EXSR      @EDT01
 E2   C                   ENDDO
@@ -1154,7 +1146,7 @@ E2   C                   ENDDO
       *
       *
 B1   C     S1S           DOWLE     O1
-     C     E@FKY         ANDEQ     *BLANKS
+     C     I@FKY         ANDEQ     *BLANKS
      C     S1@S1O        ANDEQ     *ON
       *
       *
@@ -1182,7 +1174,7 @@ W3   C     X@ECBA        WHENNE    *ZERO
      C                   MOVE      *ALL'1'       S18897
      C                   MOVE      S1@IOP        F1@IOP
      C                   MOVEL     F1AK          AK(S1S)
-     C                   MOVE      '//'          E@FKY
+     C                   MOVE      '//'          I@FKY
       *
       * If option is in error and 'detail', remove from stack
 W3   C     X@ECBA        WHENNE    *ZERO
@@ -1198,7 +1190,7 @@ W3   C                   OTHER
      C                   EXSR      TS@S1O
       *
       * If Exit
-B4   C     E@FKY         IFNE      *BLANKS
+B4   C     I@FKY         IFNE      *BLANKS
       *
       * Test validity of record to display if 'detail'
      C                   MOVEL     AK(S1S)       F1AK
@@ -1225,11 +1217,11 @@ X4   C                   ELSE
 E4   C                   ENDIF
       *
       * If exit key is not ' /' select, refresh full display
-B4   C     E@FKY         IFNE      ' /'
+B4   C     I@FKY         IFNE      ' /'
      C                   MOVE      '*RFD'        @FMT
       *
       *
-B5   C     E@FKY         IFNE      *BLANKS
+B5   C     I@FKY         IFNE      *BLANKS
       *
       * Find first '1:Detail' option
      C                   Z-ADD     E1            AK@SQ
@@ -1702,7 +1694,7 @@ E1   C                   ENDIF
       *
      C                   MOVE      'f?>E@'       KY@DIR
      C                   EXSR      PR@KY
-     C                   MOVE      ' /'          E@FKY
+     C                   MOVE      ' /'          I@FKY
       *
       *
      C                   ENDSR
@@ -1727,7 +1719,7 @@ B2   C                   SELECT
 W2   C     D@CFLD        WHENEQ    'C1SKSN'
      C     C1(01)        ANDNE     ':'
      C                   EXSR      @SSS01
-B3   C     E@FKY         IFEQ      *BLANKS
+B3   C     I@FKY         IFEQ      *BLANKS
      C                   MOVE      C1SSGT        C1SKSN
 E3   C                   ENDIF
       *
@@ -1740,7 +1732,7 @@ W3   C     *IN98         WHENEQ    *ON
      C                   MOVE      *ON           *IN96
      C                   Z-ADD     7             X@ECBA
      C                   MOVE      'MSG1838'     X@MI
-W3   C     E@FKY         WHENEQ    *BLANKS
+W3   C     I@FKY         WHENEQ    *BLANKS
      C                   MOVE      X@SUPN        C1SUPN
 E3   C                   ENDSL
       *
@@ -1753,7 +1745,7 @@ W3   C     *IN98         WHENEQ    *ON
      C                   MOVE      *ON           *IN95
      C                   Z-ADD     7             X@ECBA
      C                   MOVE      'MSG1838'     X@MI
-W3   C     E@FKY         WHENEQ    *BLANKS
+W3   C     I@FKY         WHENEQ    *BLANKS
      C                   MOVE      X@SUPN        C1IMPN
 E3   C                   ENDSL
       *
@@ -1792,7 +1784,7 @@ W3   C     *IN98         WHENEQ    *ON
      C                   MOVE      *ON           *IN96
      C                   Z-ADD     7             X@ECBA
      C                   MOVE      'MSG1838'     X@MI
-W3   C     E@FKY         WHENEQ    *BLANKS
+W3   C     I@FKY         WHENEQ    *BLANKS
      C                   MOVE      X@SUPN        C1SUPN
 E3   C                   ENDSL
       *
@@ -1805,7 +1797,7 @@ W3   C     *IN98         WHENEQ    *ON
      C                   MOVE      *ON           *IN95
      C                   Z-ADD     7             X@ECBA
      C                   MOVE      'MSG1838'     X@MI
-W3   C     E@FKY         WHENEQ    *BLANKS
+W3   C     I@FKY         WHENEQ    *BLANKS
      C                   MOVE      X@SUPN        C1IMPN
 E3   C                   ENDSL
       *
@@ -1833,10 +1825,12 @@ B1   C                   SELECT
       *
       *
 W1   C     KY@DIR        WHENEQ    'E@>C1'
-     C                   MOVE      E@SKSN        C1SKSN
-     C                   MOVE      E@SUPN        C1SUPN
-     C                   MOVE      E@IMPN        C1IMPN
-     C                   MOVE      E@DLTD        C1DLTD
+      /free
+       C1SKSN = e_Shortname;
+       C1SUPN = e_SupplierNumber;
+       C1IMPN = e_ImprintNumber;
+       C1DLTD = e_DeletedStatus;
+      /end-free
       *
       *
 W1   C     KY@DIR        WHENEQ    'C1>V1'
@@ -1903,8 +1897,10 @@ W1   C     KY@DIR        WHENEQ    'V1>f?'
      C                   MOVE      V1IMPN        BLIMPN
       *
       *
-W1   C     KY@DIR        WHENEQ    'f?>E@'
-     C                   MOVE      BLISBN        E@ISBN
+      /free
+       when KY@DIR = 'f?>E@';
+         e_ISBN = BLISBN;
+      /end-free
       *
       *
 W1   C     KY@DIR        WHENEQ    'F1>f?'
@@ -2241,7 +2237,7 @@ E2   C                   ENDSL
       *
       * Set/Reset display format
      C                   MOVE      *IN22         @VCF
-     C                   CLEAR                   E@FKY
+     C                   CLEAR                   I@FKY
      C                   CLEAR                   @FMT
 B2   C                   SELECT
 W2   C     *IN23         WHENEQ    *ON
@@ -2266,7 +2262,7 @@ B2   C                   SELECT
       *
       * F3=Exit
 W2   C     *INKC         WHENEQ    *ON
-     C                   MOVE      'KC'          E@FKY
+     C                   MOVE      'KC'          I@FKY
       *
       * F5=Refresh
 W2   C     *INKE         WHENEQ    *ON
@@ -2280,7 +2276,7 @@ B3   C     D@VPF1        IFGT      1
      C                   SUB       1             D@VPF1
      C                   MOVE      '*DSP'        @FMT
 X3   C                   ELSE
-     C                   MOVE      'KL'          E@FKY
+     C                   MOVE      'KL'          I@FKY
 E3   C                   ENDIF
       *
       * Enter, RollUp, RollDown, F4=List
@@ -4252,9 +4248,9 @@ E1   C                   ENDIF
       *
      C                   EXSR      TS@F1O
      C     X@ECBA        IFNE      *ZERO
-     C                   MOVE      X@EC          E@EC
+     C                   MOVE      X@EC          I@EC
      C                   CALL      'QMHSNDPM'    @SNDPM
-     C                   MOVE      E@EC          X@EC
+     C                   MOVE      I@EC          X@EC
      C                   ENDIF
       *
       *
@@ -4460,23 +4456,16 @@ E2   C                   ENDSL
      C                   ENDIF
       *
       *
-B2   C                   SELECT
-      *
-      * option is view, do nothing.
-     C     S1OPT         WHENEQ    ' 5'
-      *
-      * If no errors and caller performs commit, do so.
-W2   C     X@ECBA        WHENEQ    *ZERO
-     C     E@CPC         ANDNE     *ON
-     C                   COMMIT
-      *
-      * If errors and caller performs commit, roll back.
-W2   C     X@ECBA        WHENNE    *ZERO
-     C     E@CPC         ANDNE     *ON
-     C                   ROLBK
-      *
-      *
-E2   C                   ENDSL
+      /free
+       select;
+         when S1OPT = ' 5';    // do nothing
+         when e_CallerCommits; // do nothing
+         when X@ECBA = *ZERO;
+           commit;
+         other;
+           rolbk;
+       endsl;
+      /end-free
       *
       *
 E1   C                   ENDSL
@@ -4798,7 +4787,7 @@ E2   C                   ENDIF
      C                   MOVE      *IN22         @VCF
       *
       * Set/Reset display input
-     C                   CLEAR                   E@FKY
+     C                   CLEAR                   I@FKY
      C                   CLEAR                   @FMT
      C                   SELECT
      C     *IN23         WHENEQ    *ON
@@ -4817,7 +4806,7 @@ E2   C                   ENDIF
       *
       * F3=Exit
      C     *INKC         WHENEQ    *ON
-     C                   MOVE      'KC'          E@FKY
+     C                   MOVE      'KC'          I@FKY
       *
       * F5=Refresh
      C     *INKE         WHENEQ    *ON
@@ -4825,7 +4814,7 @@ E2   C                   ENDIF
       *
       * F12=Cancel
      C     *INKL         WHENEQ    *ON
-     C                   MOVE      'KL'          E@FKY
+     C                   MOVE      'KL'          I@FKY
       *
       *   =Enter or RollDown or Rollup
      C     @VCF          WHENNE    *ON
@@ -4944,7 +4933,7 @@ E2   C                   ENDIF
       *
      C                   MOVE      *IN21         @CHG
      C                   MOVE      *IN22         @VCF
-     C                   CLEAR                   E@FKY
+     C                   CLEAR                   I@FKY
      C                   CLEAR                   @FMT
       *
       *
@@ -4966,7 +4955,7 @@ E2   C                   ENDIF
       *
       *
      C     *INKC         WHENEQ    *ON
-     C                   MOVE      'KC'          E@FKY
+     C                   MOVE      'KC'          I@FKY
       *
       *
      C     *INKE         WHENEQ    *ON
@@ -4974,7 +4963,7 @@ E2   C                   ENDIF
       *
       *
      C     *INKL         WHENEQ    *ON
-     C                   MOVE      'KL'          E@FKY
+     C                   MOVE      'KL'          I@FKY
       *
       *
      C     @VCF          WHENNE    *ON
@@ -5205,7 +5194,7 @@ E1   C                   ENDIF
       *
      C                   MOVE      *IN21         @CHG
      C                   MOVE      *IN22         @VCF
-     C                   CLEAR                   E@FKY
+     C                   CLEAR                   I@FKY
      C                   CLEAR                   @FMT
       *
       *
@@ -5227,7 +5216,7 @@ E1   C                   ENDIF
       *
       *
      C     *INKC         WHENEQ    *ON
-     C                   MOVE      'KC'          E@FKY
+     C                   MOVE      'KC'          I@FKY
       *
       *
      C     *INKE         WHENEQ    *ON
@@ -5235,7 +5224,7 @@ E1   C                   ENDIF
       *
       *
      C     *INKL         WHENEQ    *ON
-     C                   MOVE      'KL'          E@FKY
+     C                   MOVE      'KL'          I@FKY
       *
       *
      C     @VCF          WHENNE    *ON
@@ -5361,7 +5350,7 @@ E1   C                   ENDIF
       *
      C                   MOVE      *IN21         @CHG
      C                   MOVE      *IN22         @VCF
-     C                   CLEAR                   E@FKY
+     C                   CLEAR                   I@FKY
      C                   CLEAR                   @FMT
       *
       *
@@ -5383,7 +5372,7 @@ E1   C                   ENDIF
       *
       *
      C     *INKC         WHENEQ    *ON
-     C                   MOVE      'KC'          E@FKY
+     C                   MOVE      'KC'          I@FKY
       *
       *
      C     *INKE         WHENEQ    *ON
@@ -5391,7 +5380,7 @@ E1   C                   ENDIF
       *
       *
      C     *INKL         WHENEQ    *ON
-     C                   MOVE      'KL'          E@FKY
+     C                   MOVE      'KL'          I@FKY
       *
       *
      C     @VCF          WHENNE    *ON
@@ -6012,26 +6001,19 @@ E1   C                   ENDIF
       *-------------------------------------------------------------------------
       *
       * Set mode
-     C                   SELECT
-     C     E@OPT         WHENEQ    ' 5'
-     C                   MOVE      '*V99*V99'    @MODE
-     C     E@OPT         WHENEQ    'F4'
-     C                   MOVE      '*S99*S99'    @MODE
-     C                   OTHER
-     C                   MOVE      '*M99*M99'    @MODE
-     C                   ENDSL
+      /free
+       select;
+         when e_CallerOpt = ' 5';
+           @MODE = '*V99*V99';
+         when e_CallerOpt = 'F4';
+           @MODE = '*S99*S99';
+         other;
+           @MODE = '*M99*M99';
+       endsl;
+      /end-free
       *
       *
-     C     *LIKE         DEFINE    S@PGM         E@PGM
-     C     *LIKE         DEFINE    S1OPT         E@OPT
-     C                   MOVE      E@FKY         E@FKY             2
-     C     *LIKE         DEFINE    *IN           E@CPC
-      *
-     C     *LIKE         DEFINE    C1SKSN        E@SKSN
-     C     *LIKE         DEFINE    C1SUPN        E@SUPN
-     C     *LIKE         DEFINE    C1IMPN        E@IMPN
-     C     *LIKE         DEFINE    C1DLTD        E@DLTD
-     C     *LIKE         DEFINE    BLISBN        E@ISBN
+     C                   MOVE      I@FKY         I@FKY             2
       *
       *
      C     *LIKE         DEFINE    *IN           D@MOB
@@ -6137,8 +6119,8 @@ E1   C                   ENDIF
       ***C           *LIKE     DEFN W3        W.
       *
       *
-     C     *LIKE         DEFINE    E@OPT         X@OPT
-     C     *LIKE         DEFINE    E@FKY         X@FKEY
+     C     *LIKE         DEFINE    S1OPT         X@OPT
+     C     *LIKE         DEFINE    I@FKY         X@FKEY
       *
       *
      C     *LIKE         DEFINE    S2CI          T1CI
@@ -6157,28 +6139,28 @@ E1   C                   ENDIF
      C                   PARM                    X@EFLG
       *
       *
-     C     *LIKE         DEFINE    E@SUPN        X@SUPN
+     C     *LIKE         DEFINE    C1SUPN        X@SUPN
      C     SO1730        PLIST
      C                   PARM      S@PGM         X@PGM
      C                   PARM      'F4'          X@OPT
-     C     E@FKY         PARM      *BLANKS       X@FKEY
+     C     I@FKY         PARM      *BLANKS       X@FKEY
      C                   PARM      *ZERO         X@SUPN
-     C     E@EC          PARM                    X@EC
+     C     I@EC          PARM                    X@EC
       *
       *
-     C     *LIKE         DEFINE    E@SKSN        X@SKSN
-     C     *LIKE         DEFINE    E@IMPN        X@IMPN
-     C     *LIKE         DEFINE    E@DLTD        X@DLTD
+     C     *LIKE         DEFINE    C1SKSN        X@SKSN
+     C     *LIKE         DEFINE    C1IMPN        X@IMPN
+     C     *LIKE         DEFINE    C1DLTD        X@DLTD
      C     SO1710        PLIST
      C                   PARM      S@PGM         X@PGM
      C                   PARM      'F4'          X@OPT
-     C     E@FKY         PARM      *BLANKS       X@FKEY
+     C     I@FKY         PARM      *BLANKS       X@FKEY
      C                   PARM      *BLANKS       X@SKSN
      C                   PARM      *ZERO         X@SUPN
      C                   PARM      *ZERO         X@IMPN
      C                   PARM      'Y'           X@DLTD
      C                   PARM      *BLANKS       X@ISBN
-     C     E@EC          PARM                    X@EC
+     C     I@EC          PARM                    X@EC
       *
       *
      C     F1KEY1        KLIST
