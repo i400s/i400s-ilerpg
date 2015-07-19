@@ -524,16 +524,22 @@ B4   C     D@MOB         IFEQ      BOTTOM
      C                   MOVE      'CPD6A69'     X@MI
      C                   CALL      'QMHSNDPM'    @SNDSM
      C     #LOKEY        OCCUR     F1AK
-     C                   EXSR      SL@F1
+      /free
+       SO1710_IndexBeforeListFile();
+      /end-free
 X4   C                   ELSE
      C     #HIKEY        OCCUR     F1AK
-     C                   EXSR      SG@F1
+      /free
+       SO1710_IndexAfterListFile();
+      /end-free
 E4   C                   ENDIF
       *
       * RollDown/PageUp
 W3   C     @ROLL         WHENEQ    DOWN
      C     #LOKEY        OCCUR     F1AK
-     C                   EXSR      SL@F1
+      /free
+       SO1710_IndexBeforeListFile();
+      /end-free
      C                   EXSR      RP@F1
       *
       * All ready at top area
@@ -562,12 +568,16 @@ X4   C                   ELSE
 E4   C                   ENDIF
       *
       * Reposition file pointer
-     C                   EXSR      SL@F1
+      /free
+       SO1710_IndexBeforeListFile();
+      /end-free
       *
       * Enter or refresh requested
 W3   C                   OTHER
      C     #LOKEY        OCCUR     F1AK
-     C                   EXSR      SL@F1
+      /free
+       SO1710_IndexBeforeListFile();
+      /end-free
 E3   C                   ENDSL
       *
       * Perform first read for the subfile page
@@ -575,7 +585,9 @@ E3   C                   ENDSL
       *
       * If end of file get first previous record
 B3   C     F1@EOF        IFEQ      *ON
-     C                   EXSR      SG@F1
+      /free
+       SO1710_IndexAfterListFile();
+      /end-free
      C                   EXSR      RP@F1
       *
       * If valid record, use it to set *LOWKEY
@@ -583,7 +595,9 @@ B4   C     F1@EOF        IFEQ      *OFF
      C     #LOKEY        OCCUR     F1AK
      C                   MOVE      'f?>F1'       KY@DIR
      C                   EXSR      PR@KY
-     C                   EXSR      SL@F1
+      /free
+       SO1710_IndexBeforeListFile();
+      /end-free
      C                   EXSR      RD@F1
 E4   C                   ENDIF
 E3   C                   ENDIF
@@ -5447,44 +5461,6 @@ E1   C                   ENDIF
      C                   ENDSR
       *
       *-------------------------------------------------------------------------
-     C     SL@F1         BEGSR
-      *-------------------------------------------------------------------------
-      *
-      *
-     C                   SELECT
-     C     F1@SQ         WHENEQ    1
-     C     F1R1K1        SETLL     DTAF1R1
-     C     F1@SQ         WHENEQ    2
-     C     F1R2K1        SETLL     DTAF1R2
-     C     F1@SQ         WHENEQ    3
-     C     F1R3K1        SETLL     DTAF1R3
-     C     F1@SQ         WHENEQ    4
-     C     F1R4K1        SETLL     DTAF1R4
-     C                   ENDSL
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
-     C     SG@F1         BEGSR
-      *-------------------------------------------------------------------------
-      *
-      *
-     C                   SELECT
-     C     F1@SQ         WHENEQ    1
-     C     F1R1K1        SETGT     DTAF1R1
-     C     F1@SQ         WHENEQ    2
-     C     F1R2K1        SETGT     DTAF1R2
-     C     F1@SQ         WHENEQ    3
-     C     F1R3K1        SETGT     DTAF1R3
-     C     F1@SQ         WHENEQ    4
-     C     F1R4K1        SETGT     DTAF1R4
-     C                   ENDSL
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
      C     RD@F1         BEGSR
       *-------------------------------------------------------------------------
       *
@@ -6276,9 +6252,8 @@ E1   C                   ENDIF
        // -------------------------------------------------------------------------
        /define SO1710_GetListFileSequence
        /include qincprsrc,SO1710_H
-       // Was SQ@F1
        // -------------------------------------------------------------------------
-       Select;
+       select;
          when C1SUPN <> *zero and C1SKSN <> '*ALL';
            return 2;
          when C1SUPN <> *zero;
@@ -6287,6 +6262,44 @@ E1   C                   ENDIF
            return 3;
          other;
            return 1;
+       endsl;
+      /end-free
+     P                 E
+
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_IndexBeforeListFile
+       /include qincprsrc,SO1710_H
+       // -------------------------------------------------------------------------
+       FileSequence=SO1710_GetListFileSequence();
+       select;
+         when FileSequence=1;
+           setll F1R1K1 DTAF1R1;
+         when FileSequence=2;
+           setll F1R2K1 DTAF1R2;
+         when FileSequence=3;
+           setll F1R3K1 DTAF1R3;
+         when FileSequence=4;
+           setll F1R4K1 DTAF1R4;
+       endsl;
+      /end-free
+     P                 E
+
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_IndexAfterListFile
+       /include qincprsrc,SO1710_H
+       // -------------------------------------------------------------------------
+       FileSequence=SO1710_GetListFileSequence();
+       select;
+         when FileSequence=1;
+           setgt F1R1K1 DTAF1R1;
+         when FileSequence=2;
+           setgt F1R2K1 DTAF1R2;
+         when FileSequence=3;
+           setgt F1R3K1 DTAF1R3;
+         when FileSequence=4;
+           setgt F1R4K1 DTAF1R4;
        endsl;
       /end-free
      P                 E
