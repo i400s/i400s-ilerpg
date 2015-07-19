@@ -87,6 +87,7 @@
       /include qincprsrc,svcdspfmt
       /define SO1710_WrkRcdBbl
       /include qincprsrc,EntPgmPrc
+      /include qincprsrc,SO1710_H
       *-------------------------------------------------------------------------
       *
       * PK='Primary key(s)' & '0=Control, 1=Detail'
@@ -459,7 +460,9 @@ B1   C     @FMT          DOWNE     *BLANKS
 B2   C     @FMT          IFEQ      '*ENT'
       *
       * Find F1 file access sequence
-     C                   EXSR      SQ@F1
+      /free
+       f1@sq = SO1710_GetListFileSequence;
+      /end-free
       *
       *
      C                   MOVE      'C1>V1'       KY@DIR
@@ -5444,30 +5447,6 @@ E1   C                   ENDIF
      C                   ENDSR
       *
       *-------------------------------------------------------------------------
-     C     SQ@F1         BEGSR
-      *-------------------------------------------------------------------------
-      *
-      *
-     C                   SELECT
-     C     C1SUPN        WHENNE    *ZERO
-     C     C1SKSN        ANDNE     '*ALL'
-     C                   Z-ADD     2             F1@SQ
-     C     C1SUPN        WHENNE    *ZERO
-     C                   Z-ADD     4             F1@SQ
-     C     C1SKSN        WHENNE    '*ALL'
-     C                   Z-ADD     3             F1@SQ
-      *
-      *
-     C                   OTHER
-     C                   Z-ADD     1             F1@SQ
-      *
-      *
-     C                   ENDSL
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
      C     SL@F1         BEGSR
       *-------------------------------------------------------------------------
       *
@@ -6061,7 +6040,6 @@ E1   C                   ENDIF
      C     *LIKE         DEFINE    *IN           F1@RHC
      C     *LIKE         DEFINE    *IN           F1@COC
      C     *LIKE         DEFINE    *IN           F1@LRU
-     C     *LIKE         DEFINE    I             F1@SQ
       *
      C     *LIKE         DEFINE    *IN           D1DO
      C     *LIKE         DEFINE    I             D@VPF1
@@ -6294,3 +6272,21 @@ E1   C                   ENDIF
       *
       *
      C                   ENDSR
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_GetListFileSequence
+       /include qincprsrc,SO1710_H
+       // Was SQ@F1
+       // -------------------------------------------------------------------------
+       Select;
+         when C1SUPN <> *zero and C1SKSN <> '*ALL';
+           return 2;
+         when C1SUPN <> *zero;
+           return 4;
+         when C1SKSN <> '*ALL';
+           return 3;
+         other;
+           return 1;
+       endsl;
+      /end-free
+     P                 E
