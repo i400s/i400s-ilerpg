@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iSeriesSrcpfMetaData version="5.0">
 <properties com.ibm.etools.iseries.perspective.srcpf-ccsid="37" com.ibm.etools.iseries.perspective.srcpf-dbcs="false" com.ibm.etools.iseries.perspective.srcpf-description="DDS for files." com.ibm.etools.iseries.perspective.srcpf-record-length="112">
-<cachedProperties com.ibm.etools.iseries.perspective.srcpf-description_old="DDS for files"/>
+<cachedProperties/>
 </properties>
 <isvproperties>
 <cachedProperties/>

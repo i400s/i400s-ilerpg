@@ -20,17 +20,18 @@
              DCL        VAR(&ISBN) TYPE(*CHAR) LEN(10)
              DCL        VAR(&EC) TYPE(*CHAR) LEN(272)
 
+             MONMSG     MSGID(CPF0000 RPG9001 CEE9901) EXEC(GOTO PGMERR)
+
+
              /* */
              CHGVAR     VAR(&EC) VALUE(X'0000011000000000') /* Bytes provided, 000000110 = +
                           272 */
-
-             MONMSG     MSGID(CPF0000 RPG9001) EXEC(GOTO PGMERR)
 
 
              /* */
              CALL       PGM(SO1710) PARM(&PGM &OPT &FKY &CPC &SKSN &SUPN &IMPN &DLTD &ISBN &EC)
 
-
+             RCLRSC     LVL(*) OPTION(*NORMAL)
 
              /* */
              GOTO       CMDLBL(ENDPGM)
@@ -41,6 +42,7 @@
              IF         COND(&MSGFLIB *NE '          ') THEN(DO)
                 ROLLBACK
                 MONMSG     MSGID(CPF0000)
+                RCLRSC     LVL(*) OPTION(*NORMAL)
                 SNDPGMMSG  MSGID(&MSGID) MSGF(&MSGFLIB/&MSGF) MSGDTA(&MSGDTA) MSGTYPE(*ESCAPE)
              ENDDO
 

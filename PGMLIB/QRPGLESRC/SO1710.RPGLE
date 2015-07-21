@@ -539,8 +539,9 @@ W3   C     @ROLL         WHENEQ    DOWN
      C     #LOKEY        OCCUR     F1AK
       /free
        SO1710_IndexBeforeListFile();
+       SO1710_ReadPreviousValidListFile();
       /end-free
-     C                   EXSR      RP@F1
+      ***C                   EXSR      RP@F1
       *
       * All ready at top area
 B4   C     F1@EOF        IFEQ      *ON
@@ -553,7 +554,10 @@ E4   C                   ENDIF
 B4   C     F1@EOF        DOWEQ     *OFF
      C     D@RR1         ANDLT     D@RR1M
      C                   ADD       1             D@RR1
-     C                   EXSR      RP@F1
+      /free
+       F1@EOF = SO1710_ReadPreviousValidListFile();
+      /end-free
+      ***C                   EXSR      RP@F1
 E4   C                   ENDDO
       *
       * If begining of file reset *LOWKEY
@@ -581,14 +585,18 @@ W3   C                   OTHER
 E3   C                   ENDSL
       *
       * Perform first read for the subfile page
-     C                   EXSR      RD@F1
+      /free
+       F1@EOF = SO1710_ReadValidListFile();
+      /end-free
+      ***C                   EXSR      RD@F1
       *
       * If end of file get first previous record
 B3   C     F1@EOF        IFEQ      *ON
       /free
        SO1710_IndexAfterListFile();
+       F1@EOF = SO1710_ReadPreviousValidListFile();
       /end-free
-     C                   EXSR      RP@F1
+      ***C                   EXSR      RP@F1
       *
       * If valid record, use it to set *LOWKEY
 B4   C     F1@EOF        IFEQ      *OFF
@@ -597,8 +605,9 @@ B4   C     F1@EOF        IFEQ      *OFF
      C                   EXSR      PR@KY
       /free
        SO1710_IndexBeforeListFile();
+       F1@EOF = SO1710_ReadValidListFile();
       /end-free
-     C                   EXSR      RD@F1
+      ***C                   EXSR      RD@F1
 E4   C                   ENDIF
 E3   C                   ENDIF
       *
@@ -654,7 +663,10 @@ B4   C     D@RR1         IFEQ      D@RR1M
 E4   C                   ENDIF
       *
       * Get next record
-     C                   EXSR      RD@F1
+      /free
+       F1@EOF = SO1710_ReadValidListFile();
+      /end-free
+      ***C                   EXSR      RD@F1
 E3   C                   ENDDO
       *
       * If end of file show it
@@ -1215,7 +1227,10 @@ B5   C     F1@CDI        IFEQ      *ON
      C                   MOVE      'F1>f?'       KY@DIR
      C                   EXSR      PR@KY
      C                   EXSR      TS@F1O
-     C                   EXSR      VL@F1S
+      /free
+       SO1710_ValidateListFile();
+      /end-free
+      ***C                   EXSR      VL@F1S
       *
       * If record cannot be displayed, remove from stack
 B6   C     X@ECBA        IFNE      *ZERO
@@ -5461,180 +5476,6 @@ E1   C                   ENDIF
      C                   ENDSR
       *
       *-------------------------------------------------------------------------
-     C     RD@F1         BEGSR
-      *-------------------------------------------------------------------------
-      *
-      *
-     C                   MOVE      *OFF          F1@VR
-     C     F1@EOF        DOUEQ     *ON
-     C     F1@VR         OREQ      YES
-      *
-      *
-     C                   SELECT
-     C     F1@SQ         WHENEQ    1
-     C                   READ(N)   DTAF1R1                                99
-     C     F1@SQ         WHENEQ    2
-     C     F1R2K2        READE(N)  DTAF1R2                                99
-     C     F1@SQ         WHENEQ    3
-     C                   READ(N)   DTAF1R3                                99
-     C     F1@SQ         WHENEQ    4
-     C     F1R4K2        READE(N)  DTAF1R4                                99
-     C                   ENDSL
-     C                   MOVE      *IN99         F1@EOF
-      *
-      *
-     C     F1@EOF        CASEQ     *OFF          VL@F1S
-     C                   ENDCS
-      *
-      *
-     C                   ENDDO
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
-     C     RP@F1         BEGSR
-      *-------------------------------------------------------------------------
-      *
-      *
-     C                   MOVE      *OFF          F1@VR
-     C     F1@EOF        DOUEQ     *ON
-     C     F1@VR         OREQ      YES
-      *
-      *
-     C                   SELECT
-     C     F1@SQ         WHENEQ    1
-     C                   READP(N)  DTAF1R1                                99
-     C     F1@SQ         WHENEQ    2
-     C     F1R2K2        READPE(N) DTAF1R2                                99
-     C     F1@SQ         WHENEQ    3
-     C                   READP(N)  DTAF1R3                                99
-     C     F1@SQ         WHENEQ    4
-     C     F1R4K2        READPE(N) DTAF1R4                                99
-     C                   ENDSL
-     C                   MOVE      *IN99         F1@EOF
-      *
-      *
-     C     F1@EOF        CASEQ     *OFF          VL@F1S
-     C                   ENDCS
-      *
-      *
-     C                   ENDDO
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
-     C     VL@F1S        BEGSR
-      *-------------------------------------------------------------------------
-      *
-      * Default to record is valid
-     C                   MOVE      *ON           F1@VR
-      *
-      * Select deleted records, *=All, N=None, O=Only.
-     C                   SELECT
-     C     C1DLTD        WHENNE    '*'
-     C     V1DLTD        ANDNE     BLDLTD
-     C                   MOVE      *OFF          F1@VR
-     C                   ENDSL
-      *
-      * Select search key/short name
-     C                   SELECT
-     C     C1SKSN        WHENEQ    '*BLANKS'
-     C     V1SKSN        IFNE      BLSKSN
-     C                   MOVE      *OFF          F1@VR
-     C                   ENDIF
-      *
-      * Select search key/short name
-     C     C1SKSN        WHENNE    '*ALL'
-     C     '*'           SCAN      C1SKSN        I
-     C     I             IFEQ      *ZERO
-     C                   Z-ADD     10            I
-     C                   ELSE
-     C                   SUB       1             I
-     C                   ENDIF
-     C     I             SUBST(P)  BLSKSN:1      WK010C           10
-     C     V1SKSN        IFNE      WK010C
-     C                   MOVE      *OFF          F1@VR
-     C                   ENDIF
-     C                   ENDSL
-      *
-      * Select supplier, if entered must match
-     C                   SELECT
-     C     C1SUPN        WHENNE    *ZERO
-     C     V1SUPN        ANDNE     BLSUPN
-     C                   MOVE      *OFF          F1@VR
-     C                   ENDSL
-      *
-      * Select imprint, test against imprint prefix
-     C                   SELECT
-     C     C1IMPN        WHENNE    *ZERO
-     C     ' '           CHECKR    V1ISBP        I
-     C     I             IFEQ      *ZERO
-     C                   Z-ADD     8             I
-     C                   ENDIF
-     C     I             SUBST(P)  BLISBN:1      WK008C            8
-     C     V1ISBP        IFNE      WK008C
-     C                   MOVE      *OFF          F1@VR
-     C                   ENDIF
-     C                   ENDSL
-      *
-      *
-     C     F1@VR         CASEQ     *OFF          TE@F1S
-     C                   ENDCS
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
-     C     TE@F1S        BEGSR
-      *-------------------------------------------------------------------------
-      *
-      * Search key/short name
-     C                   SELECT
-     C     C1SKSN        WHENEQ    '*BLANKS'
-     C     V1SKSN        IFNE      BLSKSN
-     C                   MOVE      *ON           F1@EOF
-     C                   ENDIF
-      *
-      * Select search key/short name
-     C     C1SKSN        WHENNE    '*ALL'
-     C     '*'           SCAN      C1SKSN        I
-     C     I             IFEQ      *ZERO
-     C                   Z-ADD     10            I
-     C                   ELSE
-     C                   SUB       1             I
-     C                   ENDIF
-     C     I             SUBST(P)  BLSKSN:1      WK010C           10
-     C     V1SKSN        IFNE      WK010C
-     C                   MOVE      *ON           F1@EOF
-     C                   ENDIF
-     C                   ENDSL
-      *
-      * Supplier
-     C                   SELECT
-     C     C1SUPN        WHENNE    *ZERO
-     C     V1SUPN        ANDNE     BLSUPN
-     C                   MOVE      *ON           F1@EOF
-     C                   ENDSL
-      *
-      * Imprint
-     C                   SELECT
-     C     C1IMPN        WHENNE    *ZERO
-     C     ' '           CHECKR    V1ISBP        I
-     C     I             IFEQ      *ZERO
-     C                   Z-ADD     8             I
-     C                   ENDIF
-     C     I             SUBST(P)  BLISBN:1      WK008C            8
-     C     V1ISBP        IFNE      WK008C
-     C                   MOVE      *ON           F1@EOF
-     C                   ENDIF
-     C                   ENDSL
-      *
-      *
-     C                   ENDSR
-      *
-      *-------------------------------------------------------------------------
      C     @RTES         BEGSR
       *-------------------------------------------------------------------------
       *
@@ -6010,8 +5851,6 @@ E1   C                   ENDIF
      C     *LIKE         DEFINE    I             J
      C     *LIKE         DEFINE    I             K
      C     *LIKE         DEFINE    *IN           F1@TE
-     C     *LIKE         DEFINE    *IN           F1@VR
-     C     *LIKE         DEFINE    *IN           F1@EOF
      C     *LIKE         DEFINE    *IN           F1@NRF
      C     *LIKE         DEFINE    *IN           F1@RHC
      C     *LIKE         DEFINE    *IN           F1@COC
@@ -6301,5 +6140,254 @@ E1   C                   ENDIF
          when FileSequence=4;
            setgt F1R4K1 DTAF1R4;
        endsl;
+      /end-free
+     P                 E
+
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_ReadValidListFile
+       /include qincprsrc,SO1710_H
+       // -------------------------------------------------------------------------
+       f1@sq = SO1710_GetListFileSequence();
+       F1@VR = *off;
+       dou F1@EOF = *on or F1@VR = yes;
+       // C                   MOVE      *OFF          F1@VR
+       // C     F1@EOF        DOUEQ     *ON
+       // C     F1@VR         OREQ      YES
+         select;
+           when f1@sq = 1;
+             read(n) DTAF1R1;
+           when f1@sq = 2;
+             reade(n) F1R2K2 DTAF1R2;
+           when f1@sq = 3;
+             read(n) DTAF1R3;
+           when f1@sq = 4;
+             reade(n) F1R4K2 DTAF1R4;
+         endsl;
+         F1@EOF = %eof;
+       // C                   SELECT
+       // C     F1@SQ         WHENEQ    1
+       // C                   READ(N)   DTAF1R1                                99
+       // C     F1@SQ         WHENEQ    2
+       // C     F1R2K2        READE(N)  DTAF1R2                                99
+       // C     F1@SQ         WHENEQ    3
+       // C                   READ(N)   DTAF1R3                                99
+       // C     F1@SQ         WHENEQ    4
+       // C     F1R4K2        READE(N)  DTAF1R4                                99
+       // C                   ENDSL
+       // C                   MOVE      *IN99         F1@EOF
+         if F1@EOF = *off;
+           F1@VR = SO1710_ValidateListFile();
+         endif;
+       // C     F1@EOF        CASEQ     *OFF          VL@F1S
+       // C                   ENDCS
+       enddo;
+       // C                   ENDDO
+       return F1@EOF;
+      /end-free
+     P                 E
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_ReadPreviousValidListFile
+       /include qincprsrc,SO1710_H
+       // -------------------------------------------------------------------------
+       f1@sq = SO1710_GetListFileSequence();
+       F1@VR = *off;
+       dou F1@EOF = *on or F1@VR = yes;
+       // C                   MOVE      *OFF          F1@VR
+       // C     F1@EOF        DOUEQ     *ON
+       // C     F1@VR         OREQ      YES
+         select;
+           when f1@sq = 1;
+             readp(n) DTAF1R1;
+           when f1@sq = 2;
+             readpe(n) F1R2K2 DTAF1R2;
+           when f1@sq = 3;
+             readp(n) DTAF1R3;
+           when f1@sq = 4;
+             readpe(n) F1R4K2 DTAF1R4;
+         endsl;
+         F1@EOF = %eof;
+       // C                   SELECT
+       // C     F1@SQ         WHENEQ    1
+       // C                   READP(N)  DTAF1R1                                99
+       // C     F1@SQ         WHENEQ    2
+       // C     F1R2K2        READPE(N) DTAF1R2                                99
+       // C     F1@SQ         WHENEQ    3
+       // C                   READP(N)  DTAF1R3                                99
+       // C     F1@SQ         WHENEQ    4
+       // C     F1R4K2        READPE(N) DTAF1R4                                99
+       // C                   ENDSL
+       // C                   MOVE      *IN99         F1@EOF
+         if F1@EOF = *off;
+           F1@VR = SO1710_ValidateListFile();
+         endif;
+       // C     F1@EOF        CASEQ     *OFF          VL@F1S
+       // C                   ENDCS
+       enddo;
+       // C                   ENDDO
+       return F1@EOF;
+      /end-free
+     P                 E
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_ValidateListFile
+       /include qincprsrc,SO1710_H
+       // -------------------------------------------------------------------------
+       F1@VR = *on;
+       select;
+         when C1DLTD <> '*' and V1DLTD <> BLDLTD;
+           F1@VR = *off;
+       endsl;
+       // C                   MOVE      *ON           F1@VR
+       // C                   SELECT
+       // C     C1DLTD        WHENNE    '*'
+       // C     V1DLTD        ANDNE     BLDLTD
+       // C                   MOVE      *OFF          F1@VR
+       // C                   ENDSL
+       select;
+         when C1SKSN = '*BLANKS';
+           if V1SKSN <> BLSKSN;
+             F1@VR = *off;
+           endif;
+       // C                   SELECT
+       // C     C1SKSN        WHENEQ    '*BLANKS'
+       // C     V1SKSN        IFNE      BLSKSN
+       // C                   MOVE      *OFF          F1@VR
+       // C                   ENDIF
+         when C1SKSN <> '*ALL';
+           i = %scan('*' : C1SKSN);
+           if i = *zero;
+             i = 10;
+           else;
+             i = i - 1;
+           endif;
+           WK010C = %subst(BLSKSN:1:i);
+           if v1SKSN <> WK010C;
+             F1@VR = *off;
+           endif;
+         endsl;
+       // C     C1SKSN        WHENNE    '*ALL'
+       // C     '*'           SCAN      C1SKSN        I
+       // C     I             IFEQ      *ZERO
+       // C                   Z-ADD     10            I
+       // C                   ELSE
+       // C                   SUB       1             I
+       // C                   ENDIF
+       // C     I             SUBST(P)  BLSKSN:1      WK010C           10
+       // C     V1SKSN        IFNE      WK010C
+       // C                   MOVE      *OFF          F1@VR
+       // C                   ENDIF
+       // C                   ENDSL
+       select;
+         when C1SUPN <> *zero and V1SUPN <> BLSUPN;
+           F1@VR = *off;
+       endsl;
+       // C                   SELECT
+       // C     C1SUPN        WHENNE    *ZERO
+       // C     V1SUPN        ANDNE     BLSUPN
+       // C                   MOVE      *OFF          F1@VR
+       // C                   ENDSL
+       select;
+         when C1IMPN <> *zero;
+           i = %checkr(' ':V1ISBP);
+           if i = *zero;
+             i = 8;
+           endif;
+           WK008C = %subst(BLISBN:1:i);
+           if V1ISBP <> WK008C;
+             F1@VR = *off;
+           endif;
+       endsl;
+       // C                   SELECT
+       // C     C1IMPN        WHENNE    *ZERO
+       // C     ' '           CHECKR    V1ISBP        I
+       // C     I             IFEQ      *ZERO
+       // C                   Z-ADD     8             I
+       // C                   ENDIF
+       // C     I             SUBST(P)  BLISBN:1      WK008C            8
+       // C     V1ISBP        IFNE      WK008C
+       // C                   MOVE      *OFF          F1@VR
+       // C                   ENDIF
+       // C                   ENDSL
+       if F1@VR = *off;
+           F1@EOF = SO1710_ValidateEOFListFile();
+       endif;
+       // C     F1@VR         CASEQ     *OFF          TE@F1S
+       // C                   ENDCS
+       return F1@VR;
+      /end-free
+     P                 E
+      /free
+       // -------------------------------------------------------------------------
+       /define SO1710_ValidateEOFListFile
+       /include qincprsrc,SO1710_H
+       // -------------------------------------------------------------------------
+       select;
+         when C1SKSN = '*BLANKS';
+           if V1SKSN <> BLSKSN;
+             F1@EOF = *on;
+           endif;
+       // C                   SELECT
+       // C     C1SKSN        WHENEQ    '*BLANKS'
+       // C     V1SKSN        IFNE      BLSKSN
+       // C                   MOVE      *ON           F1@EOF
+       // C                   ENDIF
+         when C1SKSN <> '*ALL';
+         i = %scan('*':C1SKSN);
+         if i = *zero;
+           i = 10;
+         else;
+           i = i - 1;
+         endif;
+         WK010C = %subst(BLSKSN:1:i);
+         if V1SKSN <> WK010C;
+           F1@EOF = *on;
+         endif;
+       endsl;
+       // C     C1SKSN        WHENNE    '*ALL'
+       // C     '*'           SCAN      C1SKSN        I
+       // C     I             IFEQ      *ZERO
+       // C                   Z-ADD     10            I
+       // C                   ELSE
+       // C                   SUB       1             I
+       // C                   ENDIF
+       // C     I             SUBST(P)  BLSKSN:1      WK010C           10
+       // C     V1SKSN        IFNE      WK010C
+       // C                   MOVE      *ON           F1@EOF
+       // C                   ENDIF
+       // C                   ENDSL
+       select;
+         when C1SUPN  <> *zero and V1SUPN <> BLSUPN;
+           F1@EOF = *on;
+       endsl;
+       // C                   SELECT
+       // C     C1SUPN        WHENNE    *ZERO
+       // C     V1SUPN        ANDNE     BLSUPN
+       // C                   MOVE      *ON           F1@EOF
+       // C                   ENDSL
+       select;
+         when C1IMPN <> *ZERO;
+           i = %checkr(' ':V1ISBP);
+           if i = *zero;
+             i = 8;
+           ENDIF;
+           WK008C = %subst(BLISBN:1:i);
+           if V1ISBP <> WK008C;
+             F1@EOF = *on;
+           endif;
+       endsl;
+       // C                   SELECT
+       // C     C1IMPN        WHENNE    *ZERO
+       // C     ' '           CHECKR    V1ISBP        I
+       // C     I             IFEQ      *ZERO
+       // C                   Z-ADD     8             I
+       // C                   ENDIF
+       // C     I             SUBST(P)  BLISBN:1      WK008C            8
+       // C     V1ISBP        IFNE      WK008C
+       // C                   MOVE      *ON           F1@EOF
+       // C                   ENDIF
+       // C                   ENDSL
+       return F1@EOF;
       /end-free
      P                 E
