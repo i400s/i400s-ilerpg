@@ -2,9 +2,59 @@
       *-------------------------------------------------------------------------
       * Global definitions.
       *-------------------------------------------------------------------------
+      *
+      * Display file information data structure
+     D D@INFD          DS
+     D  ReturnKey            369    369
+     D  D@ROCL               370    371B 0
+     D  D@RRN                376    377B 0
+     D  D@RRL                378    379B 0
+     D  D@RRT                380    381B 0
+     D  D@@@@                372    385
+      *
+     D Key_F1          C                   CONST(X'31')
+     D Key_F2          C                   CONST(X'32')
+     D Key_F3          C                   CONST(X'33')
+     D Key_F4          C                   CONST(X'34')
+     D Key_F5          C                   CONST(X'35')
+     D Key_F6          C                   CONST(X'36')
+     D Key_F7          C                   CONST(X'37')
+     D Key_F8          C                   CONST(X'38')
+     D Key_F9          C                   CONST(X'39')
+     D Key_F10         C                   CONST(X'3A')
+     D Key_F11         C                   CONST(X'3B')
+     D Key_F12         C                   CONST(X'3C')
+     D Key_F13         C                   CONST(X'B1')
+     D Key_F14         C                   CONST(X'B2')
+     D Key_F15         C                   CONST(X'B3')
+     D Key_F16         C                   CONST(X'B4')
+     D Key_F17         C                   CONST(X'B5')
+     D Key_F18         C                   CONST(X'B6')
+     D Key_F19         C                   CONST(X'B7')
+     D Key_F20         C                   CONST(X'B8')
+     D Key_F21         C                   CONST(X'B9')
+     D Key_F22         C                   CONST(X'BA')
+     D Key_F23         C                   CONST(X'BB')
+     D Key_F24         C                   CONST(X'BC')
+     D Key_Clear       C                   CONST(X'BD')
+     D Key_Enter       C                   CONST(X'F1')
+     D Key_Help        C                   CONST(X'F3')
+     D Key_PageUp      C                   CONST(X'F4')
+     D Key_PageDown    C                   CONST(X'F5')
+     D RollDown        C                   CONST(X'F4')
+     D RollUp          C                   CONST(X'F5')
+     D Key_Print       C                   CONST(X'F6')
+     D Key_RecBackSpc  C                   CONST(X'F8')
+     D Key_AutoEnter   C                   CONST(X'3F')
+      *
+      * Program status data structure
+     D                SDS
+     D  S@PGM            *PROC
+     D  S@USER               254    263
+      *
+      *
      D f1@sq           S              3I 0
      D f1@eof          S              1N
-     D f1@vr           S              1N
       /endif
 
 
@@ -134,8 +184,6 @@
      P                 B
      D SO1710_ValidateListFile...
      D                 PI             1N
-     D WK010C          S             10A
-     D WK008C          S              8A
       /EOF
       /endif
 
@@ -159,8 +207,6 @@
      P                 B
      D SO1710_ValidateEOFListFile...
      D                 PI             1N
-     D WK010C          S             10A
-     D WK008C          S              8A
       /EOF
       /endif
 

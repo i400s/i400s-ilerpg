@@ -367,22 +367,6 @@
      D  S2I09                 10     10
      D  S2CHG                 11     11
       *
-      *
-      *
-      * Display file information data structure
-     D D@INFD          DS
-     D  D@AIB                369    369
-     D  D@ROCL               370    371B 0
-     D  D@RRN                376    377B 0
-     D  D@RRL                378    379B 0
-     D  D@RRT                380    381B 0
-     D  D@@@@                372    385
-      *
-      * Program status data structure
-     D                SDS
-     D  S@PGM            *PROC
-     D  S@USER               254    263
-      *
       * Local data area
      D #LDA            DS           256
       *
@@ -459,11 +443,6 @@ B1   C     @FMT          DOWNE     *BLANKS
       *
 B2   C     @FMT          IFEQ      '*ENT'
       *
-      * Find F1 file access sequence
-      /free
-       f1@sq = SO1710_GetListFileSequence;
-      /end-free
-      *
       *
      C                   MOVE      'C1>V1'       KY@DIR
      C                   EXSR      PR@KY
@@ -514,119 +493,77 @@ B2   C     @FMT          IFEQ      '*ENT'
       *
       *
      C     #CRRCD        OCCUR     F1DS
-      *
-      * RollUp/PageDown
-B3   C                   SELECT
-W3   C     @ROLL         WHENEQ    UP
-      *
-      * All ready at bottom of area
-B4   C     D@MOB         IFEQ      BOTTOM
-     C                   MOVE      'CPD6A69'     X@MI
+
+      /free
+b3     select;
+w3       when ReturnKey = RollUp;
+b4         if D@MOB = BOTTOM;
+             X@MI = 'CPD6A69';
+      /end-free
      C                   CALL      'QMHSNDPM'    @SNDSM
-     C     #LOKEY        OCCUR     F1AK
       /free
-       SO1710_IndexBeforeListFile();
+             %occur(F1AK) = #LOKEY;
+             SO1710_IndexBeforeListFile();
+x4         else;
+             %occur(F1AK) = #HIKEY;
+           SO1710_IndexAfterListFile();
+e4         endif;
+w3       when ReturnKey = RollDown;
+           %occur(F1AK) = #LOKEY;
+           SO1710_IndexBeforeListFile();
+b4         if SO1710_ReadPreviousValidListFile();
+             X@MI = 'CPD6A66';
       /end-free
-X4   C                   ELSE
-     C     #HIKEY        OCCUR     F1AK
-      /free
-       SO1710_IndexAfterListFile();
-      /end-free
-E4   C                   ENDIF
-      *
-      * RollDown/PageUp
-W3   C     @ROLL         WHENEQ    DOWN
-     C     #LOKEY        OCCUR     F1AK
-      /free
-       SO1710_IndexBeforeListFile();
-       SO1710_ReadPreviousValidListFile();
-      /end-free
-      ***C                   EXSR      RP@F1
-      *
-      * All ready at top area
-B4   C     F1@EOF        IFEQ      *ON
-     C                   MOVE      'CPD6A66'     X@MI
      C                   CALL      'QMHSNDPM'    @SNDSM
-E4   C                   ENDIF
-      *
-      * Read backwards a page of records
-     C                   Z-ADD     1             D@RR1
-B4   C     F1@EOF        DOWEQ     *OFF
-     C     D@RR1         ANDLT     D@RR1M
-     C                   ADD       1             D@RR1
       /free
-       F1@EOF = SO1710_ReadPreviousValidListFile();
+x4         else;
+             // Read backwards a page of records
+             D@RR1 = D@RR1M;
+b5           dou SO1710_ReadPreviousValidListFile() or
+                 D@RR1 = 1;
+               D@RR1 -= 1;
+e5           enddo;
+b5           if D@RR1 > 1;
+               %occur(F1AK) = #INKEY;
+x5           else;
+               // Else set the record found to the lowest key
+               %occur(F1AK) = #LOKEY;
+               KY@DIR = 'f?>F1';
+               exsr PR@KY;
+e5           endif;
+e4         endif;
+           // Reposition file pointer
+           SO1710_IndexBeforeListFile();
+           // Enter or refresh requested
+w3       other;
+           %occur(F1AK) = #LOKEY;
+           SO1710_IndexBeforeListFile();
+e3     endsl;
+
+       // Perform first read for the subfile page
+b3     if SO1710_ReadValidListFile();
+         // No records found
+         SO1710_IndexAfterListFile();
+b4       if SO1710_ReadPreviousValidListFile();
+           // Still no records found
+           D@MOB = BOTTOM;
+           %occur(F1AK) = #INKEY;
+           F@AK = F1AK;
+           %occur(F1AK) = #LOKEY;
+           F1AK = F@AK;
+x4       else;
+           // records exist, set key
+           %occur(F1AK) = #LOKEY;
+           KY@DIR = 'f?>F1';
+           exsr PR@KY;
+e4       endif;
+x3     else;
+         // Records exists, set key
+         %occur(F1AK) = #LOKEY;
+         KY@DIR = 'f?>F1';
+         exsr PR@KY;
+e3     endif;
       /end-free
-      ***C                   EXSR      RP@F1
-E4   C                   ENDDO
-      *
-      * If begining of file reset *LOWKEY
-B4   C     F1@EOF        IFEQ      *ON
-     C     #INKEY        OCCUR     F1AK
-      *
-      * Else set the record found to the lowest key
-X4   C                   ELSE
-     C     #LOKEY        OCCUR     F1AK
-     C                   MOVE      'f?>F1'       KY@DIR
-     C                   EXSR      PR@KY
-E4   C                   ENDIF
-      *
-      * Reposition file pointer
-      /free
-       SO1710_IndexBeforeListFile();
-      /end-free
-      *
-      * Enter or refresh requested
-W3   C                   OTHER
-     C     #LOKEY        OCCUR     F1AK
-      /free
-       SO1710_IndexBeforeListFile();
-      /end-free
-E3   C                   ENDSL
-      *
-      * Perform first read for the subfile page
-      /free
-       F1@EOF = SO1710_ReadValidListFile();
-      /end-free
-      ***C                   EXSR      RD@F1
-      *
-      * If end of file get first previous record
-B3   C     F1@EOF        IFEQ      *ON
-      /free
-       SO1710_IndexAfterListFile();
-       F1@EOF = SO1710_ReadPreviousValidListFile();
-      /end-free
-      ***C                   EXSR      RP@F1
-      *
-      * If valid record, use it to set *LOWKEY
-B4   C     F1@EOF        IFEQ      *OFF
-     C     #LOKEY        OCCUR     F1AK
-     C                   MOVE      'f?>F1'       KY@DIR
-     C                   EXSR      PR@KY
-      /free
-       SO1710_IndexBeforeListFile();
-       F1@EOF = SO1710_ReadValidListFile();
-      /end-free
-      ***C                   EXSR      RD@F1
-E4   C                   ENDIF
-E3   C                   ENDIF
-      *
-      * If still end of file then
-B3   C     F1@EOF        IFEQ      *ON
-     C                   MOVE      BOTTOM        D@MOB
-      *
-      * Reset LOKEY to initial values
-     C     #INKEY        OCCUR     F1AK
-     C                   MOVE      F1AK          F@AK
-     C     #LOKEY        OCCUR     F1AK
-     C                   MOVE      F@AK          F1AK
-      *
-      * Else records exist, set key(s)
-X3   C                   ELSE
-     C     #LOKEY        OCCUR     F1AK
-     C                   MOVE      'f?>F1'       KY@DIR
-     C                   EXSR      PR@KY
-E3   C                   ENDIF
       *
       * Save key(s)
      C                   MOVE      F1AK          F@AK
@@ -646,8 +583,11 @@ E3   C                   ENDIF
       *
       * Setup 'standard record' subfile
      C                   Z-ADD     0             D@RR1
-B3   C     F1@EOF        DOWEQ     *OFF
-     C     D@RR1         ANDLT     D@RR1M
+      /free
+       SO1710_IndexBeforeListFile();
+       dow not SO1710_ReadValidListFile() and
+           D@RR1 < D@RR1M;
+      /end-free
       *
       * Format subfle record
      C                   MOVE      *ON           F1@CDI
@@ -662,11 +602,7 @@ B4   C     D@RR1         IFEQ      D@RR1M
      C     #UPRCD        OCCUR     F1DS
 E4   C                   ENDIF
       *
-      * Get next record
-      /free
-       F1@EOF = SO1710_ReadValidListFile();
-      /end-free
-      ***C                   EXSR      RD@F1
+      *
 E3   C                   ENDDO
       *
       * If end of file show it
@@ -1228,16 +1164,11 @@ B5   C     F1@CDI        IFEQ      *ON
      C                   EXSR      PR@KY
      C                   EXSR      TS@F1O
       /free
-       SO1710_ValidateListFile();
+       if X@ECBA <> *zero and NOT SO1710_ValidateListFile();
+         AK(S1S) = *loval;
+         PK(S1S) = *loval;
+       endif;
       /end-free
-      ***C                   EXSR      VL@F1S
-      *
-      * If record cannot be displayed, remove from stack
-B6   C     X@ECBA        IFNE      *ZERO
-     C     F1@VR         ANDEQ     *OFF
-     C                   MOVE      *LOVAL        AK(S1S)
-     C                   MOVE      *LOVAL        PK(S1S)
-E6   C                   ENDIF
 E5   C                   ENDIF
       *
       *
@@ -1355,9 +1286,6 @@ E1   C                   ENDIF
       *
       *
      C                   MOVE      *ON           S1@WCR
-     C     F1@EOF        IFEQ      *ON
-     C                   MOVE      *ON           S1@WCR
-     C                   ENDIF
       *
       * ViewX
 B1   C                   SELECT
@@ -1851,6 +1779,11 @@ E1   C                   ENDSL
       *-------------------------------------------------------------------------
      C     PR@KY         BEGSR
       *-------------------------------------------------------------------------
+      *
+      * Find F1 file access sequence
+      /free
+       f1@sq = SO1710_GetListFileSequence;
+      /end-free
       *
       *
 B1   C                   SELECT
@@ -6112,13 +6045,13 @@ E1   C                   ENDIF
        // -------------------------------------------------------------------------
        FileSequence=SO1710_GetListFileSequence();
        select;
-         when FileSequence=1;
+         when FileSequence = 1;
            setll F1R1K1 DTAF1R1;
-         when FileSequence=2;
+         when FileSequence = 2;
            setll F1R2K1 DTAF1R2;
-         when FileSequence=3;
+         when FileSequence = 3;
            setll F1R3K1 DTAF1R3;
-         when FileSequence=4;
+         when FileSequence = 4;
            setll F1R4K1 DTAF1R4;
        endsl;
       /end-free
@@ -6131,13 +6064,13 @@ E1   C                   ENDIF
        // -------------------------------------------------------------------------
        FileSequence=SO1710_GetListFileSequence();
        select;
-         when FileSequence=1;
+         when FileSequence = 1;
            setgt F1R1K1 DTAF1R1;
-         when FileSequence=2;
+         when FileSequence = 2;
            setgt F1R2K1 DTAF1R2;
-         when FileSequence=3;
+         when FileSequence = 3;
            setgt F1R3K1 DTAF1R3;
-         when FileSequence=4;
+         when FileSequence = 4;
            setgt F1R4K1 DTAF1R4;
        endsl;
       /end-free
@@ -6149,11 +6082,7 @@ E1   C                   ENDIF
        /include qincprsrc,SO1710_H
        // -------------------------------------------------------------------------
        f1@sq = SO1710_GetListFileSequence();
-       F1@VR = *off;
-       dou F1@EOF = *on or F1@VR = yes;
-       // C                   MOVE      *OFF          F1@VR
-       // C     F1@EOF        DOUEQ     *ON
-       // C     F1@VR         OREQ      YES
+       dou SO1710_ValidateListFile();
          select;
            when f1@sq = 1;
              read(n) DTAF1R1;
@@ -6165,38 +6094,24 @@ E1   C                   ENDIF
              reade(n) F1R4K2 DTAF1R4;
          endsl;
          F1@EOF = %eof;
-       // C                   SELECT
-       // C     F1@SQ         WHENEQ    1
-       // C                   READ(N)   DTAF1R1                                99
-       // C     F1@SQ         WHENEQ    2
-       // C     F1R2K2        READE(N)  DTAF1R2                                99
-       // C     F1@SQ         WHENEQ    3
-       // C                   READ(N)   DTAF1R3                                99
-       // C     F1@SQ         WHENEQ    4
-       // C     F1R4K2        READE(N)  DTAF1R4                                99
-       // C                   ENDSL
-       // C                   MOVE      *IN99         F1@EOF
-         if F1@EOF = *off;
-           F1@VR = SO1710_ValidateListFile();
+         if F1@EOF;
+           return *on;
+         else;
+           F1@EOF = SO1710_ValidateEOFListFile();
+           return F1@EOF;
          endif;
-       // C     F1@EOF        CASEQ     *OFF          VL@F1S
-       // C                   ENDCS
        enddo;
-       // C                   ENDDO
-       return F1@EOF;
+       return *off;
       /end-free
      P                 E
+
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ReadPreviousValidListFile
        /include qincprsrc,SO1710_H
        // -------------------------------------------------------------------------
        f1@sq = SO1710_GetListFileSequence();
-       F1@VR = *off;
-       dou F1@EOF = *on or F1@VR = yes;
-       // C                   MOVE      *OFF          F1@VR
-       // C     F1@EOF        DOUEQ     *ON
-       // C     F1@VR         OREQ      YES
+       dou SO1710_ValidateListFile;
          select;
            when f1@sq = 1;
              readp(n) DTAF1R1;
@@ -6208,186 +6123,99 @@ E1   C                   ENDIF
              readpe(n) F1R4K2 DTAF1R4;
          endsl;
          F1@EOF = %eof;
-       // C                   SELECT
-       // C     F1@SQ         WHENEQ    1
-       // C                   READP(N)  DTAF1R1                                99
-       // C     F1@SQ         WHENEQ    2
-       // C     F1R2K2        READPE(N) DTAF1R2                                99
-       // C     F1@SQ         WHENEQ    3
-       // C                   READP(N)  DTAF1R3                                99
-       // C     F1@SQ         WHENEQ    4
-       // C     F1R4K2        READPE(N) DTAF1R4                                99
-       // C                   ENDSL
-       // C                   MOVE      *IN99         F1@EOF
-         if F1@EOF = *off;
-           F1@VR = SO1710_ValidateListFile();
+         if F1@EOF;
+           return *on;
+         else;
+           F1@EOF = SO1710_ValidateEOFListFile();
+           return F1@EOF;
          endif;
-       // C     F1@EOF        CASEQ     *OFF          VL@F1S
-       // C                   ENDCS
        enddo;
-       // C                   ENDDO
-       return F1@EOF;
+       return *off;
       /end-free
      P                 E
+
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ValidateListFile
        /include qincprsrc,SO1710_H
        // -------------------------------------------------------------------------
-       F1@VR = *on;
        select;
          when C1DLTD <> '*' and V1DLTD <> BLDLTD;
-           F1@VR = *off;
+           return *off;
        endsl;
-       // C                   MOVE      *ON           F1@VR
-       // C                   SELECT
-       // C     C1DLTD        WHENNE    '*'
-       // C     V1DLTD        ANDNE     BLDLTD
-       // C                   MOVE      *OFF          F1@VR
-       // C                   ENDSL
+
        select;
-         when C1SKSN = '*BLANKS';
-           if V1SKSN <> BLSKSN;
-             F1@VR = *off;
-           endif;
-       // C                   SELECT
-       // C     C1SKSN        WHENEQ    '*BLANKS'
-       // C     V1SKSN        IFNE      BLSKSN
-       // C                   MOVE      *OFF          F1@VR
-       // C                   ENDIF
+         when C1SKSN = '*BLANKS' and V1SKSN <> BLSKSN;
+             return *off;
          when C1SKSN <> '*ALL';
            i = %scan('*' : C1SKSN);
            if i = *zero;
              i = 10;
            else;
-             i = i - 1;
+             i -= 1;
            endif;
-           WK010C = %subst(BLSKSN:1:i);
-           if v1SKSN <> WK010C;
-             F1@VR = *off;
+           if V1SKSN <> %subst(BLSKSN:1:i);
+             return *off;
            endif;
-         endsl;
-       // C     C1SKSN        WHENNE    '*ALL'
-       // C     '*'           SCAN      C1SKSN        I
-       // C     I             IFEQ      *ZERO
-       // C                   Z-ADD     10            I
-       // C                   ELSE
-       // C                   SUB       1             I
-       // C                   ENDIF
-       // C     I             SUBST(P)  BLSKSN:1      WK010C           10
-       // C     V1SKSN        IFNE      WK010C
-       // C                   MOVE      *OFF          F1@VR
-       // C                   ENDIF
-       // C                   ENDSL
+       endsl;
+
        select;
          when C1SUPN <> *zero and V1SUPN <> BLSUPN;
-           F1@VR = *off;
+           return *off;
        endsl;
-       // C                   SELECT
-       // C     C1SUPN        WHENNE    *ZERO
-       // C     V1SUPN        ANDNE     BLSUPN
-       // C                   MOVE      *OFF          F1@VR
-       // C                   ENDSL
        select;
          when C1IMPN <> *zero;
            i = %checkr(' ':V1ISBP);
            if i = *zero;
              i = 8;
            endif;
-           WK008C = %subst(BLISBN:1:i);
-           if V1ISBP <> WK008C;
-             F1@VR = *off;
+           if V1ISBP <> %subst(BLISBN:1:i);
+             return  *off;
            endif;
        endsl;
-       // C                   SELECT
-       // C     C1IMPN        WHENNE    *ZERO
-       // C     ' '           CHECKR    V1ISBP        I
-       // C     I             IFEQ      *ZERO
-       // C                   Z-ADD     8             I
-       // C                   ENDIF
-       // C     I             SUBST(P)  BLISBN:1      WK008C            8
-       // C     V1ISBP        IFNE      WK008C
-       // C                   MOVE      *OFF          F1@VR
-       // C                   ENDIF
-       // C                   ENDSL
-       if F1@VR = *off;
-           F1@EOF = SO1710_ValidateEOFListFile();
-       endif;
-       // C     F1@VR         CASEQ     *OFF          TE@F1S
-       // C                   ENDCS
-       return F1@VR;
+
+       return *on;
       /end-free
      P                 E
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ValidateEOFListFile
        /include qincprsrc,SO1710_H
+       // WARNING: The program makes some assumptions that the logical file
+       //            selected matches these tests - in order sequence.
+       //          EOF test should not be performed on out of sequence records.
        // -------------------------------------------------------------------------
        select;
-         when C1SKSN = '*BLANKS';
-           if V1SKSN <> BLSKSN;
-             F1@EOF = *on;
-           endif;
-       // C                   SELECT
-       // C     C1SKSN        WHENEQ    '*BLANKS'
-       // C     V1SKSN        IFNE      BLSKSN
-       // C                   MOVE      *ON           F1@EOF
-       // C                   ENDIF
+         when C1SKSN = '*BLANKS' and V1SKSN <> BLSKSN;
+           return *on;
          when C1SKSN <> '*ALL';
-         i = %scan('*':C1SKSN);
-         if i = *zero;
-           i = 10;
-         else;
-           i = i - 1;
-         endif;
-         WK010C = %subst(BLSKSN:1:i);
-         if V1SKSN <> WK010C;
-           F1@EOF = *on;
-         endif;
+           i = %scan('*':C1SKSN);
+           if i = *zero;
+             i = 10;
+           else;
+             i -= 1;
+           endif;
+           if V1SKSN <> %subst(BLSKSN:1:i);
+             return *on;
+           endif;
        endsl;
-       // C     C1SKSN        WHENNE    '*ALL'
-       // C     '*'           SCAN      C1SKSN        I
-       // C     I             IFEQ      *ZERO
-       // C                   Z-ADD     10            I
-       // C                   ELSE
-       // C                   SUB       1             I
-       // C                   ENDIF
-       // C     I             SUBST(P)  BLSKSN:1      WK010C           10
-       // C     V1SKSN        IFNE      WK010C
-       // C                   MOVE      *ON           F1@EOF
-       // C                   ENDIF
-       // C                   ENDSL
+
        select;
          when C1SUPN  <> *zero and V1SUPN <> BLSUPN;
-           F1@EOF = *on;
+           return *on;
        endsl;
-       // C                   SELECT
-       // C     C1SUPN        WHENNE    *ZERO
-       // C     V1SUPN        ANDNE     BLSUPN
-       // C                   MOVE      *ON           F1@EOF
-       // C                   ENDSL
+
        select;
          when C1IMPN <> *ZERO;
            i = %checkr(' ':V1ISBP);
            if i = *zero;
              i = 8;
            ENDIF;
-           WK008C = %subst(BLISBN:1:i);
-           if V1ISBP <> WK008C;
-             F1@EOF = *on;
+           if V1ISBP <> %subst(BLISBN:1:i);
+             return *on;
            endif;
        endsl;
-       // C                   SELECT
-       // C     C1IMPN        WHENNE    *ZERO
-       // C     ' '           CHECKR    V1ISBP        I
-       // C     I             IFEQ      *ZERO
-       // C                   Z-ADD     8             I
-       // C                   ENDIF
-       // C     I             SUBST(P)  BLISBN:1      WK008C            8
-       // C     V1ISBP        IFNE      WK008C
-       // C                   MOVE      *ON           F1@EOF
-       // C                   ENDIF
-       // C                   ENDSL
-       return F1@EOF;
+
+       return *off;
       /end-free
      P                 E
