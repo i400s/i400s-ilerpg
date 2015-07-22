@@ -87,7 +87,7 @@
       /include qincprsrc,svcdspfmt
       /define SO1710_WrkRcdBbl
       /include qincprsrc,EntPgmPrc
-      /include qincprsrc,SO1710_H
+      /include SO1710_H
       *-------------------------------------------------------------------------
       *
       * PK='Primary key(s)' & '0=Control, 1=Detail'
@@ -6023,7 +6023,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_GetListFileSequence
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // -------------------------------------------------------------------------
        select;
          when C1SUPN <> *zero and C1SKSN <> '*ALL';
@@ -6041,7 +6041,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_IndexBeforeListFile
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // -------------------------------------------------------------------------
        FileSequence=SO1710_GetListFileSequence();
        select;
@@ -6060,7 +6060,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_IndexAfterListFile
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // -------------------------------------------------------------------------
        FileSequence=SO1710_GetListFileSequence();
        select;
@@ -6079,7 +6079,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ReadValidListFile
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // -------------------------------------------------------------------------
        f1@sq = SO1710_GetListFileSequence();
        dou SO1710_ValidateListFile();
@@ -6108,7 +6108,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ReadPreviousValidListFile
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // -------------------------------------------------------------------------
        f1@sq = SO1710_GetListFileSequence();
        dou SO1710_ValidateListFile;
@@ -6137,7 +6137,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ValidateListFile
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // -------------------------------------------------------------------------
        select;
          when C1DLTD <> '*' and V1DLTD <> BLDLTD;
@@ -6180,7 +6180,7 @@ E1   C                   ENDIF
       /free
        // -------------------------------------------------------------------------
        /define SO1710_ValidateEOFListFile
-       /include qincprsrc,SO1710_H
+       /include SO1710_H
        // WARNING: The program makes some assumptions that the logical file
        //            selected matches these tests - in order sequence.
        //          EOF test should not be performed on out of sequence records.
