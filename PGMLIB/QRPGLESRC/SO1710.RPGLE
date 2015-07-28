@@ -483,126 +483,126 @@ E2   C                   ENDIF
       *
       *
       /free
-       if    @FMT = '*ENT' or @FMT = '*CRT'
-          or @FMT = '*RFD' or @FMT = '*UPD';
-         *in02 = *on;
-         write C1PNL01;
+         if    @FMT = '*ENT' or @FMT = '*CRT'
+            or @FMT = '*RFD' or @FMT = '*UPD';
+           *in02 = *on;
+           write C1PNL01;
 
-         // Write input 'control' subfile
-         %occur(F1AK) = #CHKEY;
-         F1@CDI = *off;
-         exsr FM@S1F;
-         F1@CDI = *on;
-         if S1@WCR;
-           Indicators.SflRcdType = SflRcd_Control;
-           write S1SFL01;
-         endif;
+           // Write input 'control' subfile
+           %occur(F1AK) = #CHKEY;
+           F1@CDI = *off;
+           exsr FM@S1F;
+           F1@CDI = *on;
+           if S1@WCR;
+             Indicators.SflRcdType = SflRcd_Control;
+             write S1SFL01;
+           endif;
 
-         // Set recordDS to "Current"
-         %occur(F1DS) = #CRRCD;
+           // Set recordDS to "Current"
+           %occur(F1DS) = #CRRCD;
 
-b3     select;
-w3       when ReturnKey = RollUp;
-b4         if D@MOB = BOTTOM;
-             QSndPgmMsg('CPD6A69':C@SMFN:'':0:'*DIAG':'*':0:'':I@EC);
-             %occur(F1AK) = #LOKEY;
-             SO1710_IndexBeforeListFile();
-x4         else;
-             %occur(F1AK) = #HIKEY;
-           SO1710_IndexAfterListFile();
-e4         endif;
-w3       when ReturnKey = RollDown;
-           %occur(F1AK) = #LOKEY;
-           SO1710_IndexBeforeListFile();
-b4         if SO1710_ReadPreviousValidListFile();
-             QSndPgmMsg('CPD6A69':C@SMFN:'':0:'*DIAG':'*':0:'':I@EC);
-x4         else;
-             // Read backwards a page of records
-             D@RR1 = D@RR1M;
-b5           dou SO1710_ReadPreviousValidListFile() or
-                 D@RR1 = 1;
-               D@RR1 -= 1;
-e5           enddo;
-b5           if D@RR1 > 1;
+           select;
+             when ReturnKey = RollUp;
+               if D@MOB = BOTTOM;
+                 QSndPgmMsg('CPD6A69':C@SMFN:'':0:'*DIAG':'*':0:'':I@EC);
+                 %occur(F1AK) = #LOKEY;
+                 SO1710_IndexBeforeListFile();
+               else;
+                 %occur(F1AK) = #HIKEY;
+               SO1710_IndexAfterListFile();
+               endif;
+             when ReturnKey = RollDown;
+               %occur(F1AK) = #LOKEY;
+               SO1710_IndexBeforeListFile();
+               if SO1710_ReadPreviousValidListFile();
+                 QSndPgmMsg('CPD6A69':C@SMFN:'':0:'*DIAG':'*':0:'':I@EC);
+               else;
+                 // Read backwards a page of records
+                 D@RR1 = D@RR1M;
+                 dou SO1710_ReadPreviousValidListFile() or
+                     D@RR1 = 1;
+                   D@RR1 -= 1;
+                 enddo;
+                 if D@RR1 > 1;
+                   %occur(F1AK) = #INKEY;
+                 else;
+                   // Else set the record found to the lowest key
+                   %occur(F1AK) = #LOKEY;
+                   KY@DIR = 'f?>F1';
+                   exsr PR@KY;
+                 endif;
+               endif;
+               // Reposition file pointer
+               SO1710_IndexBeforeListFile();
+               // Enter or refresh requested
+             other;
+               %occur(F1AK) = #LOKEY;
+               SO1710_IndexBeforeListFile();
+           endsl;
+
+           // Perform first read for the subfile page
+           if SO1710_ReadValidListFile();
+             // No records found
+             SO1710_IndexAfterListFile();
+             if SO1710_ReadPreviousValidListFile();
+               // Still no records found
+               D@MOB = BOTTOM;
                %occur(F1AK) = #INKEY;
-x5           else;
-               // Else set the record found to the lowest key
+               F@AK = F1AK;
+               %occur(F1AK) = #LOKEY;
+               F1AK = F@AK;
+             else;
+               // records exist, set key
                %occur(F1AK) = #LOKEY;
                KY@DIR = 'f?>F1';
                exsr PR@KY;
-e5           endif;
-e4         endif;
-           // Reposition file pointer
-           SO1710_IndexBeforeListFile();
-           // Enter or refresh requested
-w3       other;
-           %occur(F1AK) = #LOKEY;
-           SO1710_IndexBeforeListFile();
-e3     endsl;
+             endif;
+           else;
+             // Records exists, set key
+             %occur(F1AK) = #LOKEY;
+             KY@DIR = 'f?>F1';
+             exsr PR@KY;
+           endif;
 
-       // Perform first read for the subfile page
-b3     if SO1710_ReadValidListFile();
-         // No records found
-         SO1710_IndexAfterListFile();
-b4       if SO1710_ReadPreviousValidListFile();
-           // Still no records found
-           D@MOB = BOTTOM;
-           %occur(F1AK) = #INKEY;
-           F@AK = F1AK;
-           %occur(F1AK) = #LOKEY;
-           F1AK = F@AK;
-x4       else;
-           // records exist, set key
-           %occur(F1AK) = #LOKEY;
-           KY@DIR = 'f?>F1';
-           exsr PR@KY;
-e4       endif;
-x3     else;
-         // Records exists, set key
-         %occur(F1AK) = #LOKEY;
-         KY@DIR = 'f?>F1';
-         exsr PR@KY;
-e3     endif;
-
-       SO1710_IndexBeforeListFile();
-       if SO1710_ReadValidListFile();
-         // No records to display
-         Indicators.SflRcdType = SflRcd_Blank;
-         write S1SFL01;
-         Indicators.SflRcdType = SflRcd_NoRecords;
-         write S1SFL01;
-         D@MOB = BOTTOM;
-       else;
-         D@RR1 = 0;
-       SO1710_IndexBeforeListFile();
-       dow D@RR1 < D@RR1M and
-           not SO1710_ReadValidListFile();
-         // Format subfile record
-         F1@CDI = *on;
-         exsr FM@S1F;
-         // Write subfile record
-         D@RR1 += 1;
-         Indicators.SflRcdType = SflRcd_Detail;
-         write S1SFL01;
-         // Save key values if last record on screen
-         if D@RR1 = D@RR1M;
-           %occur(F1DS) = #UPRCD;
+           SO1710_IndexBeforeListFile();
+           if SO1710_ReadValidListFile();
+             // No records to display
+             Indicators.SflRcdType = SflRcd_Blank;
+             write S1SFL01;
+             Indicators.SflRcdType = SflRcd_NoRecords;
+             write S1SFL01;
+             D@MOB = BOTTOM;
+           else;
+             D@RR1 = 0;
+           SO1710_IndexBeforeListFile();
+           dow D@RR1 < D@RR1M and
+               not SO1710_ReadValidListFile();
+             // Format subfile record
+             F1@CDI = *on;
+             exsr FM@S1F;
+             // Write subfile record
+             D@RR1 += 1;
+             Indicators.SflRcdType = SflRcd_Detail;
+             write S1SFL01;
+             // Save key values if last record on screen
+             if D@RR1 = D@RR1M;
+               %occur(F1DS) = #UPRCD;
+             endif;
+           enddo;
+           endif;
+           // If end of file show it
+           if SO1710_ReadValidListFile();
+             D@MOB = BOTTOM;
+           else;
+             // Else save keys to HIKEY
+             D@MOB = MORE;
+             %occur(F1DS) = #CRRCD;
+             %occur(F1AK) = #HIKEY;
+             KY@DIR = 'f?>F1';
+             exsr PR@KY;
+           endif;
+         // End of create/update test
          endif;
-       enddo;
-       endif;
-       // If end of file show it
-       if SO1710_ReadValidListFile();
-         D@MOB = BOTTOM;
-       else;
-         // Else save keys to HIKEY
-         D@MOB = MORE;
-         %occur(F1DS) = #CRRCD;
-         %occur(F1AK) = #HIKEY;
-         KY@DIR = 'f?>F1';
-         exsr PR@KY;
-       endif;
-       // End of create/update test
-       endif;
       /end-free
       *
       * Set/Reset display output
