@@ -59,7 +59,6 @@
       * 21     : *ON=Mark record as changed, *OFF=Mark record as not changed
         21                                  SFLNXTCHG
 
-
       * 01     : *OFF=Control (UL), *ON=Detail (PR)
       * 02     : *OFF=Detail records to display, *ON='(No records to display)'
       * 03-04  : *VAR=Condition fields, based on "view" (BinFmt, 00=V1, 01=V2..11=V4)
@@ -73,28 +72,23 @@
       * 20     : *RES=If 10-19 is not enough
                   S10120        20A  H      TEXT('Save field, *IN01-20')
 
-
       * 97-88  : *VAR=Condition errors
       *  97    :  *ON=S1OPT in error
       *  96    :  *ON=BLISBN in error
       *  95-88 :  *RES=Additional 'key' fields in error
                   S18897        10A  H      TEXT('Save field, *IN88-97')
 
-
-                  S1OPT          2A  B 11  2
+       N02        S1OPT          2A  B 11  2
        N10                                  DSPATR(UL)
         10                                  DSPATR(PR)
         97                                  DSPATR(RI)
         97                                  DSPATR(PC)
-
-      *
       * 'Keys'
-                  BLISBN    R        B 11  6
+       N02        BLISBN    R        B 11  6
        N01                                  DSPATR(UL)
         01                                  DSPATR(PR)
         96                                  DSPATR(RI)
         96                                  DSPATR(PC)
-      *
       * 'Records'
         01N02     BLSKSN    R        O 11 17
         01N02     S1DLTD    R    4   O 11 28REFFLD(BLDLTD)
@@ -104,11 +98,10 @@
        N03N04     S1FTTL    R   31   O 11 50REFFLD(JMREF2/FTTL *LIBL/JMREF2)
         01N02
        N03 04     S1FATN    R   31   O 11 50REFFLD(JMREF2/FATN *LIBL/JMREF2)
-      *
-      * 'No records to display'
-        01 02                          12  4'(No records to display)'
-       N01 02                          13  4'(No records to display)'
 
+      * 'No records to display'
+        02                             11  4'(No records to display)'
+       N01                                  DSPATR(ND)
       *
       *-------------------------------------------------------------------------
                 R C1PNL01                   SFLCTL(S1SFL01)
@@ -628,16 +621,16 @@
       *
       *
                                             TEXT('List subfile record')
-        01N02     BLISBN    R        O  8  2
-        01N02     BLSKSN    R        O  8 13
-        01N02     S1DLTD    R        O  8 24REFFLD(S1DLTD *SRC)
-        01N02     BLSUPN    R        O  8 29
-        01N02     BLIMPN    R        O  8 37
-        01N02     S1FTTL    R        O  8 45REFFLD(S1FTTL *SRC)
-        01N02     S1FATN    R        O  8 45REFFLD(S1FATN *SRC)
+       N01N02     BLISBN    R        O  8  2
+       N01N02     BLSKSN    R        O  8 13
+       N01N02     S1DLTD    R        O  8 24REFFLD(S1DLTD *SRC)
+       N01N02     BLSUPN    R        O  8 29
+       N01N02     BLIMPN    R        O  8 37
+       N01N02     S1FTTL    R        O  8 45REFFLD(S1FTTL *SRC)
+       N01N02     S1FATN    R        O  8 45REFFLD(S1FATN *SRC)
 
 
-        02                              9  4'(No records to display)'
+        01 02                           9  4'(No records to display)'
 
       *
       *-------------------------------------------------------------------------

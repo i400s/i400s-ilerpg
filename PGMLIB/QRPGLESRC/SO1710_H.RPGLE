@@ -46,6 +46,21 @@
      D Key_Print       C                   CONST(X'F6')
      D Key_RecBackSpc  C                   CONST(X'F8')
      D Key_AutoEnter   C                   CONST(X'3F')
+
+     D SflRcd_Control...
+     D                 C                   const('00')
+     D SflRcd_Detail...
+     D                 C                   const('10')
+     D SflRcd_Blank...
+     D                 C                   const('01')
+     D SflRcd_NoRecords...
+     D                 C                   const('11')
+
+     D p_Indicators    s               *   inz(%addr(*in))
+     D Indicators      ds            99    based(p_Indicators)
+     D                                     qualified
+     D  SflRcdType                    2A   overlay(Indicators:1)
+     D   Dtl                          1N   overlay(SflRcdType:1)
       *
       * Program status data structure
      D                SDS
@@ -54,7 +69,6 @@
       *
       *
      D f1@sq           S              3I 0
-     D f1@eof          S              1N
       /endif
 
 

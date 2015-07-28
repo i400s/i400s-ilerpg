@@ -482,26 +482,29 @@ B2   C     @FMT          IFEQ      '*ENT'
 E2   C                   ENDIF
       *
       *
-B2   C     @FMT          IFEQ      '*ENT'
-     C     @FMT          OREQ      '*CRT'
-     C     @FMT          OREQ      '*RFD'
-     C     @FMT          OREQ      '*UPD'
-      *
-      * Clear subfile
-     C                   MOVE      *ON           *IN02
-     C                   WRITE     C1PNL01
-      *
-      *
-     C     #CRRCD        OCCUR     F1DS
-
       /free
+       if    @FMT = '*ENT' or @FMT = '*CRT'
+          or @FMT = '*RFD' or @FMT = '*UPD';
+         *in02 = *on;
+         write C1PNL01;
+
+         // Write input 'control' subfile
+         %occur(F1AK) = #CHKEY;
+         F1@CDI = *off;
+         exsr FM@S1F;
+         F1@CDI = *on;
+         if S1@WCR;
+           Indicators.SflRcdType = SflRcd_Control;
+           write S1SFL01;
+         endif;
+
+         // Set recordDS to "Current"
+         %occur(F1DS) = #CRRCD;
+
 b3     select;
 w3       when ReturnKey = RollUp;
 b4         if D@MOB = BOTTOM;
-             X@MI = 'CPD6A69';
-      /end-free
-     C                   CALL      'QMHSNDPM'    @SNDSM
-      /free
+             QSndPgmMsg('CPD6A69':C@SMFN:'':0:'*DIAG':'*':0:'':I@EC);
              %occur(F1AK) = #LOKEY;
              SO1710_IndexBeforeListFile();
 x4         else;
@@ -512,10 +515,7 @@ w3       when ReturnKey = RollDown;
            %occur(F1AK) = #LOKEY;
            SO1710_IndexBeforeListFile();
 b4         if SO1710_ReadPreviousValidListFile();
-             X@MI = 'CPD6A66';
-      /end-free
-     C                   CALL      'QMHSNDPM'    @SNDSM
-      /free
+             QSndPgmMsg('CPD6A69':C@SMFN:'':0:'*DIAG':'*':0:'':I@EC);
 x4         else;
              // Read backwards a page of records
              D@RR1 = D@RR1M;
@@ -563,63 +563,47 @@ x3     else;
          KY@DIR = 'f?>F1';
          exsr PR@KY;
 e3     endif;
-      /end-free
-      *
-      * Save key(s)
-     C                   MOVE      F1AK          F@AK
-     C     #CHKEY        OCCUR     F1AK
-      *
-      * Write input 'control' subfile
-     C                   MOVE      *OFF          F1@CDI
-     C                   EXSR      FM@S1F
-     C     S1@WCR        IFEQ      *ON
-     C                   WRITE     S1SFL01
-     C                   ENDIF
-      *
-      * Restore key(s)
-     C                   MOVE      F@AK          F1AK
-     C                   MOVE      'F1>f?'       KY@DIR
-     C                   EXSR      PR@KY
-      *
-      * Setup 'standard record' subfile
-     C                   Z-ADD     0             D@RR1
-      /free
+
        SO1710_IndexBeforeListFile();
-       dow not SO1710_ReadValidListFile() and
-           D@RR1 < D@RR1M;
+       if SO1710_ReadValidListFile();
+         // No records to display
+         Indicators.SflRcdType = SflRcd_Blank;
+         write S1SFL01;
+         Indicators.SflRcdType = SflRcd_NoRecords;
+         write S1SFL01;
+         D@MOB = BOTTOM;
+       else;
+         D@RR1 = 0;
+       SO1710_IndexBeforeListFile();
+       dow D@RR1 < D@RR1M and
+           not SO1710_ReadValidListFile();
+         // Format subfile record
+         F1@CDI = *on;
+         exsr FM@S1F;
+         // Write subfile record
+         D@RR1 += 1;
+         Indicators.SflRcdType = SflRcd_Detail;
+         write S1SFL01;
+         // Save key values if last record on screen
+         if D@RR1 = D@RR1M;
+           %occur(F1DS) = #UPRCD;
+         endif;
+       enddo;
+       endif;
+       // If end of file show it
+       if SO1710_ReadValidListFile();
+         D@MOB = BOTTOM;
+       else;
+         // Else save keys to HIKEY
+         D@MOB = MORE;
+         %occur(F1DS) = #CRRCD;
+         %occur(F1AK) = #HIKEY;
+         KY@DIR = 'f?>F1';
+         exsr PR@KY;
+       endif;
+       // End of create/update test
+       endif;
       /end-free
-      *
-      * Format subfle record
-     C                   MOVE      *ON           F1@CDI
-     C                   EXSR      FM@S1F
-      *
-      * Write subfile record
-     C                   ADD       1             D@RR1
-     C                   WRITE     S1SFL01
-      *
-      * Save key values if last record on screen
-B4   C     D@RR1         IFEQ      D@RR1M
-     C     #UPRCD        OCCUR     F1DS
-E4   C                   ENDIF
-      *
-      *
-E3   C                   ENDDO
-      *
-      * If end of file show it
-B3   C     F1@EOF        IFEQ      *ON
-     C                   MOVE      BOTTOM        D@MOB
-      *
-      * Else save keys to HIKEY
-X3   C                   ELSE
-     C                   MOVE      MORE          D@MOB
-     C     #CRRCD        OCCUR     F1DS
-     C     #HIKEY        OCCUR     F1AK
-     C                   MOVE      'f?>F1'       KY@DIR
-     C                   EXSR      PR@KY
-E3   C                   ENDIF
-      *
-      * End of create/update test
-E2   C                   ENDIF
       *
       * Set/Reset display output
      C     #CHKEY        OCCUR     F1AK
@@ -1280,9 +1264,6 @@ E1   C                   ENDIF
       *
       * 'Control' or 'detail'
      C                   MOVE      F1@CDI        *IN01
-      *
-      * '(no records to display)'
-     C                   MOVE      F1@EOF        *IN02
       *
       *
      C                   MOVE      *ON           S1@WCR
@@ -4655,7 +4636,6 @@ B4   C     X@ECBA        IFEQ      *ZERO
       *
       * Format subfile record as 'detail'
      C                   MOVE      *ON           F1@CDI
-     C                   MOVE      *OFF          F1@EOF
      C                   EXSR      FM@S1F
       *
       * Write subfile record
@@ -6093,12 +6073,10 @@ E1   C                   ENDIF
            when f1@sq = 4;
              reade(n) F1R4K2 DTAF1R4;
          endsl;
-         F1@EOF = %eof;
-         if F1@EOF;
+         if %eof;
            return *on;
          else;
-           F1@EOF = SO1710_ValidateEOFListFile();
-           return F1@EOF;
+           return SO1710_ValidateEOFListFile();
          endif;
        enddo;
        return *off;
@@ -6122,12 +6100,10 @@ E1   C                   ENDIF
            when f1@sq = 4;
              readpe(n) F1R4K2 DTAF1R4;
          endsl;
-         F1@EOF = %eof;
-         if F1@EOF;
+         if %eof;
            return *on;
          else;
-           F1@EOF = SO1710_ValidateEOFListFile();
-           return F1@EOF;
+           return SO1710_ValidateEOFListFile();
          endif;
        enddo;
        return *off;

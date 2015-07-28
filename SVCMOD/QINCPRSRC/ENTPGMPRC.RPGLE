@@ -62,3 +62,14 @@
      D  e_EC                        272A
       /undefine SO1720_WrkRcdImp
       /endif
+
+     D QSndPgmMsg      PR                  EXTPGM('QMHSNDPM')
+     D  MsgID                         7    const
+     D  MsgFile                      20    const
+     D  MsgData                     256    const
+     D  MsgDataLength                10i 0 const
+     D  MsgType                      10    const
+     D  MsgQueue                     10    const
+     D  MsgStackCount                10i 0 const
+     D  MsgKey                        4    const
+     D  e_EC                        272    const
