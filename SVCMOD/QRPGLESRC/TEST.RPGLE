@@ -24,41 +24,44 @@
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
      D Author          DS                  likeds(t_Author)
      D                                     dim(2)
-     D TestAll         S             30A   varying
-     D AllKey          C                   '*allKEY   '
-     D TestAllK        S             10A
       /free
        // -------------------------------------------------------------------------
        // -------------------------------------------------------------------------
+       AuthorKeys.ISBN = '9999999999';
+       AuthorKeys.MARCTag = 100;
+       AuthorKeys.Sequence = 1;
+       if SRVDTA_GetAuthor(AuthorKeys:Author);
+         dsply ('Error: Record');
+       endif;
+
        AuthorKeys.ISBN = '0000000008';
        AuthorKeys.MARCTag = 100;
        AuthorKeys.Sequence = 1;
-       SRVDTA_GetAuthor(AuthorKeys:Author);
-       AuthorKeys.ISBN = '0000000008';
-       AuthorKeys.MARCTag = 100;
-       AuthorKeys.Sequence = 3;
-       SRVDTA_GetAuthor(AuthorKeys:Author);
-       SRVDTA_GetAuthor(AuthorKeys:Author:'*allkey');
-       SRVDTA_GetAuthor(AuthorKeys:Author:*omit:*omit);
+       if not SRVDTA_GetAuthor(AuthorKeys:Author);
+         dsply ('Error: No record');
+       elseif Author(1).Name<>'A long author with a very sillly name to test.';
+         dsply ('Error: Invalid author returned');
+       endif;
+
+       if not SRVDTA_GetAuthor(AuthorKeys:Author:*omit:*omit);
+         dsply ('Error: *omit:*omit');
+       endif;
+
+       if not SRVDTA_GetAuthor(AuthorKeys:Author:'*ALLKEY');
+         dsply ('Error: *ALLKEY');
+       endif;
+
        monitor;
-       SRVDTA_GetAuthor(AuthorKeys:Author:'':*omit);
+         SRVDTA_GetAuthor(AuthorKeys:Author:'*allkey':*omit);
+         dsply ('Error: *allkey');
        on-error;
-       //  dump(a);
        endmon;
+
        monitor;
-       SRVDTA_GetAuthor(AuthorKeys:Author:*omit:'');
+         SRVDTA_GetAuthor(AuthorKeys:Author:'*ALLKEY':'not null');
+         dsply ('Error: selection not null');
        on-error;
-       //  dump(a);
        endmon;
-       TestAllK = AllKey;
-       SRVDTA_GetAuthor(AuthorKeys:Author:TestAllK:*omit);
-       dump(a);
-       SRVDTA_GetAuthor(AuthorKeys:Author:AllKey:*omit);
-       TestAll =  '*allkey';
-       TestAll +=  AllKey;
-       TestAll += x'00000000';
-       TestAll += '*AllKeY';
-       dump(a);
 
        *inlr = *on;
        return;

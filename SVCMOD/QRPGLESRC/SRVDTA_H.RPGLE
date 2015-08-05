@@ -77,8 +77,6 @@
       *-------------------------------------------------------------------------
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
      D                                     based(p_AuthorKeys)
-     D APIError        DS                  likeds(t_QUSEC)
-     D QlgCtrlBlock    DS                  likeds(t_QLGIDRCB00)
      D p_KeysType      S               *
 
       *-------------------------------------------------------------------------

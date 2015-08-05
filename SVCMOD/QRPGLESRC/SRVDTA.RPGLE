@@ -49,18 +49,8 @@
        if %parms >= 3; // Keys type passed
          p_KeysType = %addr(KeysType); // Set pointer
          if p_KeysType <> *null;
-           QlgCtrlBlock.TypeOfRequest = 1;
-           QlgCtrlBlock.CCSIDInput = 37;
-           QlgCtrlBlock.CaseRequest = 0;
-           QlgCtrlBlock.Reserved = *allx'00';
-           QlgConvertCase(QlgCtrlBlock: // Control block
-                          KeysType:        // Set
-                          KeysType:        // Get
-                          %len(keysType):  // Length of string
-                          x'00000000');    // API error DS
            if KeysType = '*ALLKEY';
              p_KeysType = *null; // Unset pointer = '*ALLKEY'
-             dump(a);
            else;
              QmhSndPgmMsg('MSG2010':      // Keys type '&1' is invalid
                           MsgFileLMMSGF:  // Message file
