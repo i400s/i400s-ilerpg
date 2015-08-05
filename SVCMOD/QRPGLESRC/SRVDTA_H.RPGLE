@@ -27,8 +27,8 @@
       * Returns         :< IsFound
       * Parameter      >:  Keys
       *                >:< Author
-      *                >:  KeysType
-      *                >:  Selection
+      *                ?:  KeysType
+      *                ?:  Selection
       *-------------------------------------------------------------------------
      D SRVDTA_GetAuthor...
      D                 PR                  like(*in)
@@ -77,8 +77,8 @@
       *-------------------------------------------------------------------------
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
      D                                     based(p_AuthorKeys)
-     D APIError        DS                  likeds(QUSEC)
-     D QlgCtrlBlock    DS                  likeds(QLGIDRCB00)
+     D APIError        DS                  likeds(t_QUSEC)
+     D QlgCtrlBlock    DS                  likeds(t_QLGIDRCB00)
      D p_KeysType      S               *
 
       *-------------------------------------------------------------------------

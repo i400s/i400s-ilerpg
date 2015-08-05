@@ -2,20 +2,19 @@
       *-------------------------------------------------------------------------
       * TEMPLATE API errors DS
       *-------------------------------------------------------------------------
-     D QUSEC           DS                  based(pt_QUSEC)
+     D t_QUSEC         DS                  based(pt_QUSEC)
      D                                     qualified
      D  BytesProvided                10I 0
      D  BytesAvailable...
      D                               10I 0
      D  ExceptionID                   7A
      D  Reserved                      1A
-     D  GetMessageData...
-     D                              256A
+     D  MessageData                 256A
 
       *-------------------------------------------------------------------------
       * TEMPLATE Convert case DS
       *-------------------------------------------------------------------------
-     D QLGIDRCB00      DS                  based(pt_QLGIDRCB00)
+     D t_QLGIDRCB00    DS                  based(pt_QLGIDRCB00)
      D                                     qualified
      D  TypeOfRequest                10I 0
      D  CCSIDInput                   10I 0
@@ -27,13 +26,14 @@
       *-------------------------------------------------------------------------
      D QlgConvertCase...
      D                 PR                  extproc('QlgConvertCase')
-     D  CtrlBlock                          likeds(QLGIDRCB00)
+     D  CtrlBlock                          likeds(t_QLGIDRCB00)
      D                                     const
      D  SetString                  2048A   options(*varsize)
      D                                     const
      D  GetString                  2048A   options(*varsize)
      D  Length                       10I 0 const
-     D  APIError                           likeds(QUSEC)
+     D  APIError                           options(*varsize)
+     D                                     likeds(t_QUSEC)
      D                                     const
 
       *-------------------------------------------------------------------------
@@ -52,7 +52,8 @@
      D  CallStackCount...
      D                               10I 0 const
      D  MsgKey                        4A   const
-     D  APIError                           likeds(QUSEC)
+     D  APIError                           options(*varsize)
+     D                                     likeds(t_QUSEC)
      D                                     const
 
       *-------------------------------------------------------------------------
