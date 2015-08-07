@@ -14,6 +14,8 @@
      D   ISBN                        10A
      D   MARCTag                      3P 0
      D   Sequence                     5P 0
+     D   CreatedDTS                    Z
+     D   ChangedDTS                    Z
      D   Name                      2048A   varying
       *-------------------------------------------------------------------------
       * END Global definitions and templates
@@ -75,8 +77,6 @@
       *-------------------------------------------------------------------------
       * Local Variables
       *-------------------------------------------------------------------------
-     D AuthorKeys      DS                  likeds(t_AuthorKeys)
-     D                                     based(p_AuthorKeys)
      D p_KeysType      S               *
 
       *-------------------------------------------------------------------------
@@ -89,6 +89,47 @@
       *-------------------------------------------------------------------------
       * BEGIN Internal procedures
       *-------------------------------------------------------------------------
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetAuthor
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Author
+      *                >:  Keys
+      *                >:  KeysType
+      *-------------------------------------------------------------------------
+     D GetAuthor...
+     D                 PR                  like(*in)
+     D  Author                             likeds(t_Author)
+     D                                     dim(2)
+     D  p_AuthorKeys                   *   const
+     D  p_KeysType                     *   const
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetAuthor
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(GetAuthor)
+      /undefine   GetAuthor
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetAuthor
+      *-------------------------------------------------------------------------
+     P GetAuthor...
+     P                 B                   export
+     D GetAuthor...
+     D                 PI                  like(*in)
+     D  Author                             likeds(t_Author)
+     D                                     dim(2)
+     D  p_AuthorKeys                   *   const
+     D  p_KeysType                     *   const
+
+      *-------------------------------------------------------------------------
+      * Local Variables
+      *-------------------------------------------------------------------------
+     D AuthorKeys      DS                  likeds(t_AuthorKeys)
+     D                                     based(p_AuthorKeys)
+     D KeysType        S             10A   based(p_KeysType)
+      /endif
 
       /if NOT defined(SrvDta_h)
       *-------------------------------------------------------------------------

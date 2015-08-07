@@ -79,35 +79,55 @@
          endif;
        endif;
 
-         if OpenMTAUTHP;
-           Select;
-             when p_KeysType = *null; // Default '*ALLKEY'
-               p_AuthorKeys = %addr(Keys);
-               setll (AuthorKeys.ISBN:
-                      AuthorKeys.MARCTag:
-                      AuthorKeys.Sequence) MTAUTHF;
-               reade (AuthorKeys.ISBN:
-                      AuthorKeys.MARCTag:
-                      AuthorKeys.Sequence) MTAUTHF;
-               if %eof(MTAUTHP);
-                 return *off;
-               else;
-                 clear Author;
-                 Author(1).ISBN = AUISBN;
-                 Author(1).MARCTag = AUTAGC;
-                 Author(1).Sequence = AUSEQN;
-                 dow not %eof(MTAUTHP);
-                   Author(1).Name += AUAUTN;
-                   reade (AuthorKeys.ISBN:
-                          AuthorKeys.MARCTag:
-                          AuthorKeys.Sequence) MTAUTHF;
-                 enddo;
-                 Author(2) = Author(1);
-                 return *on;
-               endif;
-             other; // Problem, flag as no record found
+       return GetAuthor(Author:
+                        %addr(Keys):
+                        p_KeysType);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetAuthor
+       // Description     : Get Author
+       // Returns         :< IsFound
+       // Parameter      >:< Author
+       //                >:  Keys
+       //                >:  KeysType
+       /define GetAuthor
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+
+       if OpenMTAUTHP;
+         Select;
+           when p_KeysType = *null; // Default '*ALLKEY'
+             setll (AuthorKeys.ISBN:
+                    AuthorKeys.MARCTag:
+                    AuthorKeys.Sequence) MTAUTHF;
+             reade (AuthorKeys.ISBN:
+                    AuthorKeys.MARCTag:
+                    AuthorKeys.Sequence) MTAUTHF;
+             if %eof(MTAUTHP);
                return *off;
-           endsl;
+             else;
+               clear Author;
+               Author(1).ISBN = AUISBN;
+               Author(1).MARCTag = AUTAGC;
+               Author(1).Sequence = AUSEQN;
+               Author(1).CreatedDTS = %timestamp(); // TODO
+               Author(1).ChangedDTS = %timestamp(); // TODO
+               dow not %eof(MTAUTHP);
+                 Author(1).Name += AUAUTN;
+                 reade (AuthorKeys.ISBN:
+                        AuthorKeys.MARCTag:
+                        AuthorKeys.Sequence) MTAUTHF;
+               enddo;
+               Author(2) = Author(1); // Make both copies identical
+               return *on;
+             endif;
+           other; // Problem, flag as no record found
+             return *off;
+         endsl;
        endif;
       /end-free
      P                 E
