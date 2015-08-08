@@ -34,34 +34,34 @@
 
        // test inputs
        if %parms < 2; // not enough parameters
-          QmhSndPgmMsg('CPF24B4':      // Severe error whie addressing parameter list
-                       MsgFileQCPF:    // Message file
-                       '':             // Message data
-                       0:              // Length of message data
-                       '*ESCAPE':      // Message type
-                       '*':            // Call stack entry
-                       1:              // Call stack count
-                       '':             // Message key
-                       x'00000000');   // API error DS
+            QmhSndPgmMsg('CPF24B4':
+                         MsgFileQCPF:    // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*':            // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
        endif;
 
        if %parms >= 3; // Keys type passed
-         p_KeysType = %addr(KeysType); // Set pointer
-         if p_KeysType <> *null;
-           if KeysType = '*ALLKEY';
-             p_KeysType = *null; // Unset pointer = '*ALLKEY'
-           else;
-             QmhSndPgmMsg('MSG2010':      // Keys type '&1' is invalid
-                          MsgFileLMMSGF:  // Message file
-                          keysType:       // Message data
-                          %len(KeysType): // Length of message data
-                          '*ESCAPE':      // Message type
-                          '*':            // Call stack entry
-                          1:              // Call stack count
-                          '':             // Message key
-                          x'00000000');   // API error DS
-           endif;
-         endif;
+            p_KeysType = %addr(KeysType); // Set pointer
+            if p_KeysType <> *null;
+                 if KeysType = '*ALLKEY';
+                      p_KeysType = *null; // Unset pointer = '*ALLKEY'
+                 else;
+                      QmhSndPgmMsg('MSG2010':      // Keys type '&1' is invalid
+                                   MsgFileLMMSGF:  // Message file
+                                   keysType:       // Message data
+                                   %len(KeysType): // Length of message data
+                                   '*ESCAPE':      // Message type
+                                   '*':            // Call stack entry
+                                   1:              // Call stack count
+                                   '':             // Message key
+                                   x'00000000');   // API error DS
+                 endif;
+            endif;
        endif;
 
        // Parameters are valid, process request
@@ -85,35 +85,35 @@
        // ----------------------------------------------------------------------
 
        if OpenMTAUTHP;
-         Select;
-           when p_KeysType = *null; // Default '*ALLKEY'
-             setll (AuthorKeys.ISBN:
-                    AuthorKeys.MARCTag:
-                    AuthorKeys.Sequence) MTAUTHF;
-             reade (AuthorKeys.ISBN:
-                    AuthorKeys.MARCTag:
-                    AuthorKeys.Sequence) MTAUTHF;
-             if %eof(MTAUTHP);
-               return *off;
-             else;
-               clear Author;
-               Author(1).ISBN = AUISBN;
-               Author(1).MARCTag = AUTAGC;
-               Author(1).Sequence = AUSEQN;
-               Author(1).CreatedDTS = %timestamp(); // TODO
-               Author(1).ChangedDTS = %timestamp(); // TODO
-               dow not %eof(MTAUTHP);
-                 Author(1).Name += AUAUTN;
+            Select;
+            when p_KeysType = *null; // Default '*ALLKEY'
+                 setll (AuthorKeys.ISBN:
+                        AuthorKeys.MARCTag:
+                        AuthorKeys.Sequence) MTAUTHF;
                  reade (AuthorKeys.ISBN:
                         AuthorKeys.MARCTag:
                         AuthorKeys.Sequence) MTAUTHF;
-               enddo;
-               Author(2) = Author(1); // Make both copies identical
-               return *on;
-             endif;
-           other; // Problem, flag as no record found
-             return *off;
-         endsl;
+                 if %eof(MTAUTHP);
+                      return *off;
+                 else;
+                      clear Author;
+                      Author(1).ISBN = AUISBN;
+                      Author(1).MARCTag = AUTAGC;
+                      Author(1).Sequence = AUSEQN;
+                      Author(1).CreatedDTS = %timestamp(); // TODO
+                      Author(1).ChangedDTS = %timestamp(); // TODO
+                      dow not %eof(MTAUTHP);
+                           Author(1).Name += AUAUTN;
+                           reade (AuthorKeys.ISBN:
+                                  AuthorKeys.MARCTag:
+                                  AuthorKeys.Sequence) MTAUTHF;
+                      enddo;
+                      Author(2) = Author(1); // Make copies identical
+                      return *on;
+                 endif;
+            other; // Problem, flag as no record found
+                 return *off;
+            endsl;
        endif;
       /end-free
      P                 E
@@ -125,15 +125,15 @@
        /include SrvDta_H
        // -------------------------------------------------------------------------
        If IsOpen;
-         return IsOpen;
+            return IsOpen;
        else;
-         monitor;
-           open MTAUTHP;
-           IsOpen = *on;
-         on-error;
-           IsOpen = *off;
-         endmon;
-         return IsOpen;
+            monitor;
+                 open MTAUTHP;
+                 IsOpen = *on;
+            on-error;
+                 IsOpen = *off;
+            endmon;
+            return IsOpen;
        endif;
       /end-free
      P                 E
