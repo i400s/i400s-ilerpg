@@ -27,30 +27,24 @@
       * BEGIN Prototype : SRVDTA_GetAuthor
       * Description     : Get Author
       * Returns         :< IsFound
-      * Parameter      >:  Keys
-      *                >:< Author
+      * Parameter      >:< Author
+      *                >:  Keys
       *                ?:  KeysType
-      *                ?:  Selection
       *-------------------------------------------------------------------------
      D SRVDTA_GetAuthor...
      D                 PR                  like(*in)
+     D  Author                             likeds(t_Author)
+     D                                     dim(2)
      D  Keys                          1A   options(*varsize)
       /if not defined(SrvDta_)
      D                                     const
       /endif
-     D  Author                             likeds(t_Author)
-     D                                     dim(2)
      D  KeysType                     10A   options(*nopass:
      D                                             *omit)
       /if not defined(SrvDta_)
      D                                     const
       /endif
-     D  Selection                     1A   options(*nopass:
-     D                                             *omit:
-     D                                             *varsize)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
+
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetAuthor
       *-------------------------------------------------------------------------
@@ -65,17 +59,14 @@
      P                 B                   export
      D SRVDTA_GetAuthor...
      D                 PI                  like(*in)
-     D  Keys                          1A   options(*varsize)
      D  Author                             likeds(t_Author)
      D                                     dim(2)
+     D  Keys                          1A   options(*varsize)
      D  KeysType                     10A   options(*nopass:
-     D                                             *omit)
-     D  Selection                     1A   options(*varsize:
-     D                                             *nopass:
      D                                             *omit)
 
       *-------------------------------------------------------------------------
-      * Local Variables
+      * Local Variables : SRVDTA_GetAuthor
       *-------------------------------------------------------------------------
      D p_KeysType      S               *
 
@@ -124,7 +115,7 @@
      D  p_KeysType                     *   const
 
       *-------------------------------------------------------------------------
-      * Local Variables
+      * Local Variables : GetAuthor
       *-------------------------------------------------------------------------
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
      D                                     based(p_AuthorKeys)

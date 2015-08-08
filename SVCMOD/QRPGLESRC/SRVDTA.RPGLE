@@ -25,10 +25,9 @@
        // Procedure       : SRVDTA_GetAuthor
        // Description     : Get Author
        // Returns         :< IsFound
-       // Parameter      >:  Keys
-       //                >:< Author
+       // Parameter      >:< Author
+       //                >:  Keys
        //                ?:  KeysType
-       //                ?:  Selection
        /define SRVDTA_GetAuthor
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -65,20 +64,7 @@
          endif;
        endif;
 
-       if %parms >= 4; // Selection passed
-         if %addr(Selection) <> *null;
-           QmhSndPgmMsg('MSG2011':     // Selection is not allowed
-                        MsgFileLMMSGF: // Message file
-                        '':            // Message data
-                         0:             // Length of message data
-                        '*ESCAPE':     // Message type
-                        '*':           // Call stack entry
-                        1:             // Call stack count
-                        '':            // Message key
-                        x'00000000');  // API error DS
-         endif;
-       endif;
-
+       // Parameters are valid, process request
        return GetAuthor(Author:
                         %addr(Keys):
                         p_KeysType);

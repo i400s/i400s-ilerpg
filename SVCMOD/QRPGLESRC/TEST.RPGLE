@@ -30,36 +30,31 @@
        AuthorKeys.ISBN = '9999999999';
        AuthorKeys.MARCTag = 100;
        AuthorKeys.Sequence = 1;
-       if SRVDTA_GetAuthor(AuthorKeys:Author);
+       if SRVDTA_GetAuthor(Author:AuthorKeys);
          dsply ('Error: Record');
        endif;
 
        AuthorKeys.ISBN = '0000000008';
        AuthorKeys.MARCTag = 100;
        AuthorKeys.Sequence = 1;
-       if not SRVDTA_GetAuthor(AuthorKeys:Author);
+       if not SRVDTA_GetAuthor(Author:AuthorKeys);
          dsply ('Error: No record');
-       elseif Author(1).Name<>'A long author with a very sillly name to test.';
+       elseif Author(1).Name <> 'A long author with a very sillly +
+                                 name to test.';
          dsply ('Error: Invalid author returned');
        endif;
 
-       if not SRVDTA_GetAuthor(AuthorKeys:Author:*omit:*omit);
-         dsply ('Error: *omit:*omit');
+       if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit);
+         dsply ('Error: *omit');
        endif;
 
-       if not SRVDTA_GetAuthor(AuthorKeys:Author:'*ALLKEY');
+       if not SRVDTA_GetAuthor(Author:AuthorKeys:'*ALLKEY');
          dsply ('Error: *ALLKEY');
        endif;
 
        monitor;
-         SRVDTA_GetAuthor(AuthorKeys:Author:'*allkey':*omit);
+         SRVDTA_GetAuthor(Author:AuthorKeys:'*allkey');
          dsply ('Error: *allkey');
-       on-error;
-       endmon;
-
-       monitor;
-         SRVDTA_GetAuthor(AuthorKeys:Author:'*ALLKEY':'not null');
-         dsply ('Error: selection not null');
        on-error;
        endmon;
 
