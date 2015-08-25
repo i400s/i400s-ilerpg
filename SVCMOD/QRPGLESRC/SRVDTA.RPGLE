@@ -153,6 +153,49 @@
 
       /free
        // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetBibliographic
+       // Description     : Get Bibliographic data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                >:  Keys
+       //                ?:  Subset
+       //                ?:  ReturnFmt
+       //                ?:  Access
+       /define SRVDTA_GetBibliographic
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+       if %parms >= 4;
+            p_ReturnFmt = %addr(ReturnFmt);
+       endif;
+       if %parms >= 5;
+            p_Access = %addr(Access);
+       endif;
+
+       return GetBibliographic(p_Data:
+                               p_Keys:
+                               p_Subset:
+                               p_ReturnFmt:
+                               p_Access:
+                               GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
        // Procedure       : SRVDTA_GetBibliographicFirst
        // Description     : Get Bibliographic data
        // Returns         :< IsFound
@@ -168,95 +211,71 @@
             return *off;
        endif;
 
-       // test inputs
-       if %parms < 1
-       or %parms > 5;
-            QmhSndPgmMsg('MSG2001':      // Incorrect parm no's
-                         MsgFileLMMSGF:  // Message file
-                         '':             // Message data
-                         0:              // Length of message data
-                         '*ESCAPE':      // Message type
-                         '*':            // Call stack entry
-                         1:              // Call stack count
-                         '':             // Message key
-                         x'00000000');   // API error DS
-       endif;
-
-       if %parms >= 1; // Bibliographic data
+       if %parms >= 1;
             p_Data = %addr(Data);
        endif;
-
-       if %parms >= 2; // Bibliographic keys
+       if %parms >= 2;
             p_Keys = %addr(Keys);
        endif;
-
-       if %parms >= 3; // Subset
+       if %parms >= 3;
             p_Subset = %addr(Subset);
        endif;
-
-       if %parms >= 4; // Return format
+       if %parms >= 4;
             p_ReturnFmt = %addr(ReturnFmt);
-            select;
-            when p_ReturnFmt <> *null
-            and %scan(ReturnFmt:ReturnFmtOpts) = 0;
-                 QmhSndPgmMsg('MSG2009':       // Invalid return format
-                              MsgFileLMMSGF:   // Message file
-                              ReturnFmt:       // Message data
-                              %len(ReturnFmt): // Length of message data
-                              '*ESCAPE':       // Message type
-                              '*':             // Call stack entry
-                              1:               // Call stack count
-                              '':              // Message key
-                              x'00000000');    // API error DS
-            when p_ReturnFmt <> *null
-            and %scan(ReturnFmt:ReturnFmtOpts) = 1;
-                 p_ReturnFmt = *null; // Default option - *NONE
-            endsl;
-            if p_ReturnFmt <> *null
-            and p_Data = *null;
-                 QmhSndPgmMsg('MSG200A':       // Data return specified but no da
-                              MsgFileLMMSGF:   // Message file
-                              ReturnFmt:       // Message data
-                              %len(ReturnFmt): // Length of message data
-                              '*ESCAPE':       // Message type
-                              '*':             // Call stack entry
-                              1:               // Call stack count
-                              '':              // Message key
-                              x'00000000');    // API error DS
-
-            endif;
        endif;
-
-       if %parms >= 5; // Access
+       if %parms >= 5;
             p_Access = %addr(Access);
-            select;
-            when p_Access <> *null
-            and %scan(%trimr(Access):AccessOpts) = 0;
-                 QmhSndPgmMsg('MSG200B':      // Access type '&1' is invalid
-                              MsgFileLMMSGF:  // Message file
-                              Access:         // Message data
-                              %len(Access):   // Length of message data
-                              '*ESCAPE':      // Message type
-                              '*':            // Call stack entry
-                              1:              // Call stack count
-                              '':             // Message key
-                              x'00000000');   // API error DS
-            when p_Access <> *null
-            and %scan(%trimr(Access):AccessOpts) = 1;
-                 p_Access = *null; // Use default = *NOKEYS
-            endsl;
        endif;
 
-       if p_Access = *null; // *NOKEYS
-            p_Keys = *null; // Don't pass keys
+       return GetBibliographic(p_Data:
+                               p_Keys:
+                               p_Subset:
+                               p_ReturnFmt:
+                               p_Access:
+                               GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetBibliographicLast
+       // Description     : Get Bibliographic data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                ?:  Keys
+       //                ?:  Subset
+       //                ?:  ReturnFmt
+       //                ?:  Access
+       /define SRVDTA_GetBibliographicLast
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
        endif;
 
-       // Parameters are valid, process request
-       return GetBibliographicFirst(p_Data:
-                                    p_Keys:
-                                    p_Subset:
-                                    p_ReturnFmt:
-                                    p_Access);
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+       if %parms >= 4;
+            p_ReturnFmt = %addr(ReturnFmt);
+       endif;
+       if %parms >= 5;
+            p_Access = %addr(Access);
+       endif;
+
+       return GetBibliographic(p_Data:
+                               p_Keys:
+                               p_Subset:
+                               p_ReturnFmt:
+                               p_Access:
+                               GetAction);
 
       /end-free
      P                 E
@@ -278,118 +297,173 @@
             return *off;
        endif;
 
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+       if %parms >= 4;
+            p_ReturnFmt = %addr(ReturnFmt);
+       endif;
+       if %parms >= 5;
+            p_Access = %addr(Access);
+       endif;
+
+       return GetBibliographic(p_Data:
+                               p_Keys:
+                               p_Subset:
+                               p_ReturnFmt:
+                               p_Access:
+                               GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetBibliographicPrevious
+       // Description     : Get Bibliographic data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                >:  Keys
+       //                ?:  Subset
+       //                ?:  ReturnFmt
+       //                ?:  Access
+       /define SRVDTA_GetBibliographicPrevious
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+       if %parms >= 4;
+            p_ReturnFmt = %addr(ReturnFmt);
+       endif;
+       if %parms >= 5;
+            p_Access = %addr(Access);
+       endif;
+
+       return GetBibliographic(p_Data:
+                               p_Keys:
+                               p_Subset:
+                               p_ReturnFmt:
+                               p_Access:
+                               GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetBibliographic
+       // Description     : Get Bibliographic data
+       // Returns         :< IsFound
+       // Parameter      >:< p_Data
+       //                >:  p_Keys
+       //                >:  p_Subset
+       //                >:  p_ReturnFmt
+       //                >:  p_Access
+       //                >:  GetAction
+       /define GetBibliographic
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
        // test inputs
-       if %parms < 2
-       or %parms > 5;
+       if p_Data = *null
+       or GetAction = '*unique' and p_Keys = *null
+       or GetAction = '*next' and p_Keys = *null
+       or GetAction = '*previous' and p_Keys = *null;
             QmhSndPgmMsg('MSG2001':      // Incorrect parm no's
                          MsgFileLMMSGF:  // Message file
                          '':             // Message data
                          0:              // Length of message data
                          '*ESCAPE':      // Message type
-                         '*':            // Call stack entry
+                         '*PGMBDY':      // Call stack entry
                          1:              // Call stack count
                          '':             // Message key
                          x'00000000');   // API error DS
        endif;
 
-       if %parms >= 1; // Bibliographic data
-            p_Data = %addr(Data); // Set pointer
-       endif;
-
-       if %parms >= 2; // Bibliographic keys
-            p_Keys = %addr(Keys); // Set pointer
-       endif;
-
-       if %parms >= 3; // Subset
-            p_Subset = %addr(Subset);
-       endif;
-
-       if %parms >= 4; // Return format
-            p_ReturnFmt = %addr(ReturnFmt);
+       if p_ReturnFmt <> *null;
             select;
-            when p_ReturnFmt <> *null
-            and %scan(%trimr(ReturnFmt):ReturnFmtOpts) = 0;
+            when %scan(ReturnFmt:ReturnFmtOpts) = 0;
                  QmhSndPgmMsg('MSG2009':       // Invalid return format
                               MsgFileLMMSGF:   // Message file
                               ReturnFmt:       // Message data
                               %len(ReturnFmt): // Length of message data
                               '*ESCAPE':       // Message type
-                              '*':             // Call stack entry
+                              '*PGMBDY':       // Call stack entry
                               1:               // Call stack count
                               '':              // Message key
                               x'00000000');    // API error DS
-            when p_ReturnFmt <> *null
-            and %scan(%trimr(ReturnFmt):ReturnFmtOpts) = 1;
-                 p_ReturnFmt = *null; // Default option - *NOKEYS
-            endsl;
-            if p_ReturnFmt <> *null
-            and p_Data = *null;
-                 QmhSndPgmMsg('MSG200A':       // Data return specified but no da
+            when ReturnFmt = '*NONE';
+                 p_ReturnFmt = *null; // Default - *NONE
+            when ReturnFmt = '*KEYSONLY' and p_keys = *null
+            or ReturnFmt = '*ALL' and p_keys = *null;
+                 QmhSndPgmMsg('MSG200C':       // Key field not passed when &1
                               MsgFileLMMSGF:   // Message file
                               ReturnFmt:       // Message data
                               %len(ReturnFmt): // Length of message data
                               '*ESCAPE':       // Message type
-                              '*':             // Call stack entry
+                              '*PGMBDY':       // Call stack entry
                               1:               // Call stack count
                               '':              // Message key
                               x'00000000');    // API error DS
 
-            endif;
+            endsl;
        endif;
 
-       if %parms >= 5; // Access
-            p_Access = %addr(Access);
-            select;
-            when p_Access <> *null
-            and %scan(%trimr(Access):AccessOpts) = 0;
+       if p_access = *null;
+            if GetAction <> '*first'
+            and GetAction <> '*last';
+                 AccessNo = 2; // *BYKEYS
+            else;
+                 AccessNo = 1; // *NOKEYS
+            endif;
+       else;
+            AccessNo = %scan(Access:AccessOpts);
+            if AccessNo > 0;
+                 AccessNo = (AccessNo / 10) + 1; // Calculate "index" not offset
+            endif;
+            if AccessNo = 0 // Invalid
+            or AccessNo = 1 and GetAction <> '*first'
+                            and GetAction <> '*last';
                  QmhSndPgmMsg('MSG200B':      // Access type '&1' is invalid
                               MsgFileLMMSGF:  // Message file
                               Access:         // Message data
                               %len(Access):   // Length of message data
                               '*ESCAPE':      // Message type
-                              '*':            // Call stack entry
+                              '*PGMBDY':      // Call stack entry
                               1:              // Call stack count
                               '':             // Message key
                               x'00000000');   // API error DS
-            when p_Access <> *null
-            and %scan(%trimr(Access):AccessOpts) = 1;
-                 p_Access = *null; // Use default = *BYKEYS
-            endsl;
+            endif;
        endif;
 
-       // Parameters are valid, process request
-       return GetBibliographicNext(p_Data:
-                                   p_Keys:
-                                   p_Subset:
-                                   p_ReturnFmt:
-                                   p_Access);
-
-      /end-free
-     P                 E
-
-      /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetBibliographicFirst
-       // Description     : Get first bibligraphic data
-       // Returns         :< IsFound
-       // Parameter      >:< p_Data
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  p_ReturnFmt
-       //                >:  p_Access
-       /define GetBibliographicFirst
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
+       // Initialise MTBIBLF specific subset - defaults.
        MTBIBLSubset.SupplierNo = 0;
        MTBIBLSubset.SearchKeyPfx = GetSearchKeyPfx('*ALL');
        MTBIBLSubset.ImprintPfx = GetImprintPfx(0);
        MTBIBLSubset.Deleted = '*';
        MTBIBLSubset.ISBN = *blanks;
 
+       // Initialise MTBIBLF specific subset - passed subset.
        if p_Subset <> *null;
             MTBIBLSubset.SupplierNo = Subset.SupplierNo;
             MTBIBLSubset.SearchKeyPfx = GetSearchKeyPfx(Subset.SearchKey);
@@ -397,161 +471,129 @@
             MTBIBLSubset.Deleted = Subset.Deleted;
        endif;
 
+       // Initialise MTBIBLF specific subset - key selection.
+       if GetAction = '*unique';
+            MTBIBLSubset.ISBN = Keys.ISBN;
+       endif;
+
+       // Setup keys, including alternative LF ones, for record access.
        Record.BLISBN = MTBIBLSubset.ImprintPfx.Prefix;
        Record.BLSUPN = MTBIBLSubset.SupplierNo;
        Record.BLSKSN = MTBIBLSubset.SearchKeyPfx.Prefix;
 
-       if p_Keys <> *null;
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *first and *last.
+       select;
+       when GetAction = '*first';
+            if MTBIBLSubset.SearchKeyPfx.IsGeneric;
+                 Record.BLSKSN = %trimr(Record.BLSKSN) + SKSNLo;
+            endif;
+            if MTBIBLSubset.ImprintPfx.IsGeneric;
+                 Record.BLISBN = %trimr(Record.BLISBN) + ISBNLo;
+            endif;
+       when GetAction = '*last';
+            if MTBIBLSubset.SearchKeyPfx.IsGeneric;
+                 Record.BLSKSN = %trimr(Record.BLSKSN) + SKSNHi;
+            endif;
+            if MTBIBLSubset.ImprintPfx.IsGeneric;
+                 Record.BLISBN = %trimr(Record.BLISBN) + ISBNHi;
+            endif;
+       endsl;
+
+       // Replace keys if keys passed and *BYKEYS access.
+       if p_Keys <> *null and AccessNo = 2;
             Record.BLISBN = Keys.ISBN;
             Record.BLSUPN = Keys.SupplierNo;
             Record.BLSKSN = Keys.SearchKey;
        endif;
 
-       Sequence = GetMTBIBLSequence(MTBIBLSubset);
-       select;
-       when Sequence = 1
-       and not GetMTBIBLF1First(Record:
-                                MTBIBLSubset:
-                                '*first');
+       // Process request
+       if not GetMTBIBLF(Record:
+                         MTBIBLSubset:
+                         GetAction);
             return *off;
-       when Sequence = 2
-       and not GetMTBIBLF2First(Record:
-                                MTBIBLSubset:
-                                '*first');
-            return *off;
-       when Sequence = 3
-       and not GetMTBIBLF3First(Record:
-                                MTBIBLSubset:
-                                '*first');
-            return *off;
-       when Sequence = 4
-       and not GetMTBIBLF4First(Record:
-                                MTBIBLSubset:
-                                '*first');
-            return *off;
-       endsl;
+       endif;
 
-       if p_Data = *null
-       or p_ReturnFmt = *null;
+       if p_ReturnFmt = *null; // *NONE
             return *on;
        endif;
 
-       // Setup keys for return
-       Data.Keys.ISBN = Record.BLISBN;
-       Data.Keys.SupplierNo = Record.BLSUPN;
-       Data.Keys.SearchKey = Record.BLSKSN;
-
-       if ReturnFmt = '*KEYSONLY';
-            return *on;
+       // Update keys parameter.
+       if ReturnFmt = '*KEYSONLY'
+       or ReturnFmt = '*ALL';
+            Keys.ISBN = Record.BLISBN;
+            Keys.SupplierNo = Record.BLSUPN;
+            Keys.SearchKey = Record.BLSKSN;
        endif;
 
-       if ReturnFmt = '*ALL';
-            // Setup data for return
+       // Update keys within data, data structure
+       if ReturnFmt = '*DATAKEYS'
+       or ReturnFmt = '*DATAALL'
+       or ReturnFmt = '*ALL';
+            Data.Keys.ISBN = Record.BLISBN;
+            Data.Keys.SupplierNo = Record.BLSUPN;
+            Data.Keys.SearchKey = Record.BLSKSN;
+       endif;
+
+       // Update record formats within data structure
+       if ReturnFmt = '*ALLDATA'
+       or ReturnFmt = '*ALL';
             Data.Record(1) = Record;
             Data.Record(2) = Data.Record(1);
-            return *on;
        endif;
+
+       return *on;
 
       /end-free
      P                 E
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : GetBibliographicNext
-       // Description     : Get next bibligraphic data
+       // Procedure       : GetMTBIBLF
+       // Description     : Get bibligraphic data
        // Returns         :< IsFound
-       // Parameter      >:< p_Data
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  p_ReturnFmt
-       //                >:  p_Access
-       /define GetBibliographicNext
+       // Parameter      >:< Record
+       //                >:  Subset
+       //                >:  GetAction
+       /define GetMTBIBLF
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
 
-       MTBIBLSubset.SupplierNo = 0;
-       MTBIBLSubset.SearchKeyPfx = GetSearchKeyPfx('*ALL');
-       MTBIBLSubset.ImprintPfx = GetImprintPfx(0);
-       MTBIBLSubset.Deleted = '*';
-       MTBIBLSubset.ISBN = *blanks;
-
-       if p_Subset <> *null;
-            MTBIBLSubset.SupplierNo = Subset.SupplierNo;
-            MTBIBLSubset.SearchKeyPfx = GetSearchKeyPfx(Subset.SearchKey);
-            MTBIBLSubset.ImprintPfx = GetImprintPfx(Subset.ImprintNo);
-            MTBIBLSubset.Deleted = Subset.Deleted;
-       endif;
-
-       Record.BLISBN = MTBIBLSubset.ImprintPfx.Prefix;
-       Record.BLSUPN = MTBIBLSubset.SupplierNo;
-       Record.BLSKSN = MTBIBLSubset.SearchKeyPfx.Prefix;
-
-       if p_Keys <> *null;
-            Record.BLISBN = Keys.ISBN;
-            Record.BLSUPN = Keys.SupplierNo;
-            Record.BLSKSN = Keys.SearchKey;
-       endif;
-
-       Sequence = GetMTBIBLSequence(MTBIBLSubset);
+       Sequence = GetMTBIBLSequence(Subset);
        select;
-       when Sequence = 1
-       and not GetMTBIBLF1First(Record:
-                                MTBIBLSubset:
-                                '*next');
-            return *off;
-       when Sequence = 2
-       and not GetMTBIBLF2First(Record:
-                                MTBIBLSubset:
-                                '*next');
-            return *off;
-       when Sequence = 3
-       and not GetMTBIBLF3First(Record:
-                                MTBIBLSubset:
-                                '*next');
-            return *off;
-       when Sequence = 4
-       and not GetMTBIBLF4First(Record:
-                                MTBIBLSubset:
-                                '*next');
-            return *off;
+       when Sequence = 1;
+            return GetMTBIBLF1(Record:
+                               Subset:
+                               GetAction);
+       when Sequence = 2;
+            return GetMTBIBLF2(Record:
+                               Subset:
+                               GetAction);
+       when Sequence = 3;
+            return GetMTBIBLF3(Record:
+                               Subset:
+                               GetAction);
+       when Sequence = 4;
+            return GetMTBIBLF4(Record:
+                               Subset:
+                               GetAction);
        endsl;
-
-       if p_Data = *null
-       or p_ReturnFmt = *null;
-            return *on;
-       endif;
-
-       // Setup keys for return
-       Data.Keys.ISBN = Record.BLISBN;
-       Data.Keys.SupplierNo = Record.BLSUPN;
-       Data.Keys.SearchKey = Record.BLSKSN;
-
-       if ReturnFmt = '*KEYSONLY';
-            return *on;
-       endif;
-
-       if ReturnFmt = '*ALL';
-            // Setup data for return
-            Data.Record(1) = Record;
-            Data.Record(2) = Data.Record(1);
-            return *on;
-       endif;
 
       /end-free
      P                 E
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF1First
+       // Procedure       : GetMTBIBLF1
        // Description     : Get MTBIBLF1 data
        // Returns         :< IsFound
        // Parameter      >:< Record
        //                >:  Subset
        //                >:  GetAction
-       /define GetMTBIBLF1First
+       /define GetMTBIBLF1
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -561,17 +603,28 @@
        p_MTBIBLF = %addr(Record);
 
        select;
-       when GetAction = '*first';
+       when GetAction = '*first'
+       or   GetAction = '*previous'
+       or   GetAction = '*unique';
             setll (MTBIBLF.BLISBN) MTBIBLF1;
-       when GetAction = '*next';
+       when GetAction = '*next'
+       or   GetAction = '*last';
             setgt (MTBIBLF.BLISBN) MTBIBLF1;
        other;
             return *off;
        endsl;
        dou %eof(MTBIBLL1);
-            read MTBIBLF1 MTBIBLF;
+            if GetAction = '*first'
+            or GetAction = '*next'
+            or GetAction = '*unique';
+                 read MTBIBLF1 MTBIBLF;
+            else;
+                 readp MTBIBLF1 MTBIBLF;
+            endif;
             if %eof(MTBIBLL1)
-            or not CmpImprintPfx(Subset.ImprintPfx:
+            or not ChkISBN(Subset.ISBN:
+                           MTBIBLF.BLISBN)
+            or not ChkImprintPfx(Subset.ImprintPfx:
                                  MTBIBLF.BLISBN);
                  return *off;
             endif;
@@ -585,13 +638,13 @@
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF2First
+       // Procedure       : GetMTBIBLF2
        // Description     : Get MTBIBLF2 data
        // Returns         :< IsFound
        // Parameter      >:< Record
        //                >:  Subset
        //                >:  GetAction
-       /define GetMTBIBLF2First
+       /define GetMTBIBLF2
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -601,11 +654,13 @@
        p_MTBIBLF = %addr(Record);
 
        select;
-       when GetAction = '*first';
+       when GetAction = '*first'
+       or   GetAction = '*previous';
             setll (MTBIBLF.BLSUPN:
                    MTBIBLF.BLSKSN:
                    MTBIBLF.BLISBN) MTBIBLF2;
-       when GetAction = '*next';
+       when GetAction = '*next'
+       or   GetAction = '*last';
             setgt (MTBIBLF.BLSUPN:
                    MTBIBLF.BLSKSN:
                    MTBIBLF.BLISBN) MTBIBLF2;
@@ -613,12 +668,17 @@
             return *off;
        endsl;
        dou %eof(MTBIBLL2);
-            reade (MTBIBLF.BLSUPN) MTBIBLF2 MTBIBLF;
+            if GetAction ='*first'
+            or GetAction ='*next';
+                 reade (MTBIBLF.BLSUPN) MTBIBLF2 MTBIBLF;
+            else;
+                 readpe (MTBIBLF.BLSUPN) MTBIBLF2 MTBIBLF;
+            endif;
             if %eof(MTBIBLL2)
-            or not CmpSearchKeyPfx(Subset.SearchKeyPfx:
+            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:
                                    MTBIBLF.BLSKSN)
             or not Subset.SearchKeyPfx.IsGeneric
-            and not CmpImprintPfx(Subset.ImprintPfx:
+            and not ChkImprintPfx(Subset.ImprintPfx:
                                   MTBIBLF.BLISBN);
                  return *off;
             endif;
@@ -632,13 +692,13 @@
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF3First
+       // Procedure       : GetMTBIBLF3
        // Description     : Get MTBIBLF3 data
        // Returns         :< IsFound
        // Parameter      >:< Record
        //                >:  Subset
        //                >:  GetAction
-       /define GetMTBIBLF3First
+       /define GetMTBIBLF3
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -648,22 +708,29 @@
        p_MTBIBLF = %addr(Record);
 
        select;
-       when GetAction = '*first';
+       when GetAction = '*first'
+       or   GetAction = '*previous';
             setll (MTBIBLF.BLSKSN:
                    MTBIBLF.BLISBN) MTBIBLF3;
-       when GetAction = '*next';
+       when GetAction = '*next'
+       or   GetAction = '*last';
             setgt (MTBIBLF.BLSKSN:
                    MTBIBLF.BLISBN) MTBIBLF3;
        other;
             return *off;
        endsl;
        dou %eof(MTBIBLL3);
-            read  MTBIBLF3 MTBIBLF;
+            if GetAction = '*first'
+            or GetAction = '*next';
+                 read  MTBIBLF3 MTBIBLF;
+            else;
+                 readp MTBIBLF3 MTBIBLF;
+            endif;
             if %eof(MTBIBLL3)
-            or not CmpSearchKeyPfx(Subset.SearchKeyPfx:
+            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:
                                    MTBIBLF.BLSKSN)
             or not Subset.SearchKeyPfx.IsGeneric
-            and not CmpImprintPfx(Subset.ImprintPfx:
+            and not ChkImprintPfx(Subset.ImprintPfx:
                                  MTBIBLF.BLISBN);
                  return *off;
             endif;
@@ -677,13 +744,13 @@
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF4First
+       // Procedure       : GetMTBIBLF4
        // Description     : Get MTBIBLF4 data
        // Returns         :< IsFound
        // Parameter      >:< Record
        //                >:  Subset
        //                >:  GetAction
-       /define GetMTBIBLF4First
+       /define GetMTBIBLF4
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -693,19 +760,26 @@
        p_MTBIBLF = %addr(Record);
 
        select;
-       when GetAction = '*first';
+       when GetAction = '*first'
+       or   GetAction = '*previous';
             setll (MTBIBLF.BLSUPN:
                    MTBIBLF.BLISBN) MTBIBLF4;
-       when GetAction = '*next';
+       when GetAction = '*next'
+       or   GetAction = '*last';
             setgt (MTBIBLF.BLSUPN:
                    MTBIBLF.BLISBN) MTBIBLF4;
        other;
             return *off;
        endsl;
        dou %eof(MTBIBLL4);
-            reade (MTBIBLF.BLSUPN) MTBIBLF4 MTBIBLF;
+            if GetAction = '*first'
+            or GetAction = '*next';
+                 reade (MTBIBLF.BLSUPN) MTBIBLF4 MTBIBLF;
+            else;
+                 readpe (MTBIBLF.BLSUPN) MTBIBLF4 MTBIBLF;
+            endif;
             if %eof(MTBIBLL4)
-            or not CmpImprintPfx(Subset.ImprintPfx:
+            or not ChkImprintPfx(Subset.ImprintPfx:
                                  MTBIBLF.BLISBN);
                  return *off;
             endif;
@@ -731,6 +805,11 @@
             return *off;
        endif;
 
+       if not ChkISBN(Subset.ISBN:
+                  Record.BLISBN);
+            return *off;
+       endif;
+
        If Subset.Deleted = 'N'
        and Record.BLDLTD <> *blanks
        or Subset.Deleted = 'Y'
@@ -743,12 +822,12 @@
             return *off;
        endif;
 
-       if not CmpSearchKeyPfx(Subset.SearchKeyPfx:
+       if not ChkSearchKeyPfx(Subset.SearchKeyPfx:
                               Record.BLSKSN);
             return *off;
        endif;
 
-       if not CmpImprintPfx(Subset.ImprintPfx:
+       if not ChkImprintPfx(Subset.ImprintPfx:
                               Record.BLISBN);
             return *off;
        endif;
@@ -768,6 +847,10 @@
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
+            return 1;
+       endif;
+
+       if Subset.ISBN <> *blanks;
             return 1;
        endif;
 
@@ -829,12 +912,12 @@
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : CmpSearchKeyPfx
-       // Description     : Compare SearchKeyPfx
-       // Returns         :< IsEqual
+       // Procedure       : ChkSearchKeyPfx
+       // Description     : Check SearchKeyPfx
+       // Returns         :< IsValid
        // Parameter      >:  SearchKeyPfx
        //                >:  SearchKey
-       /define CmpSearchKeyPfx
+       /define ChkSearchKeyPfx
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -866,7 +949,7 @@
             return ImprintPfx;
        endif;
 
-       ImprintPfx.IsGeneric = *on; // Always GENERIC*
+       ImprintPfx.IsGeneric = *on;
 
        if ImprintNo <> IPIMPN; // Cache check, file rarely changes
             chain ImprintNo MTIMPNF;
@@ -876,6 +959,7 @@
        endif;
 
        ImprintPfx.Prefix = %trimr(IPISBP);
+
        return ImprintPfx;
 
       /end-free
@@ -883,12 +967,12 @@
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : CmpImprintPfx
-       // Description     : Compare ImprintPfx
-       // Returns         :< IsEqual
+       // Procedure       : ChkImprintPfx
+       // Description     : Check ImprintPfx
+       // Returns         :< IsValid
        // Parameter      >:  ImprintPfx
        //                >:  ISBN
-       /define CmpImprintPfx
+       /define ChkImprintPfx
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -899,6 +983,30 @@
        and %subst(ISBN:1:
                   %len(ImprintPfx.Prefix)) = ImprintPfx.Prefix
        or ISBN = ImprintPfx.Prefix;
+            return *on;
+       endif;
+
+       return *off;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : ChkISBN
+       // Description     : Check ISBN
+       // Returns         :< IsValid
+       // Parameter      >:  ISBN1
+       //                >:  ISBN2
+       /define ChkISBN
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if ISBN1 = *blanks
+       or ISBN1 = ISBN2;
             return *on;
        endif;
 

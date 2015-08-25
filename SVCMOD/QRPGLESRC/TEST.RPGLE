@@ -25,11 +25,14 @@
      D Author          DS                  likeds(t_Author)
      D                                     dim(2)
      D BiblKeys        DS                  likeds(t_BibliographicKeys)
+     D                                     inz
      D biblSubset      DS                  likeds(t_BibliographicSubset)
      D                                     inz
      D Bibl            DS                  likeds(t_Bibliographic)
+     D                                     inz
 
      D wait            S              1A
+     D i               S              3I 0
       /free
        // -------------------------------------------------------------------------
        // -------------------------------------------------------------------------
@@ -74,7 +77,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAKEYS':
                                            *omit);
             dsply ('Error, SKSN=*BLANKS, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '1019000005';
@@ -84,7 +87,7 @@
             if not SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAKEYS':
                                           *omit);
                  dsply ('ErNxt, SKSN=*BLANKS, no records in Bibl') ' ' wait;
             elseif Bibl.Keys.ISBN <> '1019000007';
@@ -97,7 +100,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAKEYS':
                                            *omit);
             dsply ('Error, SKSN=*ALL, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '0000000007';
@@ -107,7 +110,7 @@
             if not SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAKEYS':
                                           *omit);
                  dsply ('ErNxt, SKSN=*ALL, no records in Bibl') ' ' wait;
             elseif Bibl.Keys.ISBN <> '0000000008';
@@ -121,7 +124,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=*ALL:SUPN=2, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '0000000011';
@@ -131,7 +134,7 @@
             if not SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=*ALL:SUPN:=2 no records in Bibl') ' ' wait;
             elseif Bibl.Keys.ISBN <> '0000000116';
@@ -145,7 +148,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=C*:SUPN=2, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '1080000001';
@@ -155,7 +158,7 @@
             if SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=C*:SUPN=2 record in Bibl') ' ' wait;
             endif;
@@ -167,7 +170,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAKEYS':
                                            *omit);
             dsply ('Error, SKSN=CCC*:SUPN=0, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '1010000011';
@@ -177,7 +180,7 @@
             if SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=CCC*:SUPN=0 record in Bibl') ' ' wait;
             endif;
@@ -189,7 +192,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=*ALL:IMPN=2, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '2000000002';
@@ -199,7 +202,7 @@
             if not SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=*ALL:IMPN:=2 no records in Bibl') ' ' wait;
             elseif Bibl.Keys.ISBN <> '2000000005';
@@ -214,7 +217,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=FF:IMPN=1, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '1000000010';
@@ -224,7 +227,7 @@
             if not SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=FF:IMPN:=1 no records in Bibl') ' ' wait;
             elseif Bibl.Keys.ISBN <> '1010101010';
@@ -239,7 +242,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=*:IMPN=0, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '0000000007';
@@ -249,7 +252,7 @@
             if not SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=*: no records in Bibl') ' ' wait;
             elseif Bibl.Keys.ISBN <> '0000000008';
@@ -264,7 +267,7 @@
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=R*:IMPN=1, no records in Bibl') ' ' wait;
        elseif Bibl.Keys.ISBN <> '1010000013';
@@ -274,7 +277,7 @@
             if SRVDTA_GetBibliographicNext(Bibl:
                                           Bibl.Keys:
                                           BiblSubset:
-                                          '*KEYSONLY':
+                                          '*DATAALL':
                                           *omit);
                  dsply ('ErNxt, SKSN=R*:IMPN=1 records in Bibl') ' ' wait;
             endif;
@@ -286,19 +289,87 @@
        if SRVDTA_GetBibliographicFirst(Bibl:
                                            *omit:
                                            BiblSubset:
-                                           '*KEYSONLY':
+                                           '*DATAALL':
                                            *omit);
             dsply ('Error, SKSN=RR*:IMPN=1, Record in Bibl ' +
                    Bibl.Keys.ISBN) ' ' wait;
-       else;
-            if SRVDTA_GetBibliographicNext(Bibl:
-                                          Bibl.Keys:
-                                          BiblSubset:
-                                          '*KEYSONLY':
+        endif;
+
+       reset BiblKeys;
+       BiblKeys.ISBN = '1080000001';
+       reset Bibl;
+       reset BiblSubset;
+       if not SRVDTA_GetBibliographic(Bibl:
+                                  BiblKeys:
+                                  *omit:
+                                  '*ALL':
+                                  *omit);
+            dsply ('Error, ISBN=1080000001, No Record in Bibl ')
+                    ' ' wait;
+       elseif Bibl.Keys.ISBN <> '1080000001';
+            dsply ('Error, ISBN=108000000, <> ' +
+                   Bibl.Keys.ISBN) ' ' wait;
+
+       endif;
+       BiblKeys.ISBN = '9898989898';
+       if SRVDTA_GetBibliographic(Bibl:
+                                  BiblKeys:
+                                  *omit:
+                                  '*ALL':
+                                  *omit);
+            dsply ('Error, ISBN=9898989898, Record in Bibl ')
+                    ' ' wait;
+
+       endif;
+
+       if not SRVDTA_GetBibliographicLast(Bibl:
+                                          BiblKeys:
+                                          *omit:
+                                          '*ALL':
                                           *omit);
-                 dsply ('ErNxt, SKSN=RR*:IMPN=1 records in Bibl') ' ' wait;
+            dsply ('Error, no Record in Bibl ' +
+                   Bibl.Keys.ISBN) ' ' wait;
+
+       elseif not SRVDTA_GetBibliographicPrevious(Bibl:
+                                  BiblKeys:
+                                  *omit:
+                                  '*ALL':
+                                  *omit);
+            dsply ('Error, Previous, No record in Bibl ' +
+                   Bibl.Keys.ISBN) ' ' wait;
+
+       endif;
+
+       BiblSubset.SearchKey = 'C*';
+       BiblSubset.SupplierNo = 0;
+       BiblSubset.ImprintNo = 1;
+       i = 1;
+       if not SRVDTA_GetBibliographicLast(Bibl:
+                                      BiblKeys:
+                                      BiblSubset:
+                                      '*ALL':
+                                      '*NOKEYS');
+            dsply ('Error: SKSN=C*:IMPN=1, No last Record in Bibl ') ' ' wait;
+       elseif BiblKeys.ISBN <> '1010000011';
+            dsply ('Error, SKSN=C*:IMPN=1,ISBN 1010000011 <> ' + BiblKeys.ISBN)
+                    ' ' wait;
+       else;
+            dow SRVDTA_GetBibliographicPrevious(Bibl:
+                                                BiblKeys:
+                                                BiblSubset:
+                                                '*KEYSONLY':
+                                                '*BYKEYS')
+            and i < 15;
+                 i += 1;
+            enddo;
+            if i <> 5 or Biblkeys.ISBN <> '1010000012';
+                 dsply ('Err, SKSN=C*:IMPN=1, prevloop ' +
+                        Biblkeys.ISBN + ' ' + %char(i))
+                        ' ' wait;
             endif;
        endif;
+
+
 
        //
 

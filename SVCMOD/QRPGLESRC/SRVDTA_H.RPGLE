@@ -127,26 +127,25 @@
       * BEGIN Prototype : SRVDTA_GetBibliographic
       * Description     : Get Bibliographic
       * Returns         :< IsFound
-      * Parameter      >:< Bibliographic
+      * Parameter      >:< Data
       *                >:  Keys
-      *                ?:  KeysType
+      *                ?:  Subset
+      *                ?:  ReturnFmt
+      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetBibliographic...
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
      D  Keys                               likeds(t_BibliographicKeys)
-     D  Access                       10A   options(*nopass:
+     D  Subset                             likeds(t_bibliographicSubset)
+     D                                     options(*nopass:
      D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
      D  ReturnFmt                    10A   options(*nopass:
      D                                             *omit)
       /if not defined(SrvDta_)
      D                                     const
       /endif
-     D  Subset                             likeds(t_bibliographicSubset)
-     D                                     options(*nopass:
+     D  Access                       10A   options(*nopass:
      D                                             *omit)
       /if not defined(SrvDta_)
      D                                     const
@@ -183,11 +182,9 @@
      D p_Keys          S               *
      D p_Subset        S               *
      D p_ReturnFmt     S               *
-     D ReturnFmtOpts...
-     D                 C                   '*NONE,*KEYSONLY,*ALL'
      D p_Access        S               *
-     D AccessOpts...
-     D                 C                   '*DFTKEY'
+     D GetAction       S             10A   varying
+     D                                     inz('*unique')
 
       *-------------------------------------------------------------------------
       * END Procedure   : SRVDTA_GetBibliographic
@@ -258,17 +255,85 @@
      D p_Keys          S               *
      D p_Subset        S               *
      D p_ReturnFmt     S               *
-     D ReturnFmtOpts...
-     D                 C                   const('*NONE     +
-     D                                            *KEYSONLY +
-     D                                            *ALL      ')
      D p_Access        S               *
-     D AccessOpts...
-     D                 C                   const('*NOKEYS   +
-     D                                            *BYKEY    ')
+     D GetAction       S             10A   varying
+     D                                     inz('*first')
 
       *-------------------------------------------------------------------------
       * END Procedure   : SRVDTA_GetBibliographicFirst
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetBibliographicLast
+      * Description     : Get Bibliographic
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Keys
+      *                ?:  Subset
+      *                ?:  ReturnFmt
+      *                ?:  Access
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetBibliographicLast...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  Subset                             likeds(t_bibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  ReturnFmt                    10A   options(*nopass:
+     D                                             *omit)
+      /if not defined(SrvDta_)
+     D                                     const
+      /endif
+     D  Access                       10A   options(*nopass:
+     D                                             *omit)
+      /if not defined(SrvDta_)
+     D                                     const
+      /endif
+
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(SRVDTA_GetBibliographicLast)
+      /undefine   SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographicLast...
+     P                 B                   export
+     D SRVDTA_GetBibliographicLast...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  ReturnFmt                    10A   options(*nopass:
+     D                                             *omit)
+     D  Access                       10A   options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D p_ReturnFmt     S               *
+     D p_Access        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*last')
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographicLast
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -332,16 +397,81 @@
      D p_Keys          S               *
      D p_Subset        S               *
      D p_ReturnFmt     S               *
-     D ReturnFmtOpts...
-     D                 C                   const('*NONE     +
-     D                                            *KEYSONLY +
-     D                                            *ALL      ')
      D p_Access        S               *
-     D AccessOpts...
-     D                 C                   const('*BYKEYS   ')
+     D GetAction       S             10A   varying
+     D                                     inz('*next')
 
       *-------------------------------------------------------------------------
       * END Procedure   : SRVDTA_GetBibliographicNext
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetBibliographicPrevious
+      * Description     : Get Bibliographic
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *                ?:  ReturnFmt
+      *                ?:  Access
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetBibliographicPrevious...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D  Subset                             likeds(t_bibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  ReturnFmt                    10A   options(*nopass:
+     D                                             *omit)
+      /if not defined(SrvDta_)
+     D                                     const
+      /endif
+     D  Access                       10A   options(*nopass:
+     D                                             *omit)
+      /if not defined(SrvDta_)
+     D                                     const
+      /endif
+
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(SRVDTA_GetBibliographicPrevious)
+      /undefine   SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographicPrevious...
+     P                 B                   export
+     D SRVDTA_GetBibliographicPrevious...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  ReturnFmt                    10A   options(*nopass:
+     D                                             *omit)
+     D  Access                       10A   options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D p_ReturnFmt     S               *
+     D p_Access        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*previous')
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographicPrevious
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -425,7 +555,7 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetBibliographicFirst
+      * BEGIN Prototype : GetBibliographic
       * Description     : Get Bibliographic
       * Returns         :< IsFound
       * Parameter      >:< p_Data
@@ -433,35 +563,38 @@
       *                >:  p_Subset
       *                >:  p_ReturnFmt
       *                >:  p_Access
+      *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetBibliographicFirst...
+     D GetBibliographic...
      D                 PR                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  p_ReturnFmt                    *
      D  p_Access                       *
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetBibliographicFirst
+      * END Prototype   : GetBibliographic
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetBibliographicFirst)
-      /undefine   GetBibliographicFirst
+      /if defined(GetBibliographic)
+      /undefine   GetBibliographic
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetBibliographicFirst
+      * BEGIN Procedure : GetBibliographic
       *-------------------------------------------------------------------------
-     P GetBibliographicFirst...
+     P GetBibliographic...
      P                 B
-     D GetBibliographicFirst...
+     D GetBibliographic...
      D                 PI                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  p_ReturnFmt                    *
      D  p_Access                       *
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetBibliographicFirst
+      * Local Variables : GetBibliographic
       *-------------------------------------------------------------------------
      D Data            DS                  likeds(t_Bibliographic)
      D                                     based(p_Data)
@@ -470,108 +603,101 @@
      D Subset          DS                  likeds(t_BibliographicSubset)
      D                                     based(p_Subset)
      D ReturnFmt       S             10A   based(p_ReturnFmt)
+     D  ReturnFmtOpts...
+     D                 C                   const('*NONE     +
+     D                                            *KEYSONLY +
+     D                                            *DATAKEYS +
+     D                                            *DATAALL  +
+     D                                            *ALL      ')
      D Access          S             10A   based(p_Access)
-
-     D Record          DS                  likeds(t_BibliographicRecord)
-     D                                     inz
+     D  AccessOpts...
+     D                 C                   const('*NOKEYS   +
+     D                                            *BYKEYS   ')
+     D  AccessNo       S              3I 0
      D MTBIBLSubset...
      D                 DS                  likeds(t_MTBIBLSubset)
      D                                     inz
-     D Sequence        S              3I 0
+     D Record          DS                  likeds(t_BibliographicRecord)
+     D                                     inz
+     D SKSNLo          S             10A   inz(*allx'00')
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D ISBNLo          S             10A   inz(*allx'00')
+     D ISBNHi          S             10A   inz(*allx'FF')
+
       /EOF
       /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetBibliographicNext
+      * BEGIN Prototype : GetMTBIBLF
       * Description     : Get Bibliographic
       * Returns         :< IsFound
-      * Parameter      >:< p_Data
-      *                >:  p_Keys
-      *                >:  p_Subset
-      *                >:  p_ReturnFmt
-      *                >:  p_Access
+      * Parameter      >:< Record
+      *                >:  Subset
+      *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetBibliographicNext...
+     D GetMTBIBLF...
      D                 PR                  like(*in)
-     D  p_Data                         *
-     D  p_Keys                         *
-     D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D  p_Access                       *
+     D  Record                             likeds(t_BibliographicRecord)
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetBibliographicNext
+      * END Prototype   : GetMTBIBLF
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetBibliographicNext)
-      /undefine   GetBibliographicNext
+      /if defined(GetMTBIBLF)
+      /undefine   GetMTBIBLF
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetBibliographicnext
+      * BEGIN Procedure : GetMTBIBLF
       *-------------------------------------------------------------------------
-     P GetBibliographicNext...
+     P GetMTBIBLF...
      P                 B
-     D GetBibliographicNext...
+     D GetMTBIBLF...
      D                 PI                  like(*in)
-     D  p_Data                         *
-     D  p_Keys                         *
-     D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D  p_Access                       *
+     D  Record                             likeds(t_BibliographicRecord)
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetBibliographicNext
+      * Local Variables : GetMTBIBLF
       *-------------------------------------------------------------------------
-     D Data            DS                  likeds(t_Bibliographic)
-     D                                     based(p_Data)
-     D Keys            DS                  likeds(t_BibliographicKeys)
-     D                                     based(p_keys)
-     D Subset          DS                  likeds(t_BibliographicSubset)
-     D                                     based(p_Subset)
-     D ReturnFmt       S             10A   based(p_ReturnFmt)
-     D Access          S             10A   based(p_Access)
-
-     D Record          DS                  likeds(t_BibliographicRecord)
-     D                                     inz
-     D MTBIBLSubset...
-     D                 DS                  likeds(t_MTBIBLSubset)
-     D                                     inz
      D Sequence        S              3I 0
       /EOF
       /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTBIBLF1First
+      * BEGIN Prototype : GetMTBIBLF1
       * Description     : Get MTBIBLF1 data
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetMTBIBLF1First...
+     D GetMTBIBLF1...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetMTBIBLF1First
+      * END Prototype   : GetMTBIBLF1
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetMTBIBLF1First)
-      /undefine   GetMTBIBLF1First
+      /if defined(GetMTBIBLF1)
+      /undefine   GetMTBIBLF1
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetMTBIBLF1First
+      * BEGIN Procedure : GetMTBIBLF1
       *-------------------------------------------------------------------------
-     P GetMTBIBLF1First...
+     P GetMTBIBLF1...
      P                 B
-     D GetMTBIBLF1First...
+     D GetMTBIBLF1...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetMTBIBLF1First
+      * Local Variables : GetMTBIBLF1
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF1:*input)
      D                                     based(p_MTBIBLF)
@@ -580,37 +706,37 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTBIBLF2First
+      * BEGIN Prototype : GetMTBIBLF2
       * Description     : Get MTBIBLF2 data
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetMTBIBLF2First...
+     D GetMTBIBLF2...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetMTBIBLF2First
+      * END Prototype   : GetMTBIBLF2
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetMTBIBLF2First)
-      /undefine   GetMTBIBLF2First
+      /if defined(GetMTBIBLF2)
+      /undefine   GetMTBIBLF2
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetMTBIBLF2First
+      * BEGIN Procedure : GetMTBIBLF2
       *-------------------------------------------------------------------------
-     P GetMTBIBLF2First...
+     P GetMTBIBLF2...
      P                 B
-     D GetMTBIBLF2First...
+     D GetMTBIBLF2...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetMTBIBLF2First
+      * Local Variables : GetMTBIBLF2
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF2:*input)
      D                                     based(p_MTBIBLF)
@@ -619,37 +745,37 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTBIBLF3First
+      * BEGIN Prototype : GetMTBIBLF3
       * Description     : Get MTBIBLF3 data
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetMTBIBLF3First...
+     D GetMTBIBLF3...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetMTBIBLF3First
+      * END Prototype   : GetMTBIBLF3
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetMTBIBLF3First)
-      /undefine   GetMTBIBLF3First
+      /if defined(GetMTBIBLF3)
+      /undefine   GetMTBIBLF3
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetMTBIBLF3First
+      * BEGIN Procedure : GetMTBIBLF3
       *-------------------------------------------------------------------------
-     P GetMTBIBLF3First...
+     P GetMTBIBLF3...
      P                 B
-     D GetMTBIBLF3First...
+     D GetMTBIBLF3...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetMTBIBLF3First
+      * Local Variables : GetMTBIBLF3
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF3:*input)
      D                                     based(p_MTBIBLF)
@@ -658,37 +784,37 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTBIBLF4First
+      * BEGIN Prototype : GetMTBIBLF4
       * Description     : Get MTBIBLF4 data
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetMTBIBLF4First...
+     D GetMTBIBLF4...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetMTBIBLF4First
+      * END Prototype   : GetMTBIBLF4
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetMTBIBLF4First)
-      /undefine   GetMTBIBLF4First
+      /if defined(GetMTBIBLF4)
+      /undefine   GetMTBIBLF4
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetMTBIBLF4First
+      * BEGIN Procedure : GetMTBIBLF4
       *-------------------------------------------------------------------------
-     P GetMTBIBLF4First...
+     P GetMTBIBLF4...
      P                 B
-     D GetMTBIBLF4First...
+     D GetMTBIBLF4...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
-     D  GetAction                    10    const
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetMTBIBLF4First
+      * Local Variables : GetMTBIBLF4
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF4:*input)
      D                                     based(p_MTBIBLF)
@@ -796,34 +922,34 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : CmpSearchKeyPfx
-      * Description     : Compare SearchKeyPfx
-      * Returns         :< IsEqual
+      * BEGIN Prototype : ChkSearchKeyPfx
+      * Description     : Check SearchKeyPfx
+      * Returns         :< IsValid
       *                >:  SearchKeyPfx
       *                >:  SearchKey
       *-------------------------------------------------------------------------
-     D CmpSearchKeyPfx...
+     D ChkSearchKeyPfx...
      D                 PR              N
      D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
      D  SearchKey                    10
       *-------------------------------------------------------------------------
-      * END Prototype   : CmpSearchKeyPfx
+      * END Prototype   : ChkSearchKeyPfx
       *-------------------------------------------------------------------------
       /endif
-      /if defined(CmpSearchKeyPfx)
-      /undefine   CmpSearchKeyPfx
+      /if defined(ChkSearchKeyPfx)
+      /undefine   ChkSearchKeyPfx
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : CmpSearchKeyPfx
+      * BEGIN Procedure : ChkSearchKeyPfx
       *-------------------------------------------------------------------------
-     P CmpSearchKeyPfx...
+     P ChkSearchKeyPfx...
      P                 B
-     D CmpSearchKeyPfx...
+     D ChkSearchKeyPfx...
      D                 PI              N
      D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
      D  SearchKey                    10
 
       *-------------------------------------------------------------------------
-      * Local Variables : CmpSearchKeyPfx
+      * Local Variables : ChkSearchKeyPfx
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -863,34 +989,68 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : CmpImprintPfx
-      * Description     : Compare ImprintPfx
-      * Returns         :< IsEqual
+      * BEGIN Prototype : ChkImprintPfx
+      * Description     : Check ImprintPfx
+      * Returns         :< IsValid
       *                >:  ImprintPfx
       *                >:  ISBN
       *-------------------------------------------------------------------------
-     D CmpImprintPfx...
+     D ChkImprintPfx...
      D                 PR              N
      D  ImprintPfx                         likeds(t_ImprintPfx)
      D  ISBN                         10
       *-------------------------------------------------------------------------
-      * END Prototype   : CmpImprintPfx
+      * END Prototype   : ChkImprintPfx
       *-------------------------------------------------------------------------
       /endif
-      /if defined(CmpImprintPfx)
-      /undefine   CmpImprintPfx
+      /if defined(ChkImprintPfx)
+      /undefine   ChkImprintPfx
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : CmpImprintPfx
+      * BEGIN Procedure : ChkImprintPfx
       *-------------------------------------------------------------------------
-     P CmpImprintPfx...
+     P ChkImprintPfx...
      P                 B
-     D CmpImprintPfx...
+     D ChkImprintPfx...
      D                 PI              N
      D  ImprintPfx                         likeds(t_imprintPfx)
      D  ISBN                         10
 
       *-------------------------------------------------------------------------
-      * Local Variables : CmpImprintPfx
+      * Local Variables : ChkImprintPfx
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkISBN
+      * Description     : Check ISBN
+      * Returns         :< IsValid
+      *                >:  ISBN1
+      *                >:  ISBN2
+      *-------------------------------------------------------------------------
+     D ChkISBN...
+     D                 PR              N
+     D  ISBN1                        10
+     D  ISBN2                        10
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkISBN
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(ChkISBN)
+      /undefine   ChkISBN
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkISBN
+      *-------------------------------------------------------------------------
+     P ChkISBN...
+     P                 B
+     D ChkISBN...
+     D                 PI              N
+     D  ISBN1                        10
+     D  ISBN2                        10
+
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkISBN
       *-------------------------------------------------------------------------
       /EOF
       /endif
