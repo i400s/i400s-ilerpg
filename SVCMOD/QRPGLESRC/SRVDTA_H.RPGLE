@@ -4,29 +4,43 @@
       *-------------------------------------------------------------------------
      D t_AuthorKeys...
      D                 DS                  qualified
-     D                                     based(pt_AuthorKeys)
+     D                                     based(pt_Template)
      D   ISBN                        10A
      D   MARCTag                      3P 0
      D   Sequence                     5P 0
-     D t_Author...
+     D t_AuthorSubset...
+     D                 DS                  Likeds(T_AuthorKeys)
+     D                                     based(pt_Template)
+     D t_AuthorRecord...
      D                 DS                  qualified
-     D                                     based(pt_Author)
-     D   ISBN                        10A
-     D   MARCTag                      3P 0
-     D   Sequence                     5P 0
+     D                                     based(pt_Template)
+     D   AUISBN                      10A
+     D   AUTAGC                       3P 0
+     D   AUSEQN                       5P 0
      D   CreatedDTS                    Z
      D   ChangedDTS                    Z
      D   Name                      2048A   varying
+     D t_Author...
+     D                 DS                  qualified
+     D                                     based(pt_Template)
+     D   Keys                              likeds(t_AuthorKeys)
+     D   Record                            likeds(t_AuthorRecord)
+     D                                     dim(2)
+      /if defined(SrvDta_)
+     D t_MTAUTHSubset...
+     D                 DS                  Likeds(T_AuthorSubset)
+     D                                     based(pt_Template)
+      /endif
 
      D t_BibliographicKeys...
      D                 DS                  qualified
-     D                                     based(pt_BibliographicKeys)
+     D                                     based(pt_Template)
      D   ISBN                        10A
      D   SupplierNo                   7P 0
      D   SearchKey                   10A
      D t_BibliographicSubset...
      D                 DS                  qualified
-     D                                     based(pt_BibliographicSubset)
+     D                                     based(pt_Template)
      D   SupplierNo                   7P 0
      D   SearchKey                   10A
      D   ImprintNo                    8P 0
@@ -34,21 +48,21 @@
      D t_BibliographicRecord...
      D               E DS                  qualified
      D                                     extname(MTBIBLP:MTBIBLF:*input)
-     D                                     based(pt_BibliographicRecord)
+     D                                     based(pt_Template)
      D t_Bibliographic...
      D                 DS                  qualified
-     D                                     based(pt_Bibliographic)
+     D                                     based(pt_Template)
      D   Keys                              likeds(t_BibliographicKeys)
      D   Record                            likeds(t_BibliographicRecord)
      D                                     dim(2)
 
      D t_SearchKeyPfx...
      D                 DS                  qualified
-     D                                     based(pt_SearchKeyPfx)
+     D                                     based(pt_Template)
      D  Prefix                       10    varying
      D  IsGeneric                     1N
      D t_ImprintPfx    DS                  qualified
-     D                                     based(pt_ImprintPfx)
+     D                                     based(pt_Template)
      D  Prefix                       10    varying
      D  IsGeneric                     1N
      D
@@ -56,7 +70,7 @@
       /if defined(SrvDta_)
      D t_MTBIBLSubset...
      D                 DS                  qualified
-     D                                     based(pt_MTBIBLSubset)
+     D                                     based(pt_Template)
      D  SupplierNo                    7  0
      D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
      D  ImprintPfx                         likeds(t_ImprintPfx)
@@ -73,19 +87,25 @@
       * BEGIN Prototype : SRVDTA_GetAuthor
       * Description     : Get Author
       * Returns         :< IsFound
-      * Parameter      >:< Author
+      * Parameter      >:< Data
       *                >:  Keys
-      *                ?:  KeysType
+      *                ?:  Subset
+      *                ?:  ReturnFmt
+      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetAuthor...
      D                 PR                  like(*in)
-     D  Author                             likeds(t_Author)
-     D                                     dim(2)
-     D  Keys                          1A   options(*varsize)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  ReturnFmt                    10A   options(*nopass:
+     D                                             *omit)
       /if not defined(SrvDta_)
      D                                     const
       /endif
-     D  KeysType                     10A   options(*nopass:
+     D  Access                       10A   options(*nopass:
      D                                             *omit)
       /if not defined(SrvDta_)
      D                                     const
@@ -105,16 +125,26 @@
      P                 B                   export
      D SRVDTA_GetAuthor...
      D                 PI                  like(*in)
-     D  Author                             likeds(t_Author)
-     D                                     dim(2)
-     D  Keys                          1A   options(*varsize)
-     D  KeysType                     10A   options(*nopass:
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+     D  ReturnFmt                    10A   options(*nopass:
+     D                                             *omit)
+     D  Access                       10A   options(*nopass:
      D                                             *omit)
 
       *-------------------------------------------------------------------------
       * Local Variables : SRVDTA_GetAuthor
       *-------------------------------------------------------------------------
-     D p_KeysType      S               *
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D p_ReturnFmt     S               *
+     D p_Access        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*unique')
 
       *-------------------------------------------------------------------------
       * END Procedure   : SRVDTA_GetAuthor
@@ -486,16 +516,21 @@
       * BEGIN Prototype : GetAuthor
       * Description     : Get Author
       * Returns         :< IsFound
-      * Parameter      >:< Author
-      *                >:  Keys
-      *                >:  KeysType
+      * Parameter      >:< p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  p_ReturnFmt
+      *                >:  p_Access
+      *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetAuthor...
      D                 PR                  like(*in)
-     D  Author                             likeds(t_Author)
-     D                                     dim(2)
-     D  p_AuthorKeys                   *   const
-     D  p_KeysType                     *   const
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  p_ReturnFmt                    *
+     D  p_Access                       *
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetAuthor
       *-------------------------------------------------------------------------
@@ -506,49 +541,200 @@
       * BEGIN Procedure : GetAuthor
       *-------------------------------------------------------------------------
      P GetAuthor...
-     P                 B                   export
+     P                 B
      D GetAuthor...
      D                 PI                  like(*in)
-     D  Author                             likeds(t_Author)
-     D                                     dim(2)
-     D  p_AuthorKeys                   *   const
-     D  p_KeysType                     *   const
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  p_ReturnFmt                    *
+     D  p_Access                       *
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetAuthor
       *-------------------------------------------------------------------------
-     D AuthorKeys      DS                  likeds(t_AuthorKeys)
-     D                                     based(p_AuthorKeys)
-     D KeysType        S             10A   based(p_KeysType)
+     D Data            DS                  likeds(t_Author)
+     D                                     based(p_Data)
+     D Keys            DS                  likeds(t_AuthorKeys)
+     D                                     based(p_keys)
+     D Subset          DS                  likeds(t_AuthorSubset)
+     D                                     based(p_Subset)
+     D ReturnFmt       S             10A   based(p_ReturnFmt)
+     D  ReturnFmtOpts...
+     D                 C                   const('*NONE     +
+     D                                            *KEYSONLY +
+     D                                            *DATAKEYS +
+     D                                            *DATAALL  +
+     D                                            *ALL      ')
+     D Access          S             10A   based(p_Access)
+     D  AccessOpts...
+     D                 C                   const('*NOKEYS   +
+     D                                            *BYKEYS   ')
+     D  AccessNo       S              3I 0
+     D MTAUTHSubset...
+     D                 DS                  likeds(t_MTAUTHSubset)
+     D                                     inz
+     D Record          DS                  likeds(t_AuthorRecord)
+     D                                     inz
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetAuthor
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
-      /if NOT defined(SrvDta_h)
+      /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : OpenMTAUTHP
-      * Description     : Opens file if not open
-      * Returns         :< IsOpen
-      * Parameter       : *none
+      * BEGIN Prototype : GetMTAUTHF
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  Subset
+      *                >:  GetAction
       *-------------------------------------------------------------------------
-     D OpenMTAUTHP...
+     D GetMTAUTHF...
      D                 PR                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : OpenMTAUTHP
+      * END Prototype   : GetMTAUTHF
       *-------------------------------------------------------------------------
       /endif
-      /if defined(OpenMTAUTHP)
-      /undefine OpenMTAUTHP
+      /if defined(GetMTAUTHF)
+      /undefine   GetMTAUTHF
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : OpenMTAUTHP
+      * BEGIN Procedure : GetMTAUTHF
       *-------------------------------------------------------------------------
-     P OpenMTAUTHP...
+     P GetMTAUTHF...
      P                 B
-     D OpenMTAUTHP...
+     D GetMTAUTHF...
      D                 PI                  like(*in)
-     D IsOpen          S              1N   static
-     D                                     inz(*off)
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+
       *-------------------------------------------------------------------------
-      * END Procedure   : OpenMTAUTHP
+      * Local Variables : GetMTAUTHF
+      *-------------------------------------------------------------------------
+     D Sequence        S              3I 0
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTAUTHF
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTAUTHF1
+      * Description     : Get MTAUTHF1 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTAUTHF1...
+     D                 PR                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTAUTHF1
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(GetMTAUTHF1)
+      /undefine   GetMTAUTHF1
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTAUTHF1
+      *-------------------------------------------------------------------------
+     P GetMTAUTHF1...
+     P                 B
+     D GetMTAUTHF1...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLF1
+      *-------------------------------------------------------------------------
+     D MTAUTHF         DS                  likerec(MTAUTHF1:*input)
+     D                                     inz
+      ***D                                     based(p_MTAUTHF)
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF1
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkMTAUTHIsValid
+      * Description     : Check MTAUTH record is valid
+      * Returns         :< IsValid
+      *                >:  Record
+      *                >:  Subset
+      *-------------------------------------------------------------------------
+     D ChkMTAUTHIsValid...
+     D                 PR              N
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(ChkMTAUTHIsValid)
+      /undefine   ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
+     P ChkMTAUTHIsValid...
+     P                 B
+     D ChkMTAUTHIsValid...
+     D                 PI              N
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : VhkMTAUTHUsValid
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTAUTHSequence
+      * Description     : Get file assess sequence
+      * Returns         :< Sequence
+      *                >:  Subset
+      *-------------------------------------------------------------------------
+     D GetMTAUTHSequence...
+     D                 PR             3I 0
+     D  Subset                             likeds(t_MTAUTHSubset)
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(GetMTAUTHSequence)
+      /undefine   GetMTAUTHSequence
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
+     P GetMTAUTHSequence...
+     P                 B
+     D GetMTAUTHSequence...
+     D                 PI             3I 0
+     D  Subset                             likeds(t_MTAUTHSubset)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTAUTHSequence
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -624,6 +810,9 @@
      D ISBNLo          S             10A   inz(*allx'00')
      D ISBNHi          S             10A   inz(*allx'FF')
 
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetBibliographic
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -662,6 +851,9 @@
       * Local Variables : GetMTBIBLF
       *-------------------------------------------------------------------------
      D Sequence        S              3I 0
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -701,6 +893,9 @@
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF1:*input)
      D                                     based(p_MTBIBLF)
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF1
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -740,6 +935,9 @@
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF2:*input)
      D                                     based(p_MTBIBLF)
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF2
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -779,6 +977,9 @@
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF3:*input)
      D                                     based(p_MTBIBLF)
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF3
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -818,6 +1019,9 @@
       *-------------------------------------------------------------------------
      D MTBIBLF         DS                  likerec(MTBIBLF4:*input)
      D                                     based(p_MTBIBLF)
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF4
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -852,6 +1056,9 @@
       *-------------------------------------------------------------------------
       * Local Variables : ChkMTBIBLIsValid
       *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLIsValid
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -882,6 +1089,9 @@
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLSequence
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -917,6 +1127,9 @@
      D SearchKeyPfx    DS                  likeds(t_SearchKeyPfx)
      D                                     inz
      D i               S              3I 0
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetSearchKeyPfx
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -951,6 +1164,9 @@
       *-------------------------------------------------------------------------
       * Local Variables : ChkSearchKeyPfx
       *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkSearckKeyPfx
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -984,6 +1200,9 @@
       *-------------------------------------------------------------------------
      D ImprintPfx      DS                  likeds(t_ImprintPfx)
      D                                     inz
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetImprintPfx
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -1018,6 +1237,9 @@
       *-------------------------------------------------------------------------
       * Local Variables : ChkImprintPfx
       *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkImprintPfx
+      *-------------------------------------------------------------------------
       /EOF
       /endif
 
@@ -1051,6 +1273,79 @@
 
       *-------------------------------------------------------------------------
       * Local Variables : ChkISBN
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkISBN
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkGetParms
+      * Description     : Check the parameters for the accessors
+      * Returns         : IsValid
+      * Parameter      >:  p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:< p_ReturnFmt
+      *                >:    ReturnFmtOpts
+      *                >:  p_Access
+      *                >:   AccessOpts
+      *                 :<  AccessNo
+      *                >:  GetAction
+      *
+      *-------------------------------------------------------------------------
+     D ChkGetParms...
+     D                 PR             1N
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  p_ReturnFmt                    *
+     D   ReturnFmtOpts...
+     D                              200A   varying
+     D                                     const
+     D  p_Access                       *
+     D   AccessOpts...
+     D                               50A   varying
+     D                                     const
+     D   AccessNo                     3I 0
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkGetParms
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(ChkGetParms)
+      /undefine ChkGetParms
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkGetParms
+      *-------------------------------------------------------------------------
+     P ChkGetParms...
+     P                 B
+     D ChkGetParms...
+     D                 PI             1N
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  p_ReturnFmt                    *
+     D   ReturnFmtOpts...
+     D                              200A   varying
+     D                                     const
+     D  p_Access                       *
+     D   AccessOpts...
+     D                               50A   varying
+     D                                     const
+     D   AccessNo                     3I 0
+     D  GetAction                    10A   varying
+
+      *-------------------------------------------------------------------------
+      * Local Variables : InzSrvPgm
+      *-------------------------------------------------------------------------
+     D ReturnFmt       S             10A   based(p_ReturnFmt)
+     D Access          S             10A   based(p_Access)
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkGetParms
       *-------------------------------------------------------------------------
       /EOF
       /endif

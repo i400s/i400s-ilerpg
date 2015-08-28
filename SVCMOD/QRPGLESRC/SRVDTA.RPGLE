@@ -9,6 +9,7 @@
       *-------------------------------------------------------------------------
       *     [AU] Author
      FMTAUTHP   IF   E           K DISK    usropn
+     F                                     rename(MTAUTHF:MTAUTHF1)
       *-------------------------------------------------------------------------
       *     [BL] Bibliographic
      FMTBIBLL1  IF   E           K DISK    usropn
@@ -36,118 +37,43 @@
       /free
        // ----------------------------------------------------------------------
        // Procedure       : SRVDTA_GetAuthor
-       // Description     : Get Author
+       // Description     : Get Author data
        // Returns         :< IsFound
-       // Parameter      >:< Author
+       // Parameter      >:< Data
        //                >:  Keys
-       //                ?:  KeysType
+       //                ?:  Subset
+       //                ?:  ReturnFmt
+       //                ?:  Access
        /define SRVDTA_GetAuthor
        /include SrvDta_H
        // ----------------------------------------------------------------------
-
-       // test inputs
-       if %parms < 2; // not enough parameters
-            QmhSndPgmMsg('CPF24B4':
-                         MsgFileQCPF:    // Message file
-                         '':             // Message data
-                         0:              // Length of message data
-                         '*ESCAPE':      // Message type
-                         '*':            // Call stack entry
-                         1:              // Call stack count
-                         '':             // Message key
-                         x'00000000');   // API error DS
+       if not InzSrvPgm;
+            return *off;
        endif;
 
-       if %parms >= 3; // Keys type passed
-            p_KeysType = %addr(KeysType); // Set pointer
-            if p_KeysType <> *null;
-                 if KeysType = '*ALLKEY';
-                      p_KeysType = *null; // Unset pointer = '*ALLKEY'
-                 else;
-                      QmhSndPgmMsg('MSG2010':      // Keys type '&1' is invalid
-                                   MsgFileLMMSGF:  // Message file
-                                   keysType:       // Message data
-                                   %len(KeysType): // Length of message data
-                                   '*ESCAPE':      // Message type
-                                   '*':            // Call stack entry
-                                   1:              // Call stack count
-                                   '':             // Message key
-                                   x'00000000');   // API error DS
-                 endif;
-            endif;
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+       if %parms >= 4;
+            p_ReturnFmt = %addr(ReturnFmt);
+       endif;
+       if %parms >= 5;
+            p_Access = %addr(Access);
        endif;
 
-       // Parameters are valid, process request
-       return GetAuthor(Author:
-                        %addr(Keys):
-                        p_KeysType);
+       return GetAuthor(p_Data:
+                        p_Keys:
+                        p_Subset:
+                        p_ReturnFmt:
+                        p_Access:
+                        GetAction);
 
-      /end-free
-     P                 E
-
-      /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetAuthor
-       // Description     : Get Author
-       // Returns         :< IsFound
-       // Parameter      >:< Author
-       //                >:  Keys
-       //                >:  KeysType
-       /define GetAuthor
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
-
-       if OpenMTAUTHP;
-            Select;
-            when p_KeysType = *null; // Default '*ALLKEY'
-                 setll (AuthorKeys.ISBN:
-                        AuthorKeys.MARCTag:
-                        AuthorKeys.Sequence) MTAUTHF;
-                 reade (AuthorKeys.ISBN:
-                        AuthorKeys.MARCTag:
-                        AuthorKeys.Sequence) MTAUTHF;
-                 if %eof(MTAUTHP);
-                      return *off;
-                 else;
-                      clear Author;
-                      Author(1).ISBN = AUISBN;
-                      Author(1).MARCTag = AUTAGC;
-                      Author(1).Sequence = AUSEQN;
-                      Author(1).CreatedDTS = %timestamp(); // TODO
-                      Author(1).ChangedDTS = %timestamp(); // TODO
-                      dow not %eof(MTAUTHP);
-                           Author(1).Name += AUAUTN;
-                           reade (AuthorKeys.ISBN:
-                                  AuthorKeys.MARCTag:
-                                  AuthorKeys.Sequence) MTAUTHF;
-                      enddo;
-                      Author(2) = Author(1); // Make copies identical
-                      return *on;
-                 endif;
-            other; // Problem, flag as no record found
-                 return *off;
-            endsl;
-       endif;
-      /end-free
-     P                 E
-
-      /free
-       // -------------------------------------------------------------------------
-       // Opens file and returns indicator showing success
-       /define OpenMTAUTHP
-       /include SrvDta_H
-       // -------------------------------------------------------------------------
-       If IsOpen;
-            return IsOpen;
-       else;
-            monitor;
-                 open MTAUTHP;
-                 IsOpen = *on;
-            on-error;
-                 IsOpen = *off;
-            endmon;
-            return IsOpen;
-       endif;
       /end-free
      P                 E
 
@@ -366,6 +292,270 @@
       /end-free
      P                 E
 
+      * ------------------------------------------------------------------------
+      * BEGIN Internal procedures
+      * ------------------------------------------------------------------------
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetAuthor
+       // Description     : Get Author data
+       // Returns         :< IsFound
+       // Parameter      >:< p_Data
+       //                >:  p_Keys
+       //                >:  p_Subset
+       //                >:  p_ReturnFmt
+       //                >:  p_Access
+       //                >:  GetAction
+       /define GetAuthor
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       ChkGetParms(p_Data:
+                   p_Keys:
+                   p_Subset:
+                   p_ReturnFmt:
+                   ReturnFmtOpts:
+                   p_Access:
+                   AccessOpts:
+                   AccessNo:
+                   GetAction);
+
+       // Initialise MTAUTHF specific subset - defaults.
+       MTAUTHSubset.ISBN = *blanks;
+       MTAUTHSubset.MARCTag = 0;
+       MTAUTHSubset.Sequence = 0;
+
+       // Initialise MTAUTHF specific subset - passed subset.
+       if p_Subset <> *null;
+            MTAUTHSubset.ISBN = Subset.ISBN;
+            MTAUTHSubset.MARCTag = Subset.MARCTag;
+            MTAUTHSubset.Sequence = Subset.Sequence;
+       endif;
+
+       // Initialise MTAUTHF specific subset - key selection.
+       if GetAction = '*unique';
+            MTAUTHSubset.ISBN = Keys.ISBN;
+            MTAUTHSubset.MARCTag = Keys.MARCTag;
+            MTAUTHSubset.Sequence = Keys.Sequence;
+       endif;
+
+       // Setup keys, including alternative LF ones, for record access.
+       Record.AUISBN = MTAUTHSubset.ISBN;
+       Record.AUTAGC = MTAUTHSubset.MARCTag;
+       Record.AUSEQN = MTAUTHSubset.Sequence;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *first and *last.
+       select;
+       when GetAction = '*first';
+            // Nothing to do
+       when GetAction = '*last';
+            // Nothing to do
+       endsl;
+
+       // Replace keys if keys passed and *BYKEYS access.
+       if p_Keys <> *null and AccessNo >= 2;
+            Record.AUISBN = Keys.ISBN;
+            Record.AUTAGC = Keys.MARCTag;
+            Record.AUSEQN = Keys.Sequence;
+       endif;
+
+       // Process request
+       if not GetMTAUTHF(Record:
+                         MTAUTHSubset:
+                         GetAction);
+            return *off;
+       endif;
+
+       if p_ReturnFmt = *null; // *NONE
+            return *on;
+       endif;
+
+       // Update keys parameter.
+       if ReturnFmt = '*KEYSONLY'
+       or ReturnFmt = '*ALL';
+            Keys.ISBN = Record.AUISBN;
+            Keys.MARCTag = Record.AUTAGC;
+            Keys.Sequence = Record.AUSEQN;
+       endif;
+
+       // Update keys within data, data structure
+       if ReturnFmt = '*DATAKEYS'
+       or ReturnFmt = '*DATAALL'
+       or ReturnFmt = '*ALL';
+            Data.Keys.ISBN = Record.AUISBN;
+            Data.Keys.MARCTag = Record.AUTAGC;
+            Data.Keys.Sequence = Record.AUSEQN;
+       endif;
+
+       // Update record formats within data structure
+       if ReturnFmt = '*ALLDATA'
+       or ReturnFmt = '*ALL';
+            Data.Record(1) = Record;
+            Data.Record(2) = Data.Record(1);
+       endif;
+
+       return *on;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetMTAUTHF
+       // Description     : Get Author data
+       // Returns         :< IsFound
+       // Parameter      >:< Record
+       //                >:  Subset
+       //                >:  GetAction
+       /define GetMTAUTHF
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       Sequence = GetMTAUTHSequence(Subset);
+       select;
+       when Sequence = 1;
+            return GetMTAUTHF1(Record:
+                               Subset:
+                               GetAction);
+       endsl;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetMTAUTHF1
+       // Description     : Get MTAUTHF1 data
+       // Returns         :< IsFound
+       // Parameter      >:< Record
+       //                >:  Subset
+       //                >:  GetAction
+       /define GetMTAUTHF1
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       // p_MTAUTHF = %addr(Record);
+
+       select;
+       when GetAction = '*first'
+       or   GetAction = '*previous'
+       or   GetAction = '*unique';
+            setll (Record.AUISBN:
+                   Record.AUTAGC:
+                   Record.AUSEQN) MTAUTHF1;
+       when GetAction = '*next'
+       or   GetAction = '*last';
+            setgt (Record.AUISBN:
+                   Record.AUTAGC:
+                   Record.AUSEQN) MTAUTHF1;
+       other;
+            return *off;
+       endsl;
+       dou %eof(MTAUTHP);
+            if GetAction = '*first'
+            or GetAction = '*next'
+            or GetAction = '*unique';
+                 reade (Record.AUISBN:
+                        Record.AUTAGC:
+                        Record.AUSEQN) MTAUTHF1 MTAUTHF;
+            else;
+                 readpe (Record.AUISBN:
+                         Record.AUTAGC:
+                         Record.AUSEQN) MTAUTHF1 MTAUTHF;
+            endif;
+            if %eof(MTAUTHP);
+                 return *off;
+            endif;
+            if ChkMTAUTHIsValid(Record:
+                                Subset);
+                 // Assemble data to return
+                 setll (MTAUTHF.AUISBN:
+                        MTAUTHF.AUTAGC:
+                        MTAUTHF.AUSEQN) MTAUTHF1;
+                 reade (MTAUTHF.AUISBN:
+                        MTAUTHF.AUTAGC:
+                        MTAUTHF.AUSEQN) MTAUTHF1 MTAUTHF;
+                 clear Record;
+                 Record.AUISBN = MTAUTHF.AUISBN;
+                 Record.AUTAGC = MTAUTHF.AUTAGC;
+                 Record.AUSEQN = MTAUTHF.AUSEQN;
+                 Record.CreatedDTS = %timestamp(); // TODO
+                 Record.ChangedDTS = %timestamp(); // TODO
+                 dow not %eof(MTAUTHP);
+                      Record.Name += MTAUTHF.AUAUTN;
+                      reade (MTAUTHF.AUISBN:
+                             MTAUTHF.AUTAGC:
+                             MTAUTHF.AUSEQN) MTAUTHF1 MTAUTHF;
+                 enddo;
+                 return *on;
+            endif;
+       enddo;
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : ChkMTAUTHIsValid
+       // Description     : Check MTAUTH record is valid.
+       // Returns         :< IsValid
+       // Parameter      >:  Record
+       //                >:  Subset
+       /define ChkMTAUTHIsValid
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if not ChkISBN(Subset.ISBN:
+                  Record.AUISBN);
+            return *off;
+       endif;
+
+       If Subset.MARCTag <> *zero
+       and Subset.MARCTag <> Record.AUTAGC;
+            return *off;
+       endif;
+
+       if Subset.Sequence <> 0
+       and Subset.Sequence <> Record.AUSEQN;
+            return *off;
+       endif;
+
+       return *on; // Assume valid
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetMTAUTHSequence
+       // Description     : Get Logical index based on subset.
+       // Returns         :< Sequence
+       // Parameter      >:  Subset
+       /define GetMTAUTHSequence
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return 1;
+       endif;
+
+       return 1;
+
+      /end-free
+     P                 E
+
       /free
        // ----------------------------------------------------------------------
        // Procedure       : GetBibliographic
@@ -384,77 +574,15 @@
             return *off;
        endif;
 
-       // test inputs
-       if p_Data = *null
-       or GetAction = '*unique' and p_Keys = *null
-       or GetAction = '*next' and p_Keys = *null
-       or GetAction = '*previous' and p_Keys = *null;
-            QmhSndPgmMsg('MSG2001':      // Incorrect parm no's
-                         MsgFileLMMSGF:  // Message file
-                         '':             // Message data
-                         0:              // Length of message data
-                         '*ESCAPE':      // Message type
-                         '*PGMBDY':      // Call stack entry
-                         1:              // Call stack count
-                         '':             // Message key
-                         x'00000000');   // API error DS
-       endif;
-
-       if p_ReturnFmt <> *null;
-            select;
-            when %scan(ReturnFmt:ReturnFmtOpts) = 0;
-                 QmhSndPgmMsg('MSG2009':       // Invalid return format
-                              MsgFileLMMSGF:   // Message file
-                              ReturnFmt:       // Message data
-                              %len(ReturnFmt): // Length of message data
-                              '*ESCAPE':       // Message type
-                              '*PGMBDY':       // Call stack entry
-                              1:               // Call stack count
-                              '':              // Message key
-                              x'00000000');    // API error DS
-            when ReturnFmt = '*NONE';
-                 p_ReturnFmt = *null; // Default - *NONE
-            when ReturnFmt = '*KEYSONLY' and p_keys = *null
-            or ReturnFmt = '*ALL' and p_keys = *null;
-                 QmhSndPgmMsg('MSG200C':       // Key field not passed when &1
-                              MsgFileLMMSGF:   // Message file
-                              ReturnFmt:       // Message data
-                              %len(ReturnFmt): // Length of message data
-                              '*ESCAPE':       // Message type
-                              '*PGMBDY':       // Call stack entry
-                              1:               // Call stack count
-                              '':              // Message key
-                              x'00000000');    // API error DS
-
-            endsl;
-       endif;
-
-       if p_access = *null;
-            if GetAction <> '*first'
-            and GetAction <> '*last';
-                 AccessNo = 2; // *BYKEYS
-            else;
-                 AccessNo = 1; // *NOKEYS
-            endif;
-       else;
-            AccessNo = %scan(Access:AccessOpts);
-            if AccessNo > 0;
-                 AccessNo = (AccessNo / 10) + 1; // Calculate "index" not offset
-            endif;
-            if AccessNo = 0 // Invalid
-            or AccessNo = 1 and GetAction <> '*first'
-                            and GetAction <> '*last';
-                 QmhSndPgmMsg('MSG200B':      // Access type '&1' is invalid
-                              MsgFileLMMSGF:  // Message file
-                              Access:         // Message data
-                              %len(Access):   // Length of message data
-                              '*ESCAPE':      // Message type
-                              '*PGMBDY':      // Call stack entry
-                              1:              // Call stack count
-                              '':             // Message key
-                              x'00000000');   // API error DS
-            endif;
-       endif;
+       ChkGetParms(p_Data:
+                   p_Keys:
+                   p_Subset:
+                   p_ReturnFmt:
+                   ReturnFmtOpts:
+                   p_Access:
+                   AccessOpts:
+                   AccessNo:
+                   GetAction);
 
        // Initialise MTBIBLF specific subset - defaults.
        MTBIBLSubset.SupplierNo = 0;
@@ -501,7 +629,7 @@
        endsl;
 
        // Replace keys if keys passed and *BYKEYS access.
-       if p_Keys <> *null and AccessNo = 2;
+       if p_Keys <> *null and AccessNo >= 2;
             Record.BLISBN = Keys.ISBN;
             Record.BLSUPN = Keys.SupplierNo;
             Record.BLSKSN = Keys.SearchKey;
@@ -1015,6 +1143,105 @@
       /end-free
      P                 E
 
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : ChkGetParms
+       // Description     : Check the parameters for the accesors are valid
+       // Returns         :< IsValid
+       // Parameter      >:< p_Data
+       //                >:  p_Keys
+       //                >:  p_Subset
+       //                >:< p_ReturnFmt
+       //                >:   ReturnFmtOpts
+       //                >:  p_Access
+       //                >:   AccessOpts
+       //                 :<  AccessNo
+       //                >:  GetAction
+       /define ChkGetParms
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       // test inputs
+       if p_Data = *null
+       or GetAction = '*unique' and p_Keys = *null
+       or GetAction = '*next' and p_Keys = *null
+       or GetAction = '*previous' and p_Keys = *null;
+            QmhSndPgmMsg('MSG2001':      // Incorrect parm no's
+                         MsgFileLMMSGF:  // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       endif;
+
+       if p_ReturnFmt <> *null;
+            select;
+            when %scan(ReturnFmt:ReturnFmtOpts) = 0;
+                 QmhSndPgmMsg('MSG2009':       // Invalid return format
+                              MsgFileLMMSGF:   // Message file
+                              ReturnFmt:       // Message data
+                              %len(ReturnFmt): // Length of message data
+                              '*ESCAPE':       // Message type
+                              '*PGMBDY':       // Call stack entry
+                              1:               // Call stack count
+                              '':              // Message key
+                              x'00000000');    // API error DS
+            when ReturnFmt = '*NONE';
+                 p_ReturnFmt = *null; // Default - *NONE
+            when ReturnFmt = '*KEYSONLY' and p_keys = *null
+            or ReturnFmt = '*ALL' and p_keys = *null;
+                 QmhSndPgmMsg('MSG200C':       // Key field not passed when &1
+                              MsgFileLMMSGF:   // Message file
+                              ReturnFmt:       // Message data
+                              %len(ReturnFmt): // Length of message data
+                              '*ESCAPE':       // Message type
+                              '*PGMBDY':       // Call stack entry
+                              1:               // Call stack count
+                              '':              // Message key
+                              x'00000000');    // API error DS
+
+            endsl;
+       endif;
+
+       if p_access = *null;
+            if GetAction <> '*first'
+            and GetAction <> '*last';
+                 AccessNo = 2; // *BYKEYS
+            else;
+                 AccessNo = 1; // *NOKEYS
+            endif;
+       else;
+            AccessNo = %scan(Access:AccessOpts);
+            if AccessNo > 0;
+                 AccessNo = (AccessNo / 10) + 1; // Calculate "index" not offset
+            endif;
+            if AccessNo = 0 // Invalid
+            or AccessNo = 1 and GetAction <> '*first'
+                            and GetAction <> '*last';
+                 QmhSndPgmMsg('MSG200B':      // Access type '&1' is invalid
+                              MsgFileLMMSGF:  // Message file
+                              Access:         // Message data
+                              %len(Access):   // Length of message data
+                              '*ESCAPE':      // Message type
+                              '*PGMBDY':      // Call stack entry
+                              1:              // Call stack count
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
+       endif;
+
+       return *on;
+
+      /end-free
+     P                 E
+
       /free
        // -------------------------------------------------------------------------
        // Opens files, initialises globals, and returns status
@@ -1026,6 +1253,9 @@
        endif;
 
        monitor;
+            if not %open(MTAUTHP);
+                 open MTAUTHP;  // Author
+            endif;
             if not %open(MTBIBLL1);
                  open MTBIBLL1; // Bibliographic
             endif;

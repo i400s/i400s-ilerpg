@@ -23,7 +23,6 @@
 
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
      D Author          DS                  likeds(t_Author)
-     D                                     dim(2)
      D BiblKeys        DS                  likeds(t_BibliographicKeys)
      D                                     inz
      D biblSubset      DS                  likeds(t_BibliographicSubset)
@@ -46,24 +45,36 @@
        AuthorKeys.ISBN = '0000000008';
        AuthorKeys.MARCTag = 100;
        AuthorKeys.Sequence = 1;
-       if not SRVDTA_GetAuthor(Author:AuthorKeys);
+       if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit:'*ALL':'*BYKEYS');
             dsply ('Error: No record');
-       elseif Author(1).Name <> 'A long author with a very sillly +
+       elseif Author.Record(1).Name <> 'A long author with a very sillly +
                                  name to test.';
-            dsply ('Error: Invalid author returned');
+            dsply ('Error: Invalid author name returned');
+            dump(a);
        endif;
 
        if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit);
             dsply ('Error: *omit');
        endif;
 
-       if not SRVDTA_GetAuthor(Author:AuthorKeys:'*ALLKEY');
+       if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit:'*KEYSONLY':'*BYKEYS');
+            dsply ('Error: *ALLKEY');
+       endif;
+
+       if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit:*omit:*omit);
             dsply ('Error: *ALLKEY');
        endif;
 
        monitor;
-            SRVDTA_GetAuthor(Author:AuthorKeys:'*allkey');
+            SRVDTA_GetAuthor(Author:AuthorKeys:*omit:'*keysonly');
             dsply ('Error: *allkey');
+            SRVDTA_GetAuthor(Author:AuthorKeys:*omit:*omit:'*NOKEYS');
+            dsply ('Error: *NOKEYS not allowed');
+            SRVDTA_GetAuthor(Author:AuthorKeys:*OMIT:*OMIT:'*nokeys');
+            dsply ('Error: *nokeys');
+            SRVDTA_GetAuthor(Author:AuthorKeys:*OMIT:*OMIT:'*bykeys');
+            dsply ('Error: *bykeys');
+
        on-error;
        endmon;
 
