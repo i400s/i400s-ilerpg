@@ -344,9 +344,9 @@
        endif;
 
        // Setup keys, including alternative LF ones, for record access.
-       Record.AUISBN = RecordSubset.ISBN;
-       Record.AUTAGC = RecordSubset.MARCTag;
-       Record.AUSEQN = RecordSubset.Sequence;
+       RecordKeys.ISBN = RecordSubset.ISBN;
+       RecordKeys.MARCTag = RecordSubset.MARCTag;
+       RecordKeys.Sequence = RecordSubset.Sequence;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *first and *last.
@@ -359,13 +359,14 @@
 
        // Replace keys if keys passed and *BYKEYS access.
        if p_Keys <> *null and AccessNo >= 2;
-            Record.AUISBN = Keys.ISBN;
-            Record.AUTAGC = Keys.MARCTag;
-            Record.AUSEQN = Keys.Sequence;
+            RecordKeys.ISBN = Keys.ISBN;
+            RecordKeys.MARCTag = Keys.MARCTag;
+            RecordKeys.Sequence = Keys.Sequence;
        endif;
 
        // Process request
        if not GetAuthorRecord(Record:
+                              RecordKeys:
                               RecordSubset:
                               GetAction);
             return *off;
@@ -410,6 +411,7 @@
        // Description     : Get Author
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetAuthorRecord
@@ -423,6 +425,7 @@
        select;
        when Sequence = 1;
             return GetMTAUTHF(Record:
+                              Keys:
                               Subset:
                               GetAction);
        endsl;
@@ -436,6 +439,7 @@
        // Description     : Get MTAUTHF data
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTAUTHF
@@ -445,11 +449,9 @@
             return *off;
        endif;
 
-       // p_MTAUTHF = %addr(Record);
-
-       FileKeys.AUISBN = Record.AUISBN;
-       FileKeys.AUTAGC = Record.AUTAGC;
-       FileKeys.AUSEQN = Record.AUSEQN;
+       FileKeys.AUISBN = Keys.ISBN;
+       FileKeys.AUTAGC = Keys.MARCTag;
+       FileKeys.AUSEQN = Keys.Sequence;
 
        select;
        when GetAction = '*first'
@@ -597,38 +599,39 @@
        endif;
 
        // Setup keys, including alternative LF ones, for record access.
-       Record.BLISBN = RecordSubset.ImprintPfx.Prefix;
-       Record.BLSUPN = RecordSubset.SupplierNo;
-       Record.BLSKSN = RecordSubset.SearchKeyPfx.Prefix;
+       RecordKeys.ISBN = RecordSubset.ImprintPfx.Prefix;
+       RecordKeys.SupplierNo = RecordSubset.SupplierNo;
+       RecordKeys.SearchKey = RecordSubset.SearchKeyPfx.Prefix;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *first and *last.
        select;
        when GetAction = '*first';
             if RecordSubset.SearchKeyPfx.IsGeneric;
-                 Record.BLSKSN = %trimr(Record.BLSKSN) + SKSNLo;
+                 RecordKeys.SearchKey = %trimr(RecordKeys.SearchKey) + SKSNLo;
             endif;
             if RecordSubset.ImprintPfx.IsGeneric;
-                 Record.BLISBN = %trimr(Record.BLISBN) + ISBNLo;
+                 RecordKeys.ISBN = %trimr(RecordKeys.ISBN) + ISBNLo;
             endif;
        when GetAction = '*last';
             if RecordSubset.SearchKeyPfx.IsGeneric;
-                 Record.BLSKSN = %trimr(Record.BLSKSN) + SKSNHi;
+                 RecordKeys.SearchKey = %trimr(RecordKeys.SearchKey) + SKSNHi;
             endif;
             if RecordSubset.ImprintPfx.IsGeneric;
-                 Record.BLISBN = %trimr(Record.BLISBN) + ISBNHi;
+                 Recordkeys.ISBN = %trimr(RecordKeys.ISBN) + ISBNHi;
             endif;
        endsl;
 
        // Replace keys if keys passed and *BYKEYS access.
        if p_Keys <> *null and AccessNo >= 2;
-            Record.BLISBN = Keys.ISBN;
-            Record.BLSUPN = Keys.SupplierNo;
-            Record.BLSKSN = Keys.SearchKey;
+            RecordKeys.ISBN = Keys.ISBN;
+            RecordKeys.SupplierNo = Keys.SupplierNo;
+            RecordKeys.SearchKey = Keys.SearchKey;
        endif;
 
        // Process request
        if not GetBibliographicRecord(Record:
+                                     RecordKeys:
                                      RecordSubset:
                                      GetAction);
             return *off;
@@ -673,6 +676,7 @@
        // Description     : Get bibligraphic record
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetBibliographicRecord
@@ -686,18 +690,22 @@
        select;
        when Sequence = 1;
             return GetMTBIBLF1(Record:
+                               Keys:
                                Subset:
                                GetAction);
        when Sequence = 2;
             return GetMTBIBLF2(Record:
+                               Keys:
                                Subset:
                                GetAction);
        when Sequence = 3;
             return GetMTBIBLF3(Record:
+                               Keys:
                                Subset:
                                GetAction);
        when Sequence = 4;
             return GetMTBIBLF4(Record:
+                               Keys:
                                Subset:
                                GetAction);
        endsl;
@@ -711,6 +719,7 @@
        // Description     : Get MTBIBLF1 data
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF1
@@ -722,7 +731,7 @@
 
        p_MTBIBLF = %addr(Record);
 
-       FileKeys.BLISBN = Record.BLISBN;
+       FileKeys.BLISBN = Keys.ISBN;
 
        select;
        when GetAction = '*first'
@@ -762,6 +771,7 @@
        // Description     : Get MTBIBLF2 data
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF2
@@ -773,9 +783,9 @@
 
        p_MTBIBLF = %addr(Record);
 
-       FileKeys.BLSUPN = Record.BLSUPN;
-       FileKeys.BLSKSN = Record.BLSKSN;
-       FileKeys.BLISBN = Record.BLISBN;
+       FileKeys.BLSUPN = Keys.SupplierNo;
+       FileKeys.BLSKSN = Keys.SearchKey;
+       FileKeys.BLISBN = Keys.ISBN;
 
        select;
        when GetAction = '*first'
@@ -814,6 +824,7 @@
        // Description     : Get MTBIBLF3 data
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF3
@@ -825,8 +836,8 @@
 
        p_MTBIBLF = %addr(Record);
 
-       FileKeys.BLSKSN = Record.BLSKSN;
-       FileKeys.BLISBN = Record.BLISBN;
+       FileKeys.BLSKSN = Keys.SearchKey;
+       FileKeys.BLISBN = Keys.ISBN;
 
        select;
        when GetAction = '*first'
@@ -865,6 +876,7 @@
        // Description     : Get MTBIBLF4 data
        // Returns         :< IsFound
        // Parameter      >:< Record
+       //                >:  Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF4
@@ -876,8 +888,8 @@
 
        p_MTBIBLF = %addr(Record);
 
-       FileKeys.BLSUPN = Record.BLSUPN;
-       FileKeys.BLISBN = Record.BLISBN;
+       FileKeys.BLSUPN = Keys.SupplierNo;
+       FileKeys.BLISBN = Keys.ISBN;
 
        select;
        when GetAction = '*first'
