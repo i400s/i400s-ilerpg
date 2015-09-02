@@ -7,7 +7,7 @@
      D                                     based(pt_Template)
      D   ISBN                        10A
      D   MARCTag                      3P 0
-     D   Sequence                     5P 0
+     D   Sequence                     3P 0
      D t_AuthorSubset...
      D                 DS                  Likeds(T_AuthorKeys)
      D                                     based(pt_Template)
@@ -16,7 +16,7 @@
      D                                     based(pt_Template)
      D   AUISBN                      10A
      D   AUTAGC                       3P 0
-     D   AUSEQN                       5P 0
+     D   AUSEQN                       3P 0
      D   CreatedDTS                    Z
      D   ChangedDTS                    Z
      D   Name                      2048A   varying
@@ -572,10 +572,10 @@
      D                 C                   const('*NOKEYS   +
      D                                            *BYKEYS   ')
      D  AccessNo       S              3I 0
-     D MTAUTHSubset...
-     D                 DS                  likeds(t_MTAUTHSubset)
-     D                                     inz
      D Record          DS                  likeds(t_AuthorRecord)
+     D                                     inz
+     D RecordSubset...
+     D                 DS                  likeds(t_MTAUTHSubset)
      D                                     inz
 
       *-------------------------------------------------------------------------
@@ -586,8 +586,49 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTAUTHF
+      * BEGIN Prototype : GetAuthorRecord
       * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetAuthorRecord...
+     D                 PR                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetAuthorRecord
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(GetAuthorRecord)
+      /undefine   GetAuthorRecord
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetAuthorRecord
+      *-------------------------------------------------------------------------
+     P GetAuthorRecord...
+     P                 B
+     D GetAuthorRecord...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+
+      *-------------------------------------------------------------------------
+      * Local Variables : GetAuthorRecord
+      *-------------------------------------------------------------------------
+     D Sequence        S              3I 0
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetAuthorRecord
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTAUTHF
+      * Description     : Get MTAUTHF data
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  Subset
@@ -618,52 +659,12 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetMTAUTHF
       *-------------------------------------------------------------------------
-     D Sequence        S              3I 0
+     D FileRecord      DS                  likerec(MTAUTHF:*input)
+     D                                     inz
+     D FileKeys        DS                  likerec(MTAUTHF:*key)
+     D                                     inz
       *-------------------------------------------------------------------------
       * END Procedure   : GetMTAUTHF
-      *-------------------------------------------------------------------------
-      /EOF
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTAUTHF1
-      * Description     : Get MTAUTHF1 data
-      * Returns         :< IsFound
-      * Parameter      >:< Record
-      *                >:  Subset
-      *                >:  GetAction
-      *-------------------------------------------------------------------------
-     D GetMTAUTHF1...
-     D                 PR                  like(*in)
-     D  Record                             likeds(t_AuthorRecord)
-     D  Subset                             likeds(t_MTAUTHSubset)
-     D  GetAction                    10A   varying
-      *-------------------------------------------------------------------------
-      * END Prototype   : GetMTAUTHF1
-      *-------------------------------------------------------------------------
-      /endif
-      /if defined(GetMTAUTHF1)
-      /undefine   GetMTAUTHF1
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetMTAUTHF1
-      *-------------------------------------------------------------------------
-     P GetMTAUTHF1...
-     P                 B
-     D GetMTAUTHF1...
-     D                 PI                  like(*in)
-     D  Record                             likeds(t_AuthorRecord)
-     D  Subset                             likeds(t_MTAUTHSubset)
-     D  GetAction                    10A   varying
-
-      *-------------------------------------------------------------------------
-      * Local Variables : GetMTBIBLF1
-      *-------------------------------------------------------------------------
-     D MTAUTHF         DS                  likerec(MTAUTHF1:*input)
-     D                                     inz
-      ***D                                     based(p_MTAUTHF)
-      *-------------------------------------------------------------------------
-      * END Procedure   : GetMTBIBLF1
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -678,7 +679,7 @@
       *-------------------------------------------------------------------------
      D ChkMTAUTHIsValid...
      D                 PR              N
-     D  Record                             likeds(t_AuthorRecord)
+     D  Record                             likerec(MTAUTHF:*input)
      D  Subset                             likeds(t_MTAUTHSubset)
       *-------------------------------------------------------------------------
       * END Prototype   : ChkMTAUTHIsValid
@@ -693,7 +694,7 @@
      P                 B
      D ChkMTAUTHIsValid...
      D                 PI              N
-     D  Record                             likeds(t_AuthorRecord)
+     D  Record                             likerec(MTAUTHF:*input)
      D  Subset                             likeds(t_MTAUTHSubset)
 
       *-------------------------------------------------------------------------
@@ -800,10 +801,10 @@
      D                 C                   const('*NOKEYS   +
      D                                            *BYKEYS   ')
      D  AccessNo       S              3I 0
-     D MTBIBLSubset...
-     D                 DS                  likeds(t_MTBIBLSubset)
-     D                                     inz
      D Record          DS                  likeds(t_BibliographicRecord)
+     D                                     inz
+     D RecordSubset...
+     D                 DS                  likeds(t_MTBIBLSubset)
      D                                     inz
      D SKSNLo          S             10A   inz(*allx'00')
      D SKSNHi          S             10A   inz(*allx'FF')
@@ -818,41 +819,41 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetMTBIBLF
-      * Description     : Get Bibliographic
+      * BEGIN Prototype : GetBibliographicRecord
+      * Description     : Get Bibliographic record
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetMTBIBLF...
+     D GetBibliographicRecord...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetMTBIBLF
+      * END Prototype   : GetBibliographicRecord
       *-------------------------------------------------------------------------
       /endif
-      /if defined(GetMTBIBLF)
-      /undefine   GetMTBIBLF
+      /if defined(GetBibliographicRecord)
+      /undefine   GetBibliographicRecord
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetMTBIBLF
+      * BEGIN Procedure : GetBibliographicRecord
       *-------------------------------------------------------------------------
-     P GetMTBIBLF...
+     P GetBibliographicRecord...
      P                 B
-     D GetMTBIBLF...
+     D GetBibliographicRecord...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : GetMTBIBLF
+      * Local Variables : GetBibliographicRecord
       *-------------------------------------------------------------------------
      D Sequence        S              3I 0
       *-------------------------------------------------------------------------
-      * END Procedure   : GetMTBIBLF
+      * END Procedure   : GetBibliographicRecord
       *-------------------------------------------------------------------------
       /EOF
       /endif
@@ -891,8 +892,10 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF1
       *-------------------------------------------------------------------------
-     D MTBIBLF         DS                  likerec(MTBIBLF1:*input)
+     D FileRecord      DS                  likerec(MTBIBLF1:*input)
      D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF1:*key)
+     D                                     inz
       *-------------------------------------------------------------------------
       * END Procedure   : GetMTBIBLF1
       *-------------------------------------------------------------------------
@@ -933,8 +936,10 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF2
       *-------------------------------------------------------------------------
-     D MTBIBLF         DS                  likerec(MTBIBLF2:*input)
+     D FileRecord      DS                  likerec(MTBIBLF2:*input)
      D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF2:*key)
+     D                                     inz
       *-------------------------------------------------------------------------
       * END Procedure   : GetMTBIBLF2
       *-------------------------------------------------------------------------
@@ -975,8 +980,10 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF3
       *-------------------------------------------------------------------------
-     D MTBIBLF         DS                  likerec(MTBIBLF3:*input)
+     D FileRecord      DS                  likerec(MTBIBLF3:*input)
      D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF3:*key)
+     D                                     inz
       *-------------------------------------------------------------------------
       * END Procedure   : GetMTBIBLF3
       *-------------------------------------------------------------------------
@@ -1017,8 +1024,10 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF4
       *-------------------------------------------------------------------------
-     D MTBIBLF         DS                  likerec(MTBIBLF4:*input)
+     D FileRecord      DS                  likerec(MTBIBLF4:*input)
      D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF4:*key)
+     D                                     inz
       *-------------------------------------------------------------------------
       * END Procedure   : GetMTBIBLF4
       *-------------------------------------------------------------------------
@@ -1276,6 +1285,80 @@
       *-------------------------------------------------------------------------
       *-------------------------------------------------------------------------
       * END Procedure   : ChkISBN
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkMARCTag
+      * Description     : Check MARC tag
+      * Returns         :< IsValid
+      *                >:  TAGC1
+      *                >:  TAGC2
+      *-------------------------------------------------------------------------
+     D ChkMARCTag...
+     D                 PR              N
+     D  TAGC1                         3P 0
+     D  TAGC2                         3P 0
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkMARCTag
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(ChkMARCTag)
+      /undefine   ChkMARCTag
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMARCTag
+      *-------------------------------------------------------------------------
+     P ChkMARCTag...
+     P                 B
+     D ChkMARCTag...
+     D                 PI              N
+     D  TAGC1                         3P 0
+     D  TAGC2                         3P 0
+
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMARCTag
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkMARCTag
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkMARCSequence
+      * Description     : Check MARC sequence
+      * Returns         :< IsValid
+      *                >:  SEQN1
+      *                >:  SEQN2
+      *-------------------------------------------------------------------------
+     D ChkMARCsequence...
+     D                 PR              N
+     D  SEQN1                         3P 0
+     D  SEQN2                         3P 0
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkMARCSequence
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(ChkMARCSequence)
+      /undefine   ChkMARCSequence
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMARCSequence
+      *-------------------------------------------------------------------------
+     P ChkMARCSequence...
+     P                 B
+     D ChkMARCSequence...
+     D                 PI              N
+     D  SEQN1                         3P 0
+     D  SEQN2                         3P 0
+
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMARCSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkMARCSequence
       *-------------------------------------------------------------------------
       /EOF
       /endif

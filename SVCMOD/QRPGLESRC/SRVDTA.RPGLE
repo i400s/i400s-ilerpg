@@ -9,7 +9,7 @@
       *-------------------------------------------------------------------------
       *     [AU] Author
      FMTAUTHP   IF   E           K DISK    usropn
-     F                                     rename(MTAUTHF:MTAUTHF1)
+     F                                     rename(MTAUTHF:MTAUTHF)
       *-------------------------------------------------------------------------
       *     [BL] Bibliographic
      FMTBIBLL1  IF   E           K DISK    usropn
@@ -324,29 +324,29 @@
                    AccessNo:
                    GetAction);
 
-       // Initialise MTAUTHF specific subset - defaults.
-       MTAUTHSubset.ISBN = *blanks;
-       MTAUTHSubset.MARCTag = 0;
-       MTAUTHSubset.Sequence = 0;
+       // Initialise record specific subset - defaults.
+       RecordSubset.ISBN = *blanks;
+       RecordSubset.MARCTag = 0;
+       RecordSubset.Sequence = 0;
 
-       // Initialise MTAUTHF specific subset - passed subset.
+       // Initialise record specific subset - passed subset.
        if p_Subset <> *null;
-            MTAUTHSubset.ISBN = Subset.ISBN;
-            MTAUTHSubset.MARCTag = Subset.MARCTag;
-            MTAUTHSubset.Sequence = Subset.Sequence;
+            RecordSubset.ISBN = Subset.ISBN;
+            RecordSubset.MARCTag = Subset.MARCTag;
+            RecordSubset.Sequence = Subset.Sequence;
        endif;
 
-       // Initialise MTAUTHF specific subset - key selection.
+       // Initialise record specific subset - key selection.
        if GetAction = '*unique';
-            MTAUTHSubset.ISBN = Keys.ISBN;
-            MTAUTHSubset.MARCTag = Keys.MARCTag;
-            MTAUTHSubset.Sequence = Keys.Sequence;
+            RecordSubset.ISBN = Keys.ISBN;
+            RecordSubset.MARCTag = Keys.MARCTag;
+            RecordSubset.Sequence = Keys.Sequence;
        endif;
 
        // Setup keys, including alternative LF ones, for record access.
-       Record.AUISBN = MTAUTHSubset.ISBN;
-       Record.AUTAGC = MTAUTHSubset.MARCTag;
-       Record.AUSEQN = MTAUTHSubset.Sequence;
+       Record.AUISBN = RecordSubset.ISBN;
+       Record.AUTAGC = RecordSubset.MARCTag;
+       Record.AUSEQN = RecordSubset.Sequence;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *first and *last.
@@ -365,9 +365,9 @@
        endif;
 
        // Process request
-       if not GetMTAUTHF(Record:
-                         MTAUTHSubset:
-                         GetAction);
+       if not GetAuthorRecord(Record:
+                              RecordSubset:
+                              GetAction);
             return *off;
        endif;
 
@@ -406,8 +406,34 @@
 
       /free
        // ----------------------------------------------------------------------
+       // Procedure       : GetAuthorRecord
+       // Description     : Get Author
+       // Returns         :< IsFound
+       // Parameter      >:< Record
+       //                >:  Subset
+       //                >:  GetAction
+       /define GetAuthorRecord
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       Sequence = GetMTAUTHSequence(Subset);
+       select;
+       when Sequence = 1;
+            return GetMTAUTHF(Record:
+                              Subset:
+                              GetAction);
+       endsl;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
        // Procedure       : GetMTAUTHF
-       // Description     : Get Author data
+       // Description     : Get MTAUTHF data
        // Returns         :< IsFound
        // Parameter      >:< Record
        //                >:  Subset
@@ -419,46 +445,20 @@
             return *off;
        endif;
 
-       Sequence = GetMTAUTHSequence(Subset);
-       select;
-       when Sequence = 1;
-            return GetMTAUTHF1(Record:
-                               Subset:
-                               GetAction);
-       endsl;
-
-      /end-free
-     P                 E
-
-      /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTAUTHF1
-       // Description     : Get MTAUTHF1 data
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetMTAUTHF1
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // p_MTAUTHF = %addr(Record);
+
+       FileKeys.AUISBN = Record.AUISBN;
+       FileKeys.AUTAGC = Record.AUTAGC;
+       FileKeys.AUSEQN = Record.AUSEQN;
 
        select;
        when GetAction = '*first'
        or   GetAction = '*previous'
        or   GetAction = '*unique';
-            setll (Record.AUISBN:
-                   Record.AUTAGC:
-                   Record.AUSEQN) MTAUTHF1;
+            setll %kds(FileKeys:3) MTAUTHF;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt (Record.AUISBN:
-                   Record.AUTAGC:
-                   Record.AUSEQN) MTAUTHF1;
+            setgt %kds(FileKeys:3) MTAUTHF;
        other;
             return *off;
        endsl;
@@ -466,37 +466,32 @@
             if GetAction = '*first'
             or GetAction = '*next'
             or GetAction = '*unique';
-                 reade (Record.AUISBN:
-                        Record.AUTAGC:
-                        Record.AUSEQN) MTAUTHF1 MTAUTHF;
+                 read MTAUTHF FileRecord;
             else;
-                 readpe (Record.AUISBN:
-                         Record.AUTAGC:
-                         Record.AUSEQN) MTAUTHF1 MTAUTHF;
+                 readp MTAUTHF FileRecord;
             endif;
-            if %eof(MTAUTHP);
+            if %eof(MTAUTHP)
+            or not ChkISBN(Subset.ISBN:FileRecord.AUISBN)
+            or not ChkMARCTag(Subset.MARCTag:FileRecord.AUTAGC)
+            or not ChkMARCsequence(Subset.Sequence:FileRecord.AUSEQN);
                  return *off;
             endif;
-            if ChkMTAUTHIsValid(Record:
+            if ChkMTAUTHIsValid(FileRecord:
                                 Subset);
                  // Assemble data to return
-                 setll (MTAUTHF.AUISBN:
-                        MTAUTHF.AUTAGC:
-                        MTAUTHF.AUSEQN) MTAUTHF1;
-                 reade (MTAUTHF.AUISBN:
-                        MTAUTHF.AUTAGC:
-                        MTAUTHF.AUSEQN) MTAUTHF1 MTAUTHF;
-                 clear Record;
-                 Record.AUISBN = MTAUTHF.AUISBN;
-                 Record.AUTAGC = MTAUTHF.AUTAGC;
-                 Record.AUSEQN = MTAUTHF.AUSEQN;
+                 FileKeys.AUISBN = FileRecord.AUISBN;
+                 FileKeys.AUTAGC = FileRecord.AUTAGC;
+                 FileKeys.AUSEQN = FileRecord.AUSEQN;
+                 setll %kds(FileKeys:3) MTAUTHF;
+                 reade %kds(FileKeys:3) MTAUTHF FileRecord;
+                 Record.AUISBN = FileRecord.AUISBN;
+                 Record.AUTAGC = FileRecord.AUTAGC;
+                 Record.AUSEQN = FileRecord.AUSEQN;
                  Record.CreatedDTS = %timestamp(); // TODO
                  Record.ChangedDTS = %timestamp(); // TODO
                  dow not %eof(MTAUTHP);
-                      Record.Name += MTAUTHF.AUAUTN;
-                      reade (MTAUTHF.AUISBN:
-                             MTAUTHF.AUTAGC:
-                             MTAUTHF.AUSEQN) MTAUTHF1 MTAUTHF;
+                      Record.Name += FileRecord.AUAUTN;
+                      reade %kds(FileKeys:3) MTAUTHF FileRecord;
                  enddo;
                  return *on;
             endif;
@@ -518,18 +513,15 @@
             return *off;
        endif;
 
-       if not ChkISBN(Subset.ISBN:
-                  Record.AUISBN);
+       if not ChkISBN(Subset.ISBN:Record.AUISBN);
             return *off;
        endif;
 
-       If Subset.MARCTag <> *zero
-       and Subset.MARCTag <> Record.AUTAGC;
+       If not ChkMARCTag(Subset.MARCTag:Record.AUTAGC);
             return *off;
        endif;
 
-       if Subset.Sequence <> 0
-       and Subset.Sequence <> Record.AUSEQN;
+       if not ChkMARCSequence(Subset.Sequence:Record.AUSEQN);
             return *off;
        endif;
 
@@ -584,46 +576,46 @@
                    AccessNo:
                    GetAction);
 
-       // Initialise MTBIBLF specific subset - defaults.
-       MTBIBLSubset.SupplierNo = 0;
-       MTBIBLSubset.SearchKeyPfx = GetSearchKeyPfx('*ALL');
-       MTBIBLSubset.ImprintPfx = GetImprintPfx(0);
-       MTBIBLSubset.Deleted = '*';
-       MTBIBLSubset.ISBN = *blanks;
+       // Initialise record specific subset - defaults.
+       RecordSubset.SupplierNo = 0;
+       RecordSubset.SearchKeyPfx = GetSearchKeyPfx('*ALL');
+       RecordSubset.ImprintPfx = GetImprintPfx(0);
+       RecordSubset.Deleted = '*';
+       RecordSubset.ISBN = *blanks;
 
-       // Initialise MTBIBLF specific subset - passed subset.
+       // Initialise record specific subset - passed subset.
        if p_Subset <> *null;
-            MTBIBLSubset.SupplierNo = Subset.SupplierNo;
-            MTBIBLSubset.SearchKeyPfx = GetSearchKeyPfx(Subset.SearchKey);
-            MTBIBLSubset.ImprintPfx = GetImprintPfx(Subset.ImprintNo);
-            MTBIBLSubset.Deleted = Subset.Deleted;
+            RecordSubset.SupplierNo = Subset.SupplierNo;
+            RecordSubset.SearchKeyPfx = GetSearchKeyPfx(Subset.SearchKey);
+            RecordSubset.ImprintPfx = GetImprintPfx(Subset.ImprintNo);
+            RecordSubset.Deleted = Subset.Deleted;
        endif;
 
-       // Initialise MTBIBLF specific subset - key selection.
+       // Initialise record specific subset - key selection.
        if GetAction = '*unique';
-            MTBIBLSubset.ISBN = Keys.ISBN;
+            RecordSubset.ISBN = Keys.ISBN;
        endif;
 
        // Setup keys, including alternative LF ones, for record access.
-       Record.BLISBN = MTBIBLSubset.ImprintPfx.Prefix;
-       Record.BLSUPN = MTBIBLSubset.SupplierNo;
-       Record.BLSKSN = MTBIBLSubset.SearchKeyPfx.Prefix;
+       Record.BLISBN = RecordSubset.ImprintPfx.Prefix;
+       Record.BLSUPN = RecordSubset.SupplierNo;
+       Record.BLSKSN = RecordSubset.SearchKeyPfx.Prefix;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *first and *last.
        select;
        when GetAction = '*first';
-            if MTBIBLSubset.SearchKeyPfx.IsGeneric;
+            if RecordSubset.SearchKeyPfx.IsGeneric;
                  Record.BLSKSN = %trimr(Record.BLSKSN) + SKSNLo;
             endif;
-            if MTBIBLSubset.ImprintPfx.IsGeneric;
+            if RecordSubset.ImprintPfx.IsGeneric;
                  Record.BLISBN = %trimr(Record.BLISBN) + ISBNLo;
             endif;
        when GetAction = '*last';
-            if MTBIBLSubset.SearchKeyPfx.IsGeneric;
+            if RecordSubset.SearchKeyPfx.IsGeneric;
                  Record.BLSKSN = %trimr(Record.BLSKSN) + SKSNHi;
             endif;
-            if MTBIBLSubset.ImprintPfx.IsGeneric;
+            if RecordSubset.ImprintPfx.IsGeneric;
                  Record.BLISBN = %trimr(Record.BLISBN) + ISBNHi;
             endif;
        endsl;
@@ -636,9 +628,9 @@
        endif;
 
        // Process request
-       if not GetMTBIBLF(Record:
-                         MTBIBLSubset:
-                         GetAction);
+       if not GetBibliographicRecord(Record:
+                                     RecordSubset:
+                                     GetAction);
             return *off;
        endif;
 
@@ -677,13 +669,13 @@
 
       /free
        // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF
-       // Description     : Get bibligraphic data
+       // Procedure       : GetBibliographicRecord
+       // Description     : Get bibligraphic record
        // Returns         :< IsFound
        // Parameter      >:< Record
        //                >:  Subset
        //                >:  GetAction
-       /define GetMTBIBLF
+       /define GetBibliographicRecord
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
@@ -730,14 +722,16 @@
 
        p_MTBIBLF = %addr(Record);
 
+       FileKeys.BLISBN = Record.BLISBN;
+
        select;
        when GetAction = '*first'
        or   GetAction = '*previous'
        or   GetAction = '*unique';
-            setll (MTBIBLF.BLISBN) MTBIBLF1;
+            setll %kds(FileKeys:1) MTBIBLF1;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt (MTBIBLF.BLISBN) MTBIBLF1;
+            setgt %kds(fileKeys:1) MTBIBLF1;
        other;
             return *off;
        endsl;
@@ -745,18 +739,16 @@
             if GetAction = '*first'
             or GetAction = '*next'
             or GetAction = '*unique';
-                 read MTBIBLF1 MTBIBLF;
+                 read MTBIBLF1 FileRecord;
             else;
-                 readp MTBIBLF1 MTBIBLF;
+                 readp MTBIBLF1 FileRecord;
             endif;
             if %eof(MTBIBLL1)
-            or not ChkISBN(Subset.ISBN:
-                           MTBIBLF.BLISBN)
-            or not ChkImprintPfx(Subset.ImprintPfx:
-                                 MTBIBLF.BLISBN);
+            or not ChkISBN(Subset.ISBN:FileRecord.BLISBN)
+            or not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(Record:
+            if ChkMTBIBLIsValid(FileRecord:
                                 Subset);
                  return *on;
             endif;
@@ -781,36 +773,34 @@
 
        p_MTBIBLF = %addr(Record);
 
+       FileKeys.BLSUPN = Record.BLSUPN;
+       FileKeys.BLSKSN = Record.BLSKSN;
+       FileKeys.BLISBN = Record.BLISBN;
+
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll (MTBIBLF.BLSUPN:
-                   MTBIBLF.BLSKSN:
-                   MTBIBLF.BLISBN) MTBIBLF2;
+            setll %kds(FileKeys:3) MTBIBLF2;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt (MTBIBLF.BLSUPN:
-                   MTBIBLF.BLSKSN:
-                   MTBIBLF.BLISBN) MTBIBLF2;
+            setgt %kds(FileKeys:3) MTBIBLF2;
        other;
             return *off;
        endsl;
        dou %eof(MTBIBLL2);
             if GetAction ='*first'
             or GetAction ='*next';
-                 reade (MTBIBLF.BLSUPN) MTBIBLF2 MTBIBLF;
+                 reade %kds(FileKeys:1) MTBIBLF2 FileRecord;
             else;
-                 readpe (MTBIBLF.BLSUPN) MTBIBLF2 MTBIBLF;
+                 readpe %kds(FileKeys:1) MTBIBLF2 FileRecord;
             endif;
             if %eof(MTBIBLL2)
-            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:
-                                   MTBIBLF.BLSKSN)
+            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:FileRecord.BLSKSN)
             or not Subset.SearchKeyPfx.IsGeneric
-            and not ChkImprintPfx(Subset.ImprintPfx:
-                                  MTBIBLF.BLISBN);
+            and not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(Record:
+            if ChkMTBIBLIsValid(FileRecord:
                                 Subset);
                  return *on;
             endif;
@@ -835,34 +825,33 @@
 
        p_MTBIBLF = %addr(Record);
 
+       FileKeys.BLSKSN = Record.BLSKSN;
+       FileKeys.BLISBN = Record.BLISBN;
+
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll (MTBIBLF.BLSKSN:
-                   MTBIBLF.BLISBN) MTBIBLF3;
+            setll %kds(FileKeys:2) MTBIBLF3;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt (MTBIBLF.BLSKSN:
-                   MTBIBLF.BLISBN) MTBIBLF3;
+            setgt %kds(FileKeys:2) MTBIBLF3;
        other;
             return *off;
        endsl;
        dou %eof(MTBIBLL3);
             if GetAction = '*first'
             or GetAction = '*next';
-                 read  MTBIBLF3 MTBIBLF;
+                 read  MTBIBLF3 FileRecord;
             else;
-                 readp MTBIBLF3 MTBIBLF;
+                 readp MTBIBLF3 FileRecord;
             endif;
             if %eof(MTBIBLL3)
-            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:
-                                   MTBIBLF.BLSKSN)
+            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:FileRecord.BLSKSN)
             or not Subset.SearchKeyPfx.IsGeneric
-            and not ChkImprintPfx(Subset.ImprintPfx:
-                                 MTBIBLF.BLISBN);
+            and not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(Record:
+            if ChkMTBIBLIsValid(FileRecord:
                                 Subset);
                  return *on;
             endif;
@@ -887,31 +876,31 @@
 
        p_MTBIBLF = %addr(Record);
 
+       FileKeys.BLSUPN = Record.BLSUPN;
+       FileKeys.BLISBN = Record.BLISBN;
+
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll (MTBIBLF.BLSUPN:
-                   MTBIBLF.BLISBN) MTBIBLF4;
+            setll %kds(FileKeys:2) MTBIBLF4;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt (MTBIBLF.BLSUPN:
-                   MTBIBLF.BLISBN) MTBIBLF4;
+            setgt %kds(FileKeys:2) MTBIBLF4;
        other;
             return *off;
        endsl;
        dou %eof(MTBIBLL4);
             if GetAction = '*first'
             or GetAction = '*next';
-                 reade (MTBIBLF.BLSUPN) MTBIBLF4 MTBIBLF;
+                 reade %kds(FileKeys:1) MTBIBLF4 FileRecord;
             else;
-                 readpe (MTBIBLF.BLSUPN) MTBIBLF4 MTBIBLF;
+                 readpe %kds(FileKeys:1) MTBIBLF4 FileRecord;
             endif;
             if %eof(MTBIBLL4)
-            or not ChkImprintPfx(Subset.ImprintPfx:
-                                 MTBIBLF.BLISBN);
+            or not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(Record:
+            if ChkMTBIBLIsValid(FileRecord:
                                 Subset);
                  return *on;
             endif;
@@ -933,8 +922,7 @@
             return *off;
        endif;
 
-       if not ChkISBN(Subset.ISBN:
-                  Record.BLISBN);
+       if not ChkISBN(Subset.ISBN:Record.BLISBN);
             return *off;
        endif;
 
@@ -950,13 +938,11 @@
             return *off;
        endif;
 
-       if not ChkSearchKeyPfx(Subset.SearchKeyPfx:
-                              Record.BLSKSN);
+       if not ChkSearchKeyPfx(Subset.SearchKeyPfx:Record.BLSKSN);
             return *off;
        endif;
 
-       if not ChkImprintPfx(Subset.ImprintPfx:
-                              Record.BLISBN);
+       if not ChkImprintPfx(Subset.ImprintPfx:Record.BLISBN);
             return *off;
        endif;
 
@@ -1135,6 +1121,54 @@
 
        if ISBN1 = *blanks
        or ISBN1 = ISBN2;
+            return *on;
+       endif;
+
+       return *off;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : ChkMARCTag
+       // Description     : Check MARC tag
+       // Returns         :< IsValid
+       // Parameter      >:  TAGC1
+       //                >:  TAGC2
+       /define ChkMARCTag
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if TAGC1 = *zero
+       or TAGC1 = TAGC2;
+            return *on;
+       endif;
+
+       return *off;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : ChkMARCSequence
+       // Description     : Check MARC sequence
+       // Returns         :< IsValid
+       // Parameter      >:  SEQN1
+       //                >:  SEQN2
+       /define ChkMARCSequence
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if SEQN1 = *zero
+       or SEQN1 = SEQN2;
             return *on;
        endif;
 
