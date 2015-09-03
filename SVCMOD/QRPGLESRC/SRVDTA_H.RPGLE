@@ -90,8 +90,6 @@
       * Parameter      >:< Data
       *                >:  Keys
       *                ?:  Subset
-      *                ?:  ReturnFmt
-      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetAuthor...
      D                 PR                  like(*in)
@@ -100,16 +98,6 @@
      D  Subset                             likeds(t_AuthorSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
 
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetAuthor
@@ -130,10 +118,6 @@
      D  Subset                             likeds(t_AuthorSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
 
       *-------------------------------------------------------------------------
       * Local Variables : SRVDTA_GetAuthor
@@ -141,8 +125,6 @@
      D p_Data          S               *
      D p_Keys          S               *
      D p_Subset        S               *
-     D p_ReturnFmt     S               *
-     D p_Access        S               *
      D GetAction       S             10A   varying
      D                                     inz('*unique')
 
@@ -160,8 +142,6 @@
       * Parameter      >:< Data
       *                >:  Keys
       *                ?:  Subset
-      *                ?:  ReturnFmt
-      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetBibliographic...
      D                 PR                  like(*in)
@@ -170,16 +150,6 @@
      D  Subset                             likeds(t_bibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
 
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetBibliographic
@@ -200,10 +170,6 @@
      D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
 
       *-------------------------------------------------------------------------
       * Local Variables : SRVDTA_GetBibliographic
@@ -211,8 +177,6 @@
      D p_Data          S               *
      D p_Keys          S               *
      D p_Subset        S               *
-     D p_ReturnFmt     S               *
-     D p_Access        S               *
      D GetAction       S             10A   varying
      D                                     inz('*unique')
 
@@ -228,30 +192,14 @@
       * Description     : Get Bibliographic
       * Returns         :< IsFound
       * Parameter      >:< Data
-      *                ?:  Keys
       *                ?:  Subset
-      *                ?:  ReturnFmt
-      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetBibliographicFirst...
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
-     D  Keys                               likeds(t_BibliographicKeys)
-     D                                     options(*nopass:
-     D                                             *omit)
      D  Subset                             likeds(t_bibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
 
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetBibliographicFirst
@@ -267,15 +215,8 @@
      D SRVDTA_GetBibliographicFirst...
      D                 PI                  like(*in)
      D  Data                               likeds(t_Bibliographic)
-     D  Keys                               likeds(t_BibliographicKeys)
-     D                                     options(*nopass:
-     D                                             *omit)
      D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
-     D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-     D  Access                       10A   options(*nopass:
      D                                             *omit)
 
       *-------------------------------------------------------------------------
@@ -284,8 +225,6 @@
      D p_Data          S               *
      D p_Keys          S               *
      D p_Subset        S               *
-     D p_ReturnFmt     S               *
-     D p_Access        S               *
      D GetAction       S             10A   varying
      D                                     inz('*first')
 
@@ -301,30 +240,14 @@
       * Description     : Get Bibliographic
       * Returns         :< IsFound
       * Parameter      >:< Data
-      *                ?:  Keys
       *                ?:  Subset
-      *                ?:  ReturnFmt
-      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetBibliographicLast...
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
-     D  Keys                               likeds(t_BibliographicKeys)
-     D                                     options(*nopass:
-     D                                             *omit)
      D  Subset                             likeds(t_bibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
 
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetBibliographicLast
@@ -340,15 +263,8 @@
      D SRVDTA_GetBibliographicLast...
      D                 PI                  like(*in)
      D  Data                               likeds(t_Bibliographic)
-     D  Keys                               likeds(t_BibliographicKeys)
-     D                                     options(*nopass:
-     D                                             *omit)
      D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
-     D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-     D  Access                       10A   options(*nopass:
      D                                             *omit)
 
       *-------------------------------------------------------------------------
@@ -357,8 +273,6 @@
      D p_Data          S               *
      D p_Keys          S               *
      D p_Subset        S               *
-     D p_ReturnFmt     S               *
-     D p_Access        S               *
      D GetAction       S             10A   varying
      D                                     inz('*last')
 
@@ -376,8 +290,6 @@
       * Parameter      >:< Data
       *                >:  Keys
       *                ?:  Subset
-      *                ?:  ReturnFmt
-      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetBibliographicNext...
      D                 PR                  like(*in)
@@ -386,16 +298,6 @@
      D  Subset                             likeds(t_bibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
 
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetBibliographicNext
@@ -415,10 +317,6 @@
      D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
 
       *-------------------------------------------------------------------------
       * Local Variables : SRVDTA_GetBibliographicNext
@@ -426,8 +324,6 @@
      D p_Data          S               *
      D p_Keys          S               *
      D p_Subset        S               *
-     D p_ReturnFmt     S               *
-     D p_Access        S               *
      D GetAction       S             10A   varying
      D                                     inz('*next')
 
@@ -445,8 +341,6 @@
       * Parameter      >:< Data
       *                >:  Keys
       *                ?:  Subset
-      *                ?:  ReturnFmt
-      *                ?:  Access
       *-------------------------------------------------------------------------
      D SRVDTA_GetBibliographicPrevious...
      D                 PR                  like(*in)
@@ -455,16 +349,6 @@
      D  Subset                             likeds(t_bibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
-      /if not defined(SrvDta_)
-     D                                     const
-      /endif
 
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetBibliographicPrevious
@@ -484,10 +368,6 @@
      D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
-     D  ReturnFmt                    10A   options(*nopass:
-     D                                             *omit)
-     D  Access                       10A   options(*nopass:
-     D                                             *omit)
 
       *-------------------------------------------------------------------------
       * Local Variables : SRVDTA_GetBibliographicPrevious
@@ -495,8 +375,6 @@
      D p_Data          S               *
      D p_Keys          S               *
      D p_Subset        S               *
-     D p_ReturnFmt     S               *
-     D p_Access        S               *
      D GetAction       S             10A   varying
      D                                     inz('*previous')
 
@@ -519,8 +397,6 @@
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
-      *                >:  p_ReturnFmt
-      *                >:  p_Access
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetAuthor...
@@ -528,8 +404,6 @@
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D  p_Access                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetAuthor
@@ -547,8 +421,6 @@
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D  p_Access                       *
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
@@ -560,18 +432,6 @@
      D                                     based(p_keys)
      D Subset          DS                  likeds(t_AuthorSubset)
      D                                     based(p_Subset)
-     D ReturnFmt       S             10A   based(p_ReturnFmt)
-     D  ReturnFmtOpts...
-     D                 C                   const('*NONE     +
-     D                                            *KEYSONLY +
-     D                                            *DATAKEYS +
-     D                                            *DATAALL  +
-     D                                            *ALL      ')
-     D Access          S             10A   based(p_Access)
-     D  AccessOpts...
-     D                 C                   const('*NOKEYS   +
-     D                                            *BYKEYS   ')
-     D  AccessNo       S              3I 0
      D Record          DS                  likeds(t_AuthorRecord)
      D                                     inz
      D RecordKeys      DS                  likeds(t_AuthorKeys)
@@ -755,8 +615,6 @@
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
-      *                >:  p_ReturnFmt
-      *                >:  p_Access
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetBibliographic...
@@ -764,8 +622,6 @@
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D  p_Access                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetBibliographic
@@ -783,8 +639,6 @@
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D  p_Access                       *
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
@@ -796,18 +650,6 @@
      D                                     based(p_keys)
      D Subset          DS                  likeds(t_BibliographicSubset)
      D                                     based(p_Subset)
-     D ReturnFmt       S             10A   based(p_ReturnFmt)
-     D  ReturnFmtOpts...
-     D                 C                   const('*NONE     +
-     D                                            *KEYSONLY +
-     D                                            *DATAKEYS +
-     D                                            *DATAALL  +
-     D                                            *ALL      ')
-     D Access          S             10A   based(p_Access)
-     D  AccessOpts...
-     D                 C                   const('*NOKEYS   +
-     D                                            *BYKEYS   ')
-     D  AccessNo       S              3I 0
      D Record          DS                  likeds(t_BibliographicRecord)
      D                                     inz
      D RecordKeys      DS                  likeds(t_BibliographicKeys)
@@ -1394,11 +1236,6 @@
       * Parameter      >:  p_Data
       *                >:  p_Keys
       *                >:  p_Subset
-      *                >:< p_ReturnFmt
-      *                >:    ReturnFmtOpts
-      *                >:  p_Access
-      *                >:   AccessOpts
-      *                 :<  AccessNo
       *                >:  GetAction
       *
       *-------------------------------------------------------------------------
@@ -1407,15 +1244,6 @@
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D   ReturnFmtOpts...
-     D                              200A   varying
-     D                                     const
-     D  p_Access                       *
-     D   AccessOpts...
-     D                               50A   varying
-     D                                     const
-     D   AccessNo                     3I 0
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : ChkGetParms
@@ -1433,23 +1261,11 @@
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
-     D  p_ReturnFmt                    *
-     D   ReturnFmtOpts...
-     D                              200A   varying
-     D                                     const
-     D  p_Access                       *
-     D   AccessOpts...
-     D                               50A   varying
-     D                                     const
-     D   AccessNo                     3I 0
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
-      * Local Variables : InzSrvPgm
+      * Local Variables : ChkGetParms
       *-------------------------------------------------------------------------
-     D ReturnFmt       S             10A   based(p_ReturnFmt)
-     D Access          S             10A   based(p_Access)
-
       *-------------------------------------------------------------------------
       * END Procedure   : ChkGetParms
       *-------------------------------------------------------------------------

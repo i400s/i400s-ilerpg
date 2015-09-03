@@ -42,8 +42,6 @@
        // Parameter      >:< Data
        //                >:  Keys
        //                ?:  Subset
-       //                ?:  ReturnFmt
-       //                ?:  Access
        /define SRVDTA_GetAuthor
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -60,18 +58,10 @@
        if %parms >= 3;
             p_Subset = %addr(Subset);
        endif;
-       if %parms >= 4;
-            p_ReturnFmt = %addr(ReturnFmt);
-       endif;
-       if %parms >= 5;
-            p_Access = %addr(Access);
-       endif;
 
        return GetAuthor(p_Data:
                         p_Keys:
                         p_Subset:
-                        p_ReturnFmt:
-                        p_Access:
                         GetAction);
 
       /end-free
@@ -85,8 +75,6 @@
        // Parameter      >:< Data
        //                >:  Keys
        //                ?:  Subset
-       //                ?:  ReturnFmt
-       //                ?:  Access
        /define SRVDTA_GetBibliographic
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -103,18 +91,10 @@
        if %parms >= 3;
             p_Subset = %addr(Subset);
        endif;
-       if %parms >= 4;
-            p_ReturnFmt = %addr(ReturnFmt);
-       endif;
-       if %parms >= 5;
-            p_Access = %addr(Access);
-       endif;
 
        return GetBibliographic(p_Data:
                                p_Keys:
                                p_Subset:
-                               p_ReturnFmt:
-                               p_Access:
                                GetAction);
 
       /end-free
@@ -126,10 +106,7 @@
        // Description     : Get Bibliographic data
        // Returns         :< IsFound
        // Parameter      >:< Data
-       //                ?:  Keys
        //                ?:  Subset
-       //                ?:  ReturnFmt
-       //                ?:  Access
        /define SRVDTA_GetBibliographicFirst
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -140,24 +117,16 @@
        if %parms >= 1;
             p_Data = %addr(Data);
        endif;
+
+       // Keys never passed.
+
        if %parms >= 2;
-            p_Keys = %addr(Keys);
-       endif;
-       if %parms >= 3;
             p_Subset = %addr(Subset);
-       endif;
-       if %parms >= 4;
-            p_ReturnFmt = %addr(ReturnFmt);
-       endif;
-       if %parms >= 5;
-            p_Access = %addr(Access);
        endif;
 
        return GetBibliographic(p_Data:
                                p_Keys:
                                p_Subset:
-                               p_ReturnFmt:
-                               p_Access:
                                GetAction);
 
       /end-free
@@ -169,10 +138,7 @@
        // Description     : Get Bibliographic data
        // Returns         :< IsFound
        // Parameter      >:< Data
-       //                ?:  Keys
        //                ?:  Subset
-       //                ?:  ReturnFmt
-       //                ?:  Access
        /define SRVDTA_GetBibliographicLast
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -183,24 +149,16 @@
        if %parms >= 1;
             p_Data = %addr(Data);
        endif;
+
+       // Keys never passed.
+
        if %parms >= 2;
-            p_Keys = %addr(Keys);
-       endif;
-       if %parms >= 3;
             p_Subset = %addr(Subset);
-       endif;
-       if %parms >= 4;
-            p_ReturnFmt = %addr(ReturnFmt);
-       endif;
-       if %parms >= 5;
-            p_Access = %addr(Access);
        endif;
 
        return GetBibliographic(p_Data:
                                p_Keys:
                                p_Subset:
-                               p_ReturnFmt:
-                               p_Access:
                                GetAction);
 
       /end-free
@@ -214,8 +172,6 @@
        // Parameter      >:< Data
        //                >:  Keys
        //                ?:  Subset
-       //                ?:  ReturnFmt
-       //                ?:  Access
        /define SRVDTA_GetBibliographicNext
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -232,18 +188,10 @@
        if %parms >= 3;
             p_Subset = %addr(Subset);
        endif;
-       if %parms >= 4;
-            p_ReturnFmt = %addr(ReturnFmt);
-       endif;
-       if %parms >= 5;
-            p_Access = %addr(Access);
-       endif;
 
        return GetBibliographic(p_Data:
                                p_Keys:
                                p_Subset:
-                               p_ReturnFmt:
-                               p_Access:
                                GetAction);
 
       /end-free
@@ -257,8 +205,6 @@
        // Parameter      >:< Data
        //                >:  Keys
        //                ?:  Subset
-       //                ?:  ReturnFmt
-       //                ?:  Access
        /define SRVDTA_GetBibliographicPrevious
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -275,18 +221,10 @@
        if %parms >= 3;
             p_Subset = %addr(Subset);
        endif;
-       if %parms >= 4;
-            p_ReturnFmt = %addr(ReturnFmt);
-       endif;
-       if %parms >= 5;
-            p_Access = %addr(Access);
-       endif;
 
        return GetBibliographic(p_Data:
                                p_Keys:
                                p_Subset:
-                               p_ReturnFmt:
-                               p_Access:
                                GetAction);
 
       /end-free
@@ -304,8 +242,6 @@
        // Parameter      >:< p_Data
        //                >:  p_Keys
        //                >:  p_Subset
-       //                >:  p_ReturnFmt
-       //                >:  p_Access
        //                >:  GetAction
        /define GetAuthor
        /include SrvDta_H
@@ -317,11 +253,6 @@
        ChkGetParms(p_Data:
                    p_Keys:
                    p_Subset:
-                   p_ReturnFmt:
-                   ReturnFmtOpts:
-                   p_Access:
-                   AccessOpts:
-                   AccessNo:
                    GetAction);
 
        // Initialise record specific subset - defaults.
@@ -357,8 +288,8 @@
             // Nothing to do
        endsl;
 
-       // Replace keys if keys passed and *BYKEYS access.
-       if p_Keys <> *null and AccessNo >= 2;
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
             RecordKeys.ISBN = Keys.ISBN;
             RecordKeys.MARCTag = Keys.MARCTag;
             RecordKeys.Sequence = Keys.Sequence;
@@ -372,33 +303,14 @@
             return *off;
        endif;
 
-       if p_ReturnFmt = *null; // *NONE
-            return *on;
-       endif;
-
-       // Update keys parameter.
-       if ReturnFmt = '*KEYSONLY'
-       or ReturnFmt = '*ALL';
-            Keys.ISBN = Record.AUISBN;
-            Keys.MARCTag = Record.AUTAGC;
-            Keys.Sequence = Record.AUSEQN;
-       endif;
-
        // Update keys within data, data structure
-       if ReturnFmt = '*DATAKEYS'
-       or ReturnFmt = '*DATAALL'
-       or ReturnFmt = '*ALL';
-            Data.Keys.ISBN = Record.AUISBN;
-            Data.Keys.MARCTag = Record.AUTAGC;
-            Data.Keys.Sequence = Record.AUSEQN;
-       endif;
+       Data.Keys.ISBN = Record.AUISBN;
+       Data.Keys.MARCTag = Record.AUTAGC;
+       Data.Keys.Sequence = Record.AUSEQN;
 
        // Update record formats within data structure
-       if ReturnFmt = '*ALLDATA'
-       or ReturnFmt = '*ALL';
-            Data.Record(1) = Record;
-            Data.Record(2) = Data.Record(1);
-       endif;
+       Data.Record(1) = Record;
+       Data.Record(2) = Data.Record(1);
 
        return *on;
 
@@ -558,8 +470,6 @@
        // Parameter      >:< p_Data
        //                >:  p_Keys
        //                >:  p_Subset
-       //                >:  p_ReturnFmt
-       //                >:  p_Access
        //                >:  GetAction
        /define GetBibliographic
        /include SrvDta_H
@@ -571,11 +481,6 @@
        ChkGetParms(p_Data:
                    p_Keys:
                    p_Subset:
-                   p_ReturnFmt:
-                   ReturnFmtOpts:
-                   p_Access:
-                   AccessOpts:
-                   AccessNo:
                    GetAction);
 
        // Initialise record specific subset - defaults.
@@ -622,8 +527,8 @@
             endif;
        endsl;
 
-       // Replace keys if keys passed and *BYKEYS access.
-       if p_Keys <> *null and AccessNo >= 2;
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
             RecordKeys.ISBN = Keys.ISBN;
             RecordKeys.SupplierNo = Keys.SupplierNo;
             RecordKeys.SearchKey = Keys.SearchKey;
@@ -637,33 +542,14 @@
             return *off;
        endif;
 
-       if p_ReturnFmt = *null; // *NONE
-            return *on;
-       endif;
-
-       // Update keys parameter.
-       if ReturnFmt = '*KEYSONLY'
-       or ReturnFmt = '*ALL';
-            Keys.ISBN = Record.BLISBN;
-            Keys.SupplierNo = Record.BLSUPN;
-            Keys.SearchKey = Record.BLSKSN;
-       endif;
-
        // Update keys within data, data structure
-       if ReturnFmt = '*DATAKEYS'
-       or ReturnFmt = '*DATAALL'
-       or ReturnFmt = '*ALL';
-            Data.Keys.ISBN = Record.BLISBN;
-            Data.Keys.SupplierNo = Record.BLSUPN;
-            Data.Keys.SearchKey = Record.BLSKSN;
-       endif;
+       Data.Keys.ISBN = Record.BLISBN;
+       Data.Keys.SupplierNo = Record.BLSUPN;
+       Data.Keys.SearchKey = Record.BLSKSN;
 
        // Update record formats within data structure
-       if ReturnFmt = '*ALLDATA'
-       or ReturnFmt = '*ALL';
-            Data.Record(1) = Record;
-            Data.Record(2) = Data.Record(1);
-       endif;
+       Data.Record(1) = Record;
+       Data.Record(2) = Data.Record(1);
 
        return *on;
 
@@ -1198,11 +1084,6 @@
        // Parameter      >:< p_Data
        //                >:  p_Keys
        //                >:  p_Subset
-       //                >:< p_ReturnFmt
-       //                >:   ReturnFmtOpts
-       //                >:  p_Access
-       //                >:   AccessOpts
-       //                 :<  AccessNo
        //                >:  GetAction
        /define ChkGetParms
        /include SrvDta_H
@@ -1225,62 +1106,6 @@
                          1:              // Call stack count
                          '':             // Message key
                          x'00000000');   // API error DS
-       endif;
-
-       if p_ReturnFmt <> *null;
-            select;
-            when %scan(ReturnFmt:ReturnFmtOpts) = 0;
-                 QmhSndPgmMsg('MSG2009':       // Invalid return format
-                              MsgFileLMMSGF:   // Message file
-                              ReturnFmt:       // Message data
-                              %len(ReturnFmt): // Length of message data
-                              '*ESCAPE':       // Message type
-                              '*PGMBDY':       // Call stack entry
-                              1:               // Call stack count
-                              '':              // Message key
-                              x'00000000');    // API error DS
-            when ReturnFmt = '*NONE';
-                 p_ReturnFmt = *null; // Default - *NONE
-            when ReturnFmt = '*KEYSONLY' and p_keys = *null
-            or ReturnFmt = '*ALL' and p_keys = *null;
-                 QmhSndPgmMsg('MSG200C':       // Key field not passed when &1
-                              MsgFileLMMSGF:   // Message file
-                              ReturnFmt:       // Message data
-                              %len(ReturnFmt): // Length of message data
-                              '*ESCAPE':       // Message type
-                              '*PGMBDY':       // Call stack entry
-                              1:               // Call stack count
-                              '':              // Message key
-                              x'00000000');    // API error DS
-
-            endsl;
-       endif;
-
-       if p_access = *null;
-            if GetAction <> '*first'
-            and GetAction <> '*last';
-                 AccessNo = 2; // *BYKEYS
-            else;
-                 AccessNo = 1; // *NOKEYS
-            endif;
-       else;
-            AccessNo = %scan(Access:AccessOpts);
-            if AccessNo > 0;
-                 AccessNo = (AccessNo / 10) + 1; // Calculate "index" not offset
-            endif;
-            if AccessNo = 0 // Invalid
-            or AccessNo = 1 and GetAction <> '*first'
-                            and GetAction <> '*last';
-                 QmhSndPgmMsg('MSG200B':      // Access type '&1' is invalid
-                              MsgFileLMMSGF:  // Message file
-                              Access:         // Message data
-                              %len(Access):   // Length of message data
-                              '*ESCAPE':      // Message type
-                              '*PGMBDY':      // Call stack entry
-                              1:              // Call stack count
-                              '':             // Message key
-                              x'00000000');   // API error DS
-            endif;
        endif;
 
        return *on;
