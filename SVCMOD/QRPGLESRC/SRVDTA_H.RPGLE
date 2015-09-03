@@ -428,15 +428,7 @@
       *-------------------------------------------------------------------------
      D Data            DS                  likeds(t_Author)
      D                                     based(p_Data)
-     D Keys            DS                  likeds(t_AuthorKeys)
-     D                                     based(p_keys)
-     D Subset          DS                  likeds(t_AuthorSubset)
-     D                                     based(p_Subset)
      D Record          DS                  likeds(t_AuthorRecord)
-     D                                     inz
-     D RecordKeys      DS                  likeds(t_AuthorKeys)
-     D                                     inz
-     D RecordSubset    DS                  likeds(t_MTAUTHSubset)
      D                                     inz
 
       *-------------------------------------------------------------------------
@@ -458,8 +450,8 @@
      D GetAuthorRecord...
      D                 PR                  like(*in)
      D  Record                             likeds(t_AuthorRecord)
-     D  Keys                               likeds(t_AuthorKeys)
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  p_Keys                         *
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetAuthorRecord
@@ -475,14 +467,22 @@
      D GetAuthorRecord...
      D                 PI                  like(*in)
      D  Record                             likeds(t_AuthorRecord)
-     D  Keys                               likeds(t_AuthorKeys)
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  p_Keys                         *
+     D  p_Subset                       *
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetAuthorRecord
       *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_AuthorKeys)
+     D                                     based(p_keys)
+     D Subset          DS                  likeds(t_AuthorSubset)
+     D                                     based(p_Subset)
      D Sequence        S              3I 0
+     D RecordKeys      DS                  likeds(t_AuthorKeys)
+     D                                     inz
+     D RecordSubset    DS                  likeds(t_MTAUTHSubset)
+     D                                     inz
       *-------------------------------------------------------------------------
       * END Procedure   : GetAuthorRecord
       *-------------------------------------------------------------------------
@@ -646,20 +646,8 @@
       *-------------------------------------------------------------------------
      D Data            DS                  likeds(t_Bibliographic)
      D                                     based(p_Data)
-     D Keys            DS                  likeds(t_BibliographicKeys)
-     D                                     based(p_keys)
-     D Subset          DS                  likeds(t_BibliographicSubset)
-     D                                     based(p_Subset)
      D Record          DS                  likeds(t_BibliographicRecord)
      D                                     inz
-     D RecordKeys      DS                  likeds(t_BibliographicKeys)
-     D                                     inz
-     D RecordSubset    DS                  likeds(t_MTBIBLSubset)
-     D                                     inz
-     D SKSNLo          S             10A   inz(*allx'00')
-     D SKSNHi          S             10A   inz(*allx'FF')
-     D ISBNLo          S             10A   inz(*allx'00')
-     D ISBNHi          S             10A   inz(*allx'FF')
 
       *-------------------------------------------------------------------------
       * END Procedure   : GetBibliographic
@@ -680,8 +668,8 @@
      D GetBibliographicRecord...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Keys                         *
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetBibliographicRecord
@@ -697,14 +685,26 @@
      D GetBibliographicRecord...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Keys                         *
+     D  p_Subset                       *
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetBibliographicRecord
       *-------------------------------------------------------------------------
      D Sequence        S              3I 0
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D Subset          DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
+     D RecordKeys      DS                  likeds(t_BibliographicKeys)
+     D                                     inz
+     D RecordSubset    DS                  likeds(t_MTBIBLSubset)
+     D                                     inz
+     D SKSNLo          S             10A   inz(*allx'00')
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D ISBNLo          S             10A   inz(*allx'00')
+     D ISBNHi          S             10A   inz(*allx'FF')
       *-------------------------------------------------------------------------
       * END Procedure   : GetBibliographicRecord
       *-------------------------------------------------------------------------

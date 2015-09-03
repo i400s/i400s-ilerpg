@@ -255,6 +255,44 @@
                    p_Subset:
                    GetAction);
 
+       // Process request
+       if not GetAuthorRecord(Record:
+                              p_Keys:
+                              p_Subset:
+                              GetAction);
+            return *off;
+       endif;
+
+       // Update keys within data, data structure
+       Data.Keys.ISBN = Record.AUISBN;
+       Data.Keys.MARCTag = Record.AUTAGC;
+       Data.Keys.Sequence = Record.AUSEQN;
+
+       // Update record formats within data structure
+       Data.Record(1) = Record;
+       Data.Record(2) = Data.Record(1);
+
+       return *on;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetAuthorRecord
+       // Description     : Get Author
+       // Returns         :< IsFound
+       // Parameter      >:< Record
+       //                >:  Keys
+       //                >:  Subset
+       //                >:  GetAction
+       /define GetAuthorRecord
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
        // Initialise record specific subset - defaults.
        RecordSubset.ISBN = *blanks;
        RecordSubset.MARCTag = 0;
@@ -295,50 +333,13 @@
             RecordKeys.Sequence = Keys.Sequence;
        endif;
 
-       // Process request
-       if not GetAuthorRecord(Record:
-                              RecordKeys:
-                              RecordSubset:
-                              GetAction);
-            return *off;
-       endif;
+       Sequence = GetMTAUTHSequence(RecordSubset);
 
-       // Update keys within data, data structure
-       Data.Keys.ISBN = Record.AUISBN;
-       Data.Keys.MARCTag = Record.AUTAGC;
-       Data.Keys.Sequence = Record.AUSEQN;
-
-       // Update record formats within data structure
-       Data.Record(1) = Record;
-       Data.Record(2) = Data.Record(1);
-
-       return *on;
-
-      /end-free
-     P                 E
-
-      /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetAuthorRecord
-       // Description     : Get Author
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetAuthorRecord
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
-       Sequence = GetMTAUTHSequence(Subset);
        select;
        when Sequence = 1;
             return GetMTAUTHF(Record:
-                              Keys:
-                              Subset:
+                              RecordKeys:
+                              RecordSubset:
                               GetAction);
        endsl;
 
@@ -483,6 +484,45 @@
                    p_Subset:
                    GetAction);
 
+       // Process request
+       if not GetBibliographicRecord(Record:
+                                     p_Keys:
+                                     p_Subset:
+                                     GetAction);
+            return *off;
+       endif;
+
+       // Update keys within data, data structure
+       Data.Keys.ISBN = Record.BLISBN;
+       Data.Keys.SupplierNo = Record.BLSUPN;
+       Data.Keys.SearchKey = Record.BLSKSN;
+
+       // Update record formats within data structure
+       Data.Record(1) = Record;
+       Data.Record(2) = Data.Record(1);
+
+       return *on;
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : GetBibliographicRecord
+       // Description     : Get bibligraphic record
+       // Returns         :< IsFound
+       // Parameter      >:< Record
+       //                >:  Keys
+       //                >:  Subset
+       //                >:  GetAction
+       /define GetBibliographicRecord
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+
        // Initialise record specific subset - defaults.
        RecordSubset.SupplierNo = 0;
        RecordSubset.SearchKeyPfx = GetSearchKeyPfx('*ALL');
@@ -534,65 +574,27 @@
             RecordKeys.SearchKey = Keys.SearchKey;
        endif;
 
-       // Process request
-       if not GetBibliographicRecord(Record:
-                                     RecordKeys:
-                                     RecordSubset:
-                                     GetAction);
-            return *off;
-       endif;
-
-       // Update keys within data, data structure
-       Data.Keys.ISBN = Record.BLISBN;
-       Data.Keys.SupplierNo = Record.BLSUPN;
-       Data.Keys.SearchKey = Record.BLSKSN;
-
-       // Update record formats within data structure
-       Data.Record(1) = Record;
-       Data.Record(2) = Data.Record(1);
-
-       return *on;
-
-      /end-free
-     P                 E
-
-      /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetBibliographicRecord
-       // Description     : Get bibligraphic record
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetBibliographicRecord
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
-       Sequence = GetMTBIBLSequence(Subset);
+       Sequence = GetMTBIBLSequence(RecordSubset);
        select;
        when Sequence = 1;
             return GetMTBIBLF1(Record:
-                               Keys:
-                               Subset:
+                               RecordKeys:
+                               RecordSubset:
                                GetAction);
        when Sequence = 2;
             return GetMTBIBLF2(Record:
-                               Keys:
-                               Subset:
+                               RecordKeys:
+                               RecordSubset:
                                GetAction);
        when Sequence = 3;
             return GetMTBIBLF3(Record:
-                               Keys:
-                               Subset:
+                               RecordKeys:
+                               RecordSubset:
                                GetAction);
        when Sequence = 4;
             return GetMTBIBLF4(Record:
-                               Keys:
-                               Subset:
+                               RecordKeys:
+                               RecordSubset:
                                GetAction);
        endsl;
 
