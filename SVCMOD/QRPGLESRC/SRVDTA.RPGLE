@@ -283,8 +283,8 @@
        // Description     : Get Author
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
-       //                >:  Subset
+       //                >:  p_Keys
+       //                >:  p_Subset
        //                >:  GetAction
        /define GetAuthorRecord
        /include SrvDta_H
@@ -305,40 +305,12 @@
             RecordSubset.Sequence = Subset.Sequence;
        endif;
 
-       // Initialise record specific subset - key selection.
-       if GetAction = '*unique';
-            RecordSubset.ISBN = Keys.ISBN;
-            RecordSubset.MARCTag = Keys.MARCTag;
-            RecordSubset.Sequence = Keys.Sequence;
-       endif;
-
-       // Setup keys, including alternative LF ones, for record access.
-       RecordKeys.ISBN = RecordSubset.ISBN;
-       RecordKeys.MARCTag = RecordSubset.MARCTag;
-       RecordKeys.Sequence = RecordSubset.Sequence;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *first and *last.
-       select;
-       when GetAction = '*first';
-            // Nothing to do
-       when GetAction = '*last';
-            // Nothing to do
-       endsl;
-
-       // Replace keys if keys passed.
-       if p_Keys <> *null;
-            RecordKeys.ISBN = Keys.ISBN;
-            RecordKeys.MARCTag = Keys.MARCTag;
-            RecordKeys.Sequence = Keys.Sequence;
-       endif;
-
-       Sequence = GetMTAUTHSequence(RecordSubset);
+       Sequence = GetMTAUTHSequence(RecordSubset:GetAction);
 
        select;
        when Sequence = 1;
             return GetMTAUTHF(Record:
-                              RecordKeys:
+                              p_Keys:
                               RecordSubset:
                               GetAction);
        endsl;
@@ -352,7 +324,7 @@
        // Description     : Get MTAUTHF data
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
+       //                >:  p_Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTAUTHF
@@ -362,9 +334,36 @@
             return *off;
        endif;
 
-       FileKeys.AUISBN = Keys.ISBN;
-       FileKeys.AUTAGC = Keys.MARCTag;
-       FileKeys.AUSEQN = Keys.Sequence;
+       // Initialise record specific subset - key selection.
+       if GetAction = '*unique';
+            Subset.ISBN = Keys.ISBN;
+            Subset.MARCTag = Keys.MARCTag;
+            Subset.Sequence = Keys.Sequence;
+       endif;
+
+       // Setup keys for record access.
+       FileKeys.AUISBN = Subset.ISBN;
+       FileKeys.AUTAGC = Subset.MARCTag;
+       FileKeys.AUSEQN = Subset.Sequence;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.AUISBN = %trimr(FileKeys.AUISBN) + ISBNHi;
+            if FileKeys.AUTAGC = 0;
+                 FileKeys.AUTAGC = *hival;
+            endif;
+            if FileKeys.AUSEQN = 0;
+                 FileKeys.AUSEQN = *hival;
+            endif;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.AUISBN = Keys.ISBN;
+            FileKeys.AUTAGC = Keys.MARCTag;
+            FileKeys.AUSEQN = Keys.Sequence;
+       endif;
 
        select;
        when GetAction = '*first'
@@ -451,10 +450,15 @@
        // Description     : Get Logical index based on subset.
        // Returns         :< Sequence
        // Parameter      >:  Subset
+       //                >:  GetAction
        /define GetMTAUTHSequence
        /include SrvDta_H
        // ----------------------------------------------------------------------
        if not InzSrvPgm;
+            return 1;
+       endif;
+
+       if GetAction = '*unique';
             return 1;
        endif;
 
@@ -512,8 +516,8 @@
        // Description     : Get bibligraphic record
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
-       //                >:  Subset
+       //                >:  p_Keys
+       //                >:  p_Subset
        //                >:  GetAction
        /define GetBibliographicRecord
        /include SrvDta_H
@@ -538,62 +542,26 @@
             RecordSubset.Deleted = Subset.Deleted;
        endif;
 
-       // Initialise record specific subset - key selection.
-       if GetAction = '*unique';
-            RecordSubset.ISBN = Keys.ISBN;
-       endif;
-
-       // Setup keys, including alternative LF ones, for record access.
-       RecordKeys.ISBN = RecordSubset.ImprintPfx.Prefix;
-       RecordKeys.SupplierNo = RecordSubset.SupplierNo;
-       RecordKeys.SearchKey = RecordSubset.SearchKeyPfx.Prefix;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *first and *last.
-       select;
-       when GetAction = '*first';
-            if RecordSubset.SearchKeyPfx.IsGeneric;
-                 RecordKeys.SearchKey = %trimr(RecordKeys.SearchKey) + SKSNLo;
-            endif;
-            if RecordSubset.ImprintPfx.IsGeneric;
-                 RecordKeys.ISBN = %trimr(RecordKeys.ISBN) + ISBNLo;
-            endif;
-       when GetAction = '*last';
-            if RecordSubset.SearchKeyPfx.IsGeneric;
-                 RecordKeys.SearchKey = %trimr(RecordKeys.SearchKey) + SKSNHi;
-            endif;
-            if RecordSubset.ImprintPfx.IsGeneric;
-                 Recordkeys.ISBN = %trimr(RecordKeys.ISBN) + ISBNHi;
-            endif;
-       endsl;
-
-       // Replace keys if keys passed.
-       if p_Keys <> *null;
-            RecordKeys.ISBN = Keys.ISBN;
-            RecordKeys.SupplierNo = Keys.SupplierNo;
-            RecordKeys.SearchKey = Keys.SearchKey;
-       endif;
-
-       Sequence = GetMTBIBLSequence(RecordSubset);
+       Sequence = GetMTBIBLSequence(RecordSubset:GetAction);
        select;
        when Sequence = 1;
             return GetMTBIBLF1(Record:
-                               RecordKeys:
+                               p_Keys:
                                RecordSubset:
                                GetAction);
        when Sequence = 2;
             return GetMTBIBLF2(Record:
-                               RecordKeys:
+                               p_Keys:
                                RecordSubset:
                                GetAction);
        when Sequence = 3;
             return GetMTBIBLF3(Record:
-                               RecordKeys:
+                               p_Keys:
                                RecordSubset:
                                GetAction);
        when Sequence = 4;
             return GetMTBIBLF4(Record:
-                               RecordKeys:
+                               p_Keys:
                                RecordSubset:
                                GetAction);
        endsl;
@@ -607,7 +575,7 @@
        // Description     : Get MTBIBLF1 data
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
+       //                >:  p_Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF1
@@ -617,9 +585,26 @@
             return *off;
        endif;
 
-       p_MTBIBLF = %addr(Record);
+       // Initialise record specific subset - key selection.
+       if GetAction = '*unique';
+            Subset.ISBN = Keys.ISBN;
+       endif;
 
-       FileKeys.BLISBN = Keys.ISBN;
+       // Setup keys for record access.
+       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       p_MTBIBLF = %addr(Record);
 
        select;
        when GetAction = '*first'
@@ -659,7 +644,7 @@
        // Description     : Get MTBIBLF2 data
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
+       //                >:  p_Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF2
@@ -669,11 +654,28 @@
             return *off;
        endif;
 
-       p_MTBIBLF = %addr(Record);
+       // Setup keys for record access.
+       FileKeys.BLSUPN = Subset.SupplierNo;
+       FileKeys.BLSKSN = Subset.SearchKeyPfx.Prefix;
+       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
 
-       FileKeys.BLSUPN = Keys.SupplierNo;
-       FileKeys.BLSKSN = Keys.SearchKey;
-       FileKeys.BLISBN = Keys.ISBN;
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            if Subset.SearchKeyPfx.IsGeneric;
+                 FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
+            endif;
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.BLSUPN = Keys.SupplierNo;
+            FileKeys.BLSKSN = Keys.SearchKey;
+            FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       p_MTBIBLF = %addr(Record);
 
        select;
        when GetAction = '*first'
@@ -712,7 +714,7 @@
        // Description     : Get MTBIBLF3 data
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
+       //                >:  p_Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF3
@@ -722,10 +724,26 @@
             return *off;
        endif;
 
-       p_MTBIBLF = %addr(Record);
+       // Setup keys for record access.
+       FileKeys.BLSKSN = Subset.SearchKeyPfx.Prefix;
+       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
 
-       FileKeys.BLSKSN = Keys.SearchKey;
-       FileKeys.BLISBN = Keys.ISBN;
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            if Subset.SearchKeyPfx.IsGeneric;
+                 FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
+            endif;
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.BLSKSN = Keys.SearchKey;
+            FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       p_MTBIBLF = %addr(Record);
 
        select;
        when GetAction = '*first'
@@ -764,7 +782,7 @@
        // Description     : Get MTBIBLF4 data
        // Returns         :< IsFound
        // Parameter      >:< Record
-       //                >:  Keys
+       //                >:  p_Keys
        //                >:  Subset
        //                >:  GetAction
        /define GetMTBIBLF4
@@ -774,10 +792,23 @@
             return *off;
        endif;
 
-       p_MTBIBLF = %addr(Record);
+       // Setup keys for record access.
+       FileKeys.BLSUPN = Subset.SupplierNo;
+       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
 
-       FileKeys.BLSUPN = Keys.SupplierNo;
-       FileKeys.BLISBN = Keys.ISBN;
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.BLSUPN = Keys.SupplierNo;
+            FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       p_MTBIBLF = %addr(Record);
 
        select;
        when GetAction = '*first'
@@ -857,6 +888,7 @@
        // Description     : Get Logical index based on subset.
        // Returns         :< Sequence
        // Parameter      >:  Subset
+       //                >:  GetAction
        /define GetMTBIBLSequence
        /include SrvDta_H
        // ----------------------------------------------------------------------
@@ -864,7 +896,7 @@
             return 1;
        endif;
 
-       if Subset.ISBN <> *blanks;
+       if GetAction = '*unique';
             return 1;
        endif;
 

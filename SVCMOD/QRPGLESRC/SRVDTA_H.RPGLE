@@ -443,8 +443,8 @@
       * Description     : Get Author
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
-      *                >:  Subset
+      *                >:  p_Keys
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetAuthorRecord...
@@ -474,13 +474,9 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetAuthorRecord
       *-------------------------------------------------------------------------
-     D Keys            DS                  likeds(t_AuthorKeys)
-     D                                     based(p_keys)
      D Subset          DS                  likeds(t_AuthorSubset)
      D                                     based(p_Subset)
      D Sequence        S              3I 0
-     D RecordKeys      DS                  likeds(t_AuthorKeys)
-     D                                     inz
      D RecordSubset    DS                  likeds(t_MTAUTHSubset)
      D                                     inz
       *-------------------------------------------------------------------------
@@ -495,14 +491,14 @@
       * Description     : Get MTAUTHF data
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
+      *                >:  p_Keys
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTAUTHF...
      D                 PR                  like(*in)
      D  Record                             likeds(t_AuthorRecord)
-     D  Keys                               likeds(t_AuthorKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTAUTHSubset)
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
@@ -519,13 +515,16 @@
      D GetMTAUTHF...
      D                 PI                  like(*in)
      D  Record                             likeds(t_AuthorRecord)
-     D  Keys                               Likeds(t_AuthorKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTAUTHSubset)
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTAUTHF
       *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_AuthorKeys)
+     D                                     based(p_keys)
+     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTAUTHF:*input)
      D                                     inz
      D FileKeys        DS                  likerec(MTAUTHF:*key)
@@ -579,10 +578,12 @@
       * Description     : Get file assess sequence
       * Returns         :< Sequence
       *                >:  Subset
+      *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTAUTHSequence...
      D                 PR             3I 0
      D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTAUTHSequence
       *-------------------------------------------------------------------------
@@ -597,6 +598,7 @@
      D GetMTAUTHSequence...
      D                 PI             3I 0
      D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTAUTHSequence
@@ -661,8 +663,8 @@
       * Description     : Get Bibliographic record
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
-      *                >:  Subset
+      *                >:  p_Keys
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetBibliographicRecord...
@@ -692,19 +694,11 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetBibliographicRecord
       *-------------------------------------------------------------------------
-     D Sequence        S              3I 0
-     D Keys            DS                  likeds(t_BibliographicKeys)
-     D                                     based(p_keys)
      D Subset          DS                  likeds(t_BibliographicSubset)
      D                                     based(p_Subset)
-     D RecordKeys      DS                  likeds(t_BibliographicKeys)
-     D                                     inz
+     D Sequence        S              3I 0
      D RecordSubset    DS                  likeds(t_MTBIBLSubset)
      D                                     inz
-     D SKSNLo          S             10A   inz(*allx'00')
-     D SKSNHi          S             10A   inz(*allx'FF')
-     D ISBNLo          S             10A   inz(*allx'00')
-     D ISBNHi          S             10A   inz(*allx'FF')
       *-------------------------------------------------------------------------
       * END Procedure   : GetBibliographicRecord
       *-------------------------------------------------------------------------
@@ -717,14 +711,14 @@
       * Description     : Get MTBIBLF1 data
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
+      *                >:  p_Keys
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF1...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
@@ -741,13 +735,16 @@
      D GetMTBIBLF1...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF1
       *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF1:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF1:*key)
@@ -764,14 +761,14 @@
       * Description     : Get MTBIBLF2 data
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
+      *                >:  p_Keys
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF2...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
@@ -788,13 +785,17 @@
      D GetMTBIBLF2...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF2
       *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF2:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF2:*key)
@@ -811,14 +812,14 @@
       * Description     : Get MTBIBLF3 data
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
+      *                >:  p_Keys
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF3...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
@@ -835,13 +836,17 @@
      D GetMTBIBLF3...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF3
       *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF3:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF3:*key)
@@ -858,14 +863,14 @@
       * Description     : Get MTBIBLF4 data
       * Returns         :< IsFound
       * Parameter      >:< Record
-      *                >:  Keys
+      *                >:  p_Keys
       *                >:  Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF4...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
@@ -882,13 +887,16 @@
      D GetMTBIBLF4...
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
-     D  Keys                               likeds(t_BibliographicKeys)
+     D  p_Keys                         *
      D  Subset                             likeds(t_MTBIBLSubset)
      D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF4
       *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF4:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF4:*key)
@@ -942,10 +950,12 @@
       * Description     : Get file assess sequence
       * Returns         :< Sequence
       *                >:  Subset
+      *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLSequence...
      D                 PR             3I 0
      D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTBIBLSequence
       *-------------------------------------------------------------------------
@@ -960,6 +970,7 @@
      D GetMTBIBLSequence...
      D                 PI             3I 0
      D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
 
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLSequence
