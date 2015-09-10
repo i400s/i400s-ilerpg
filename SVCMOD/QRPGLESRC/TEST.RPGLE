@@ -22,7 +22,11 @@
       /include SrvDta_H
 
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
+     D                                     inz
      D Author          DS                  likeds(t_Author)
+     D                                     inz
+     D AuthorSubset    DS                  likeds(t_AuthorSubset)
+     D                                     inz
      D BiblKeys        DS                  likeds(t_BibliographicKeys)
      D                                     inz
      D biblSubset      DS                  likeds(t_BibliographicSubset)
@@ -56,6 +60,62 @@
        if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit);
             dsply ('Error: *omit');
        endif;
+
+       if not SRVDTA_GetAuthorLast(Author);
+            dsply ('Error: no last') '' wait;
+       elseif Author.Keys.ISBN <> '9898989898';
+            dsply ('Error: ISBN not 9898989898 ' +
+                   Author.Keys.ISBN) ' ' wait;
+       else;
+            if not SRVDTA_GetAuthorPrevious(Author:Author.Keys);
+                 dsply ('Error: no previous') ' ' wait;
+            elseif Author.Keys.ISBN <> '9898989898'
+            and Author.Keys.MARCTag <> 2;
+                 dsply ('Error: Previous MarcTag <> 2 ' +
+                        %char(Author.Keys.MARCTag)) ' ' wait;
+            endif;
+       endif;
+
+       if not SRVDTA_GetAuthorFirst(Author);
+            dsply ('Error: no first') '' wait;
+       elseif Author.Keys.ISBN <> '0000000004';
+            dsply ('Error: ISBN not 0000000004 ' +
+                   Author.Keys.ISBN) ' ' wait;
+       else;
+            if not SRVDTA_GetAuthorNext(Author:Author.Keys);
+                 dsply ('Error: no next') ' ' wait;
+            elseif Author.Keys.ISBN <> '0000000004'
+            and Author.Keys.MARCTag <> 700;
+                 dsply ('Error: Previous MarcTag <> 700 ' +
+                        %char(Author.Keys.MARCTag)) ' ' wait;
+            endif;
+       endif;
+
+       AuthorSubset.ISBN = '0000000007';
+
+       if not SRVDTA_GetAuthorFirst(Author:AuthorSubset);
+            dsply ('Error: no first 0000000007') '' wait;
+       elseif Author.Keys.ISBN <> '0000000007';
+            dsply ('Error: ISBN not 0000000007 ' +
+                   Author.Keys.ISBN) ' ' wait;
+       else;
+            if not SRVDTA_GetAuthorNext(Author:Author.Keys:AuthorSubset);
+                 dsply ('Error: no next 0000000007') ' ' wait;
+            elseif Author.Keys.ISBN <> '0000000007'
+            and Author.Keys.MARCTag <> 700;
+                 dsply ('Error: Next 0000000007 MarcTag <> 700 ' +
+                        %char(Author.Keys.MARCTag)) ' ' wait;
+            else;
+            if not SRVDTA_GetAuthorPrevious(Author:Author.Keys:AuthorSubset);
+                 dsply ('Error: no prev 0000000007') ' ' wait;
+            elseif Author.Keys.ISBN <> '0000000007'
+            and Author.Keys.MARCTag <> 100;
+                 dsply ('Error: prev 0000000007 MarcTag <> 100 ' +
+                        %char(Author.Keys.MARCTag)) ' ' wait;
+            endif;
+            endif;
+       endif;
+
 
        // ----------------------------------------------------------------------
        // test Bibliographic

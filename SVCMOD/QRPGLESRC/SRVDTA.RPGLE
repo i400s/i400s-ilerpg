@@ -69,6 +69,136 @@
 
       /free
        // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetAuthorFirst
+       // Description     : Get Author data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                ?:  Subset
+       /define SRVDTA_GetAuthorFirst
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+
+       // Keys never passed.
+
+       if %parms >= 2;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetAuthor(p_Data:
+                        p_Keys:
+                        p_Subset:
+                        GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetAuthorLast
+       // Description     : Get Author data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                ?:  Subset
+       /define SRVDTA_GetAuthorLast
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+
+       // Keys never passed.
+
+       if %parms >= 2;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetAuthor(p_Data:
+                        p_Keys:
+                        p_Subset:
+                        GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetAuthorNext
+       // Description     : Get Author data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                >:  Keys
+       //                ?:  Subset
+       /define SRVDTA_GetAuthorNext
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetAuthor(p_Data:
+                        p_Keys:
+                        p_Subset:
+                        GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
+       // Procedure       : SRVDTA_GetAuthorPrevious
+       // Description     : Get Author data
+       // Returns         :< IsFound
+       // Parameter      >:< Data
+       //                >:  Keys
+       //                ?:  Subset
+       /define SRVDTA_GetAuthorPrevious
+       /include SrvDta_H
+       // ----------------------------------------------------------------------
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetAuthor(p_Data:
+                        p_Keys:
+                        p_Subset:
+                        GetAction);
+
+      /end-free
+     P                 E
+
+      /free
+       // ----------------------------------------------------------------------
        // Procedure       : SRVDTA_GetBibliographic
        // Description     : Get Bibliographic data
        // Returns         :< IsFound

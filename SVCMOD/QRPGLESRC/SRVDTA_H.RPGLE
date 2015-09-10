@@ -136,6 +136,204 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetAuthorFirst
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetAuthorFirst...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(SRVDTA_GetAuthorFirst)
+      /undefine   SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorFirst...
+     P                 B                   export
+     D SRVDTA_GetAuthorFirst...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*first')
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetAuthorLast
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetAuthorLast...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(SRVDTA_GetAuthorLast)
+      /undefine   SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorLast...
+     P                 B                   export
+     D SRVDTA_GetAuthorLast...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*last')
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetAuthorNext
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetAuthorNext...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(SRVDTA_GetAuthorNext)
+      /undefine   SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorNext...
+     P                 B                   export
+     D SRVDTA_GetAuthorNext...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*next')
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetAuthorPrevious
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetAuthorPrevious...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+      /endif
+      /if defined(SRVDTA_GetAuthorPrevious)
+      /undefine   SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorPrevious...
+     P                 B                   export
+     D SRVDTA_GetAuthorPrevious...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*previous')
+
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+      /EOF
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : SRVDTA_GetBibliographic
       * Description     : Get Bibliographic
       * Returns         :< IsFound
@@ -147,7 +345,7 @@
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
      D  Keys                               likeds(t_BibliographicKeys)
-     D  Subset                             likeds(t_bibliographicSubset)
+     D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
 
@@ -197,7 +395,7 @@
      D SRVDTA_GetBibliographicFirst...
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
-     D  Subset                             likeds(t_bibliographicSubset)
+     D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
 
@@ -245,7 +443,7 @@
      D SRVDTA_GetBibliographicLast...
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
-     D  Subset                             likeds(t_bibliographicSubset)
+     D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
 
@@ -295,7 +493,7 @@
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
      D  Keys                               likeds(t_BibliographicKeys)
-     D  Subset                             likeds(t_bibliographicSubset)
+     D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
 
@@ -346,7 +544,7 @@
      D                 PR                  like(*in)
      D  Data                               likeds(t_Bibliographic)
      D  Keys                               likeds(t_BibliographicKeys)
-     D  Subset                             likeds(t_bibliographicSubset)
+     D  Subset                             likeds(t_BibliographicSubset)
      D                                     options(*nopass:
      D                                             *omit)
 
