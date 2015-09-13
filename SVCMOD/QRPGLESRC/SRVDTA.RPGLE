@@ -7,11 +7,11 @@
       /include qincprsrc,StdHSpec
 
       *-------------------------------------------------------------------------
-      *     [AU] Author
+      * [AU] Author
      FMTAUTHP   IF   E           K DISK    usropn
      F                                     rename(MTAUTHF:MTAUTHF)
       *-------------------------------------------------------------------------
-      *     [BL] Bibliographic
+      * [BL] Bibliographic
      FMTBIBLL1  IF   E           K DISK    usropn
      F                                     rename(MTBIBLF:MTBIBLF1)
      FMTBIBLL2  IF   E           K DISK    usropn
@@ -23,28 +23,48 @@
       *-------------------------------------------------------------------------
       * [IP] Imprint
      FMTIMPNP   IF   E           K DISK    usropn
+      *-------------------------------------------------------------------------
 
-      *
       *-------------------------------------------------------------------------
       * Global data and procedure specifications
       *-------------------------------------------------------------------------
       /include StdDSpec
-      * Special define to remove "const" and make fields "reference" internally
+      * Special define used to include code only used within this program.
       /define SrvDta_
       * Header file
       /include SrvDta_h
 
+      *-------------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetAuthor
+      * Description     : Get Author data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthor
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthor...
+     P                 B                   export
+     D SRVDTA_GetAuthor...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthor
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*unique')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetAuthor
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetAuthor
-       // Description     : Get Author data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                >:  Keys
-       //                ?:  Subset
-       /define SRVDTA_GetAuthor
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -63,20 +83,41 @@
                         p_Keys:
                         p_Subset:
                         GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthor
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetAuthorFirst
+      * Description     : Get Author data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorFirst...
+     P                 B                   export
+     D SRVDTA_GetAuthorFirst...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*first')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetAuthorFirst
-       // Description     : Get Author data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                ?:  Subset
-       /define SRVDTA_GetAuthorFirst
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -95,20 +136,41 @@
                         p_Keys:
                         p_Subset:
                         GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorFirst
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetAuthorLast
+      * Description     : Get Author data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorLast...
+     P                 B                   export
+     D SRVDTA_GetAuthorLast...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*last')
+      *----------------------------------------------------------------------
+      * Program code    : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetAuthorLast
-       // Description     : Get Author data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                ?:  Subset
-       /define SRVDTA_GetAuthorLast
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -127,21 +189,43 @@
                         p_Keys:
                         p_Subset:
                         GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorLast
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetAuthorNext
+      * Description     : Get Author data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorNext...
+     P                 B                   export
+     D SRVDTA_GetAuthorNext...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*next')
+      *----------------------------------------------------------------------
+      * Program code    : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetAuthorNext
-       // Description     : Get Author data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                >:  Keys
-       //                ?:  Subset
-       /define SRVDTA_GetAuthorNext
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -160,21 +244,43 @@
                         p_Keys:
                         p_Subset:
                         GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorNext
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetAuthorPrevious
+      * Description     : Get Author data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetAuthorPrevious...
+     P                 B                   export
+     D SRVDTA_GetAuthorPrevious...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Author)
+     D  Keys                               likeds(t_AuthorKeys)
+     D  Subset                             likeds(t_AuthorSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*previous')
+      *----------------------------------------------------------------------
+      * Program code    : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetAuthorPrevious
-       // Description     : Get Author data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                >:  Keys
-       //                ?:  Subset
-       /define SRVDTA_GetAuthorPrevious
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -193,21 +299,43 @@
                         p_Keys:
                         p_Subset:
                         GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetAuthorPrevious
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetBibliographic
+      * Description     : Get Bibliographic data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *----------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographic
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographic...
+     P                 B                   export
+     D SRVDTA_GetBibliographic...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographic
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*unique')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetBibliographic
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetBibliographic
-       // Description     : Get Bibliographic data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                >:  Keys
-       //                ?:  Subset
-       /define SRVDTA_GetBibliographic
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -226,20 +354,41 @@
                                p_Keys:
                                p_Subset:
                                GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographic
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetBibliographicFirst
+      * Description     : Get Bibliographic data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographicFirst
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographicFirst...
+     P                 B                   export
+     D SRVDTA_GetBibliographicFirst...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographicFirst
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*first')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetBibliographicFirst
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetBibliographicFirst
-       // Description     : Get Bibliographic data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                ?:  Subset
-       /define SRVDTA_GetBibliographicFirst
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -258,20 +407,41 @@
                                p_Keys:
                                p_Subset:
                                GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographicFirst
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetBibliographicLast
+      * Description     : Get Bibliographic data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographicLast...
+     P                 B                   export
+     D SRVDTA_GetBibliographicLast...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*last')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetBibliographicLast
-       // Description     : Get Bibliographic data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                ?:  Subset
-       /define SRVDTA_GetBibliographicLast
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -290,21 +460,43 @@
                                p_Keys:
                                p_Subset:
                                GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographicLast
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetBibliographicNext
+      * Description     : Get Bibliographic data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographicNext
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographicNext...
+     P                 B                   export
+     D SRVDTA_GetBibliographicNext...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographicNext
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*next')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetBibliographicNext
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetBibliographicNext
-       // Description     : Get Bibliographic data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                >:  Keys
-       //                ?:  Subset
-       /define SRVDTA_GetBibliographicNext
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -323,21 +515,43 @@
                                p_Keys:
                                p_Subset:
                                GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographicNext
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetBibliographicPrevious
+      * Description     : Get Bibliographic data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetBibliographicPrevious...
+     P                 B                   export
+     D SRVDTA_GetBibliographicPrevious...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Bibliographic)
+     D  Keys                               likeds(t_BibliographicKeys)
+     D  Subset                             likeds(t_BibliographicSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*previous')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : SRVDTA_GetBibliographicPrevious
-       // Description     : Get Bibliographic data
-       // Returns         :< IsFound
-       // Parameter      >:< Data
-       //                >:  Keys
-       //                ?:  Subset
-       /define SRVDTA_GetBibliographicPrevious
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -356,26 +570,46 @@
                                p_Keys:
                                p_Subset:
                                GetAction);
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
 
-      * ------------------------------------------------------------------------
+      **************************************************************************
       * BEGIN Internal procedures
-      * ------------------------------------------------------------------------
+      **************************************************************************
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetAuthor
+      * Description     : Get Author data
+      * Returns         :< IsFound
+      * Parameter      >:< p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetAuthor
+      *-------------------------------------------------------------------------
+     P GetAuthor...
+     P                 B
+     D GetAuthor...
+     D                 PI                  like(*in)
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetAuthor
+      *-------------------------------------------------------------------------
+     D Data            DS                  likeds(t_Author)
+     D                                     based(p_Data)
+     D Record          DS                  likeds(t_AuthorRecord)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetAuthor
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetAuthor
-       // Description     : Get Author data
-       // Returns         :< IsFound
-       // Parameter      >:< p_Data
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  GetAction
-       /define GetAuthor
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -403,22 +637,43 @@
        Data.Record(2) = Data.Record(1);
 
        return *on;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetAuthor
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetAuthorRecord
+      * Description     : Get Author
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetAuthorRecord
+      *-------------------------------------------------------------------------
+     P GetAuthorRecord...
+     P                 B
+     D GetAuthorRecord...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetAuthorRecord
+      *-------------------------------------------------------------------------
+     D Subset          DS                  likeds(t_AuthorSubset)
+     D                                     based(p_Subset)
+     D Sequence        S              3I 0
+     D RecordSubset    DS                  likeds(t_MTAUTHSubset)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetAuthorRecord
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetAuthorRecord
-       // Description     : Get Author
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  GetAction
-       /define GetAuthorRecord
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -444,22 +699,45 @@
                               RecordSubset:
                               GetAction);
        endsl;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetAuthorRecord
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTAUTHF
+      * Description     : Get MTAUTHF data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTAUTHF
+      *-------------------------------------------------------------------------
+     P GetMTAUTHF...
+     P                 B
+     D GetMTAUTHF...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_AuthorRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTAUTHF
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_AuthorKeys)
+     D                                     based(p_keys)
+     D ISBNHi          S             10A   inz(*allx'FF')
+     D FileRecord      DS                  likerec(MTAUTHF:*input)
+     D                                     inz
+     D FileKeys        DS                  likerec(MTAUTHF:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTAUTHF
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTAUTHF
-       // Description     : Get MTAUTHF data
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetMTAUTHF
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -542,17 +820,32 @@
        enddo;
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTAUTHF
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkMTAUTHIsValid
+      * Description     : Check MTAUTH record is valid.
+      * Returns         :< IsValid
+      * Parameter      >:  Record
+      *                >:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
+     P ChkMTAUTHIsValid...
+     P                 B
+     D ChkMTAUTHIsValid...
+     D                 PI              N
+     D  Record                             likerec(MTAUTHF:*input)
+     D  Subset                             likeds(t_MTAUTHSubset)
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkMTAUTHIsValid
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkMTAUTHIsValid
-       // Description     : Check MTAUTH record is valid.
-       // Returns         :< IsValid
-       // Parameter      >:  Record
-       //                >:  Subset
-       /define ChkMTAUTHIsValid
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -570,20 +863,34 @@
        endif;
 
        return *on; // Assume valid
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkMTAUTHUsValid
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTAUTHSequence
+      * Description     : Get Logical index based on subset.
+      * Returns         :< Sequence
+      * Parameter      >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
+     P GetMTAUTHSequence...
+     P                 B
+     D GetMTAUTHSequence...
+     D                 PI             3I 0
+     D  Subset                             likeds(t_MTAUTHSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTAUTHSequence
-       // Description     : Get Logical index based on subset.
-       // Returns         :< Sequence
-       // Parameter      >:  Subset
-       //                >:  GetAction
-       /define GetMTAUTHSequence
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return 1;
        endif;
@@ -593,22 +900,42 @@
        endif;
 
        return 1;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTAUTHSequence
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetBibliographic
+      * Description     : Get Bibliographic data
+      * Returns         :< IsFound
+      * Parameter      >:< p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetBibliographic
+      *-------------------------------------------------------------------------
+     P GetBibliographic...
+     P                 B
+     D GetBibliographic...
+     D                 PI                  like(*in)
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetBibliographic
+      *-------------------------------------------------------------------------
+     D Data            DS                  likeds(t_Bibliographic)
+     D                                     based(p_Data)
+     D Record          DS                  likeds(t_BibliographicRecord)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetBibliographic
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetBibliographic
-       // Description     : Get Bibliographic data
-       // Returns         :< IsFound
-       // Parameter      >:< p_Data
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  GetAction
-       /define GetBibliographic
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -636,22 +963,43 @@
        Data.Record(2) = Data.Record(1);
 
        return *on;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetBibliographic
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetBibliographicRecord
+      * Description     : Get bibligraphic record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetBibliographicRecord
+      *-------------------------------------------------------------------------
+     P GetBibliographicRecord...
+     P                 B
+     D GetBibliographicRecord...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_BibliographicRecord)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetBibliographicRecord
+      *-------------------------------------------------------------------------
+     D Subset          DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
+     D Sequence        S              3I 0
+     D RecordSubset    DS                  likeds(t_MTBIBLSubset)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetBibliographicRecord
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetBibliographicRecord
-       // Description     : Get bibligraphic record
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  GetAction
-       /define GetBibliographicRecord
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -695,22 +1043,45 @@
                                RecordSubset:
                                GetAction);
        endsl;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetBibliographicRecord
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTBIBLF1
+      * Description     : Get MTBIBLF1 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTBIBLF1
+      *-------------------------------------------------------------------------
+     P GetMTBIBLF1...
+     P                 B
+     D GetMTBIBLF1...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_BibliographicRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLF1
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D ISBNHi          S             10A   inz(*allx'FF')
+     D FileRecord      DS                  likerec(MTBIBLF1:*input)
+     D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF1:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTBIBLF1
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF1
-       // Description     : Get MTBIBLF1 data
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetMTBIBLF1
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -767,19 +1138,44 @@
        enddo;
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF1
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTBIBLF2
+      * Description     : Get MTBIBLF2 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTBIBLF2
+      *-------------------------------------------------------------------------
+     P GetMTBIBLF2...
+     P                 B
+     D GetMTBIBLF2...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_BibliographicRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLF2
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D ISBNHi          S             10A   inz(*allx'FF')
+     D FileRecord      DS                  likerec(MTBIBLF2:*input)
+     D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF2:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTBIBLF2
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF2
-       // Description     : Get MTBIBLF2 data
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetMTBIBLF2
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -837,19 +1233,44 @@
        enddo;
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF2
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTBIBLF3
+      * Description     : Get MTBIBLF3 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTBIBLF3
+      *-------------------------------------------------------------------------
+     P GetMTBIBLF3...
+     P                 B
+     D GetMTBIBLF3...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_BibliographicRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLF3
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D ISBNHi          S             10A   inz(*allx'FF')
+     D FileRecord      DS                  likerec(MTBIBLF3:*input)
+     D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF3:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTBIBLF3
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF3
-       // Description     : Get MTBIBLF3 data
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetMTBIBLF3
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -905,19 +1326,43 @@
        enddo;
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF3
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTBIBLF4
+      * Description     : Get MTBIBLF4 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTBIBLF4
+      *-------------------------------------------------------------------------
+     P GetMTBIBLF4...
+     P                 B
+     D GetMTBIBLF4...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_BibliographicRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLF4
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_BibliographicKeys)
+     D                                     based(p_keys)
+     D ISBNHi          S             10A   inz(*allx'FF')
+     D FileRecord      DS                  likerec(MTBIBLF4:*input)
+     D                                     based(p_MTBIBLF)
+     D FileKeys        DS                  likerec(MTBIBLF4:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTBIBLF4
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLF4
-       // Description     : Get MTBIBLF4 data
-       // Returns         :< IsFound
-       // Parameter      >:< Record
-       //                >:  p_Keys
-       //                >:  Subset
-       //                >:  GetAction
-       /define GetMTBIBLF4
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -968,17 +1413,32 @@
        enddo;
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLF4
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkMTBIBLIsValid
+      * Description     : Check MTBIBL record is valid.
+      * Returns         :< IsValid
+      * Parameter      >:  Record
+      *                >:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMTBIBLIsValid
+      *-------------------------------------------------------------------------
+     P ChkMTBIBLIsValid...
+     P                 B
+     D ChkMTBIBLIsValid...
+     D                 PI              N
+     D  Record                             likeds(t_BibliographicRecord)
+     D  Subset                             likeds(t_MTBIBLSubset)
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMTBIBLIsValid
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkMTBIBLIsValid
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkMTBIBLIsValid
-       // Description     : Check MTBIBL record is valid.
-       // Returns         :< IsValid
-       // Parameter      >:  Record
-       //                >:  Subset
-       /define ChkMTBIBLIsValid
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1008,20 +1468,34 @@
        endif;
 
        return *on; // Assume valid
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLIsValid
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTBIBLSequence
+      * Description     : Get Logical index based on subset.
+      * Returns         :< Sequence
+      * Parameter      >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTBIBLSequence
+      *-------------------------------------------------------------------------
+     P GetMTBIBLSequence...
+     P                 B
+     D GetMTBIBLSequence...
+     D                 PI             3I 0
+     D  Subset                             likeds(t_MTBIBLSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTBIBLSequence
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetMTBIBLSequence
-       // Description     : Get Logical index based on subset.
-       // Returns         :< Sequence
-       // Parameter      >:  Subset
-       //                >:  GetAction
-       /define GetMTBIBLSequence
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return 1;
        endif;
@@ -1044,19 +1518,35 @@
        endif;
 
        return 1;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTBIBLSequence
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetSearchKeyPfx
+      * Description     : Get formatted SearckKeyPfx
+      * Returns         :< SearchKeyPfx
+      * Parameter      >:  SearchKey
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetSearchKeyPfx
+      *-------------------------------------------------------------------------
+     P GetSearchKeyPfx...
+     P                 B
+     D GetSearchKeyPfx...
+     D                 PI                  likeds(t_SearchKeyPfx)
+     D  SearchKey                    10    const
+      *-------------------------------------------------------------------------
+      * Local Variables : GetSearchKeyPfx
+      *-------------------------------------------------------------------------
+     D SearchKeyPfx    DS                  likeds(t_SearchKeyPfx)
+     D                                     inz
+     D i               S              3I 0
+      *-------------------------------------------------------------------------
+      * Program code    : GetSearchKeyPfx
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetSearchKeyPfx
-       // Description     : Get formatted SearckKeyPfx
-       // Returns         :< SearchKeyPfx
-       // Parameter      >:  SearchKey
-       /define GetSearchKeyPfx
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return SearchKeyPfx;
        endif;
@@ -1082,20 +1572,34 @@
        endif;
        SearchKeyPfx.Prefix = %subst(SearchKey:1:i);
        return SearchKeyPfx;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetSearchKeyPfx
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkSearchKeyPfx
+      * Description     : Check SearchKeyPfx
+      * Returns         :< IsValid
+      * Parameter      >:  SearchKeyPfx
+      *                >:  SearchKey
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkSearchKeyPfx
+      *-------------------------------------------------------------------------
+     P ChkSearchKeyPfx...
+     P                 B
+     D ChkSearchKeyPfx...
+     D                 PI              N
+     D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
+     D  SearchKey                    10
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkSearchKeyPfx
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkSearchKeyPfx
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkSearchKeyPfx
-       // Description     : Check SearchKeyPfx
-       // Returns         :< IsValid
-       // Parameter      >:  SearchKeyPfx
-       //                >:  SearchKey
-       /define ChkSearchKeyPfx
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1108,19 +1612,34 @@
        endif;
 
        return *off;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkSearckKeyPfx
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : GetImprintPfx
+      * Description     : Get formatted ImprintPfx
+      * Returns         :< ImprintPfx
+      * Parameter      >:  ImprintNo
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetImprintPfx
+      *-------------------------------------------------------------------------
+     P GetImprintPfx...
+     P                 B
+     D GetImprintPfx...
+     D                 PI                  likeds(t_ImprintPfx)
+     D  ImprintNo                     8P 0 const
+      *-------------------------------------------------------------------------
+      * Local Variables : GetImprintPfx
+      *-------------------------------------------------------------------------
+     D ImprintPfx      DS                  likeds(t_ImprintPfx)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetImprintPfx
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : GetImprintPfx
-       // Description     : Get formatted ImprintPfx
-       // Returns         :< ImprintPfx
-       // Parameter      >:  ImprintNo
-       /define GetImprintPfx
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return ImprintPfx;
        endif;
@@ -1137,20 +1656,34 @@
        ImprintPfx.Prefix = %trimr(IPISBP);
 
        return ImprintPfx;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetImprintPfx
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkImprintPfx
+      * Description     : Check ImprintPfx
+      * Returns         :< IsValid
+      * Parameter      >:  ImprintPfx
+      *                >:  ISBN
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkImprintPfx
+      *-------------------------------------------------------------------------
+     P ChkImprintPfx...
+     P                 B
+     D ChkImprintPfx...
+     D                 PI              N
+     D  ImprintPfx                         likeds(t_imprintPfx)
+     D  ISBN                         10
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkImprintPfx
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkImprintPfx
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkImprintPfx
-       // Description     : Check ImprintPfx
-       // Returns         :< IsValid
-       // Parameter      >:  ImprintPfx
-       //                >:  ISBN
-       /define ChkImprintPfx
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1163,20 +1696,34 @@
        endif;
 
        return *off;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkImprintPfx
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkISBN
+      * Description     : Check ISBN
+      * Returns         :< IsValid
+      * Parameter      >:  ISBN1
+      *                >:  ISBN2
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkISBN
+      *-------------------------------------------------------------------------
+     P ChkISBN...
+     P                 B
+     D ChkISBN...
+     D                 PI              N
+     D  ISBN1                        10
+     D  ISBN2                        10
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkISBN
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkISBN
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkISBN
-       // Description     : Check ISBN
-       // Returns         :< IsValid
-       // Parameter      >:  ISBN1
-       //                >:  ISBN2
-       /define ChkISBN
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1187,20 +1734,34 @@
        endif;
 
        return *off;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkISBN
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkMARCTag
+      * Description     : Check MARC tag
+      * Returns         :< IsValid
+      * Parameter      >:  TAGC1
+      *                >:  TAGC2
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMARCTag
+      *-------------------------------------------------------------------------
+     P ChkMARCTag...
+     P                 B
+     D ChkMARCTag...
+     D                 PI              N
+     D  TAGC1                         3P 0
+     D  TAGC2                         3P 0
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMARCTag
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkMARCTag
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkMARCTag
-       // Description     : Check MARC tag
-       // Returns         :< IsValid
-       // Parameter      >:  TAGC1
-       //                >:  TAGC2
-       /define ChkMARCTag
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1211,20 +1772,34 @@
        endif;
 
        return *off;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkMARCTag
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : ChkMARCSequence
+      * Description     : Check MARC sequence
+      * Returns         :< IsValid
+      * Parameter      >:  SEQN1
+      *                >:  SEQN2
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMARCSequence
+      *-------------------------------------------------------------------------
+     P ChkMARCSequence...
+     P                 B
+     D ChkMARCSequence...
+     D                 PI              N
+     D  SEQN1                         3P 0
+     D  SEQN2                         3P 0
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMARCSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkMARCSequence
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkMARCSequence
-       // Description     : Check MARC sequence
-       // Returns         :< IsValid
-       // Parameter      >:  SEQN1
-       //                >:  SEQN2
-       /define ChkMARCSequence
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1235,23 +1810,38 @@
        endif;
 
        return *off;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkMARCSequence
+      *-------------------------------------------------------------------------
 
-
+      *----------------------------------------------------------------------
+      * Procedure       : ChkGetParms
+      * Description     : Check the parameters for the accesors are valid
+      * Returns         :< IsValid
+      * Parameter      >:< p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkGetParms
+      *-------------------------------------------------------------------------
+     P ChkGetParms...
+     P                 B
+     D ChkGetParms...
+     D                 PI             1N
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkGetParms
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkGetParms
+      *-------------------------------------------------------------------------
       /free
-       // ----------------------------------------------------------------------
-       // Procedure       : ChkGetParms
-       // Description     : Check the parameters for the accesors are valid
-       // Returns         :< IsValid
-       // Parameter      >:< p_Data
-       //                >:  p_Keys
-       //                >:  p_Subset
-       //                >:  GetAction
-       /define ChkGetParms
-       /include SrvDta_H
-       // ----------------------------------------------------------------------
        if not InzSrvPgm;
             return *off;
        endif;
@@ -1273,16 +1863,33 @@
        endif;
 
        return *on;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkGetParms
+      *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : InzSrvPgm
+      * Description     : initialise and open files
+      * Returns         :< IsInitilised
+      * Parameter       :  *none
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : InzSrvPgm
+      *-------------------------------------------------------------------------
+     P InzSrvPgm...
+     P                 B
+     D InzSrvPgm...
+     D                 PI             1N
+      *-------------------------------------------------------------------------
+      * Local Variables : InzSrvPgm
+      *-------------------------------------------------------------------------
+     D IsInitialised   S              1N   static
+     D OpenError       S              1N
+      *-------------------------------------------------------------------------
+      * Program code    : InzSrvPgm
+      *-------------------------------------------------------------------------
       /free
-       // -------------------------------------------------------------------------
-       // Opens files, initialises globals, and returns status
-       /define InzSrvPgm
-       /include SrvDta_H
-       // -------------------------------------------------------------------------
        If IsInitialised;
             return IsInitialised;
        endif;
@@ -1315,7 +1922,9 @@
        endif;
 
        return IsInitialised;
-
       /end-free
      P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : InzSrvPgm
+      *-------------------------------------------------------------------------
 
