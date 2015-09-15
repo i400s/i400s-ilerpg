@@ -21,6 +21,12 @@
 
       /include SrvDta_H
 
+     D ImprintKeys     DS                  likeds(t_ImprintKeys)
+     D                                     inz
+     D Imprint         DS                  likeds(t_Imprint)
+     D                                     inz
+     D ImprintSubset   DS                  likeds(t_ImprintSubset)
+     D                                     inz
      D AuthorKeys      DS                  likeds(t_AuthorKeys)
      D                                     inz
      D Author          DS                  likeds(t_Author)
@@ -38,6 +44,94 @@
      D i               S              3I 0
       /free
        // -------------------------------------------------------------------------
+       ImprintKeys.ImprintNo = 99999999;
+       if SRVDTA_GetImprint(Imprint:ImprintKeys);
+            dsply ('Error: Record');
+       endif;
+
+       ImprintKeys.ImprintNo = 2;
+       if not SRVDTA_GetImprint(Imprint:ImprintKeys:*omit);
+            dsply ('Error: No record');
+       elseif Imprint.Record(1).Name <> 'Imprint name2';
+            dsply ('Error: Invalid Imprint name returned');
+            dump(a);
+       endif;
+
+       if not SRVDTA_GetImprint(Imprint:Imprint:*omit);
+            dsply ('Error: *omit');
+       endif;
+
+       if not SRVDTA_GetImprintLast(Imprint);
+            dsply ('Error: no last') '' wait;
+       elseif Imprint.Keys.ImprintNo <> 98989898;
+            dsply ('Error: ImpNo not 98989898 ' +
+                   %char(Imprint.Keys.ImprintNo)) ' ' wait;
+       else;
+            if not SRVDTA_GetImprintPrevious(Imprint:Imprint.Keys);
+                 dsply ('Error: Imp no previous') ' ' wait;
+            elseif Imprint.Keys.ImprintNo <> 1102;
+                 dsply ('Error: Previous ImpNo <> 1102 ' +
+                        %char(Imprint.Keys.ImprintNo)) ' ' wait;
+            endif;
+       endif;
+
+       if not SRVDTA_GetImprintFirst(Imprint);
+            dsply ('Error: no first') '' wait;
+       elseif Imprint.Keys.ImprintNo <> 1;
+            dsply ('Error: ImpNo not 1 ' +
+                   %char(Imprint.Keys.ImprintNo)) ' ' wait;
+       else;
+            if not SRVDTA_GetImprintNext(Imprint:Imprint.Keys);
+                 dsply ('Error: no next Impn') ' ' wait;
+            elseif Imprint.Keys.ImprintNo <> 2;
+                 dsply ('Error: Next ImpNo <> 2 ' +
+                        %char(Imprint.Keys.ImprintNo)) ' ' wait;
+            endif;
+       endif;
+
+       ImprintSubset.SearchKey.IsGeneric = *on;
+       ImprintSubset.SearchKey.Prefix = 'MPRNTN';
+
+       if not SRVDTA_GetImprintFirst(Imprint:ImprintSubset);
+            dsply ('Error: no first MPRNTN*') '' wait;
+       elseif Imprint.Keys.ImprintNo <> 2;
+            dsply ('Error: ImpNo MPRNTN* not 2 ' +
+                   %char(Imprint.Keys.ImprintNo)) ' ' wait;
+       else;
+            if not SRVDTA_GetImprintNext(Imprint:Imprint.Keys:ImprintSubset);
+                 dsply ('Error: no next MPRNTN* ') ' ' wait;
+            elseif Imprint.Keys.ImprintNo <> 3;
+                 dsply ('Error: Next MPRNTN* ImpNo <> 3 ' +
+                        %char(Imprint.Keys.ImprintNo)) ' ' wait;
+            else;
+          if not SRVDTA_GetImprintPrevious(Imprint:Imprint.Keys:ImprintSubset);
+                 dsply ('Error: no prev MPRNTN*') ' ' wait;
+            elseif Imprint.Keys.ImprintNo <> 2;
+                 dsply ('Error: prev MPRNTN* ImpNo <> 2 ' +
+                        %char(Imprint.Keys.ImprintNo)) ' ' wait;
+            endif;
+            endif;
+       endif;
+
+       ImprintSubset.SearchKey.IsGeneric = *on;
+       ImprintSubset.SearchKey.Prefix = 'MPRNTN';
+       ImprintSubset.Deleted = 'N';
+
+       if not SRVDTA_GetImprintFirst(Imprint:ImprintSubset);
+            dsply ('Error: no first MPRNTN*') '' wait;
+       elseif Imprint.Keys.ImprintNo <> 2;
+            dsply ('Error: ImpNo MPRNTN* not 2 ' +
+                   %char(Imprint.Keys.ImprintNo)) ' ' wait;
+       else;
+            if SRVDTA_GetImprintNext(Imprint:Imprint.Keys:ImprintSubset);
+                 dsply ('Error: next MPRNTN* ') ' ' wait;
+            else;
+            if SRVDTA_GetImprintPrevious(Imprint:Imprint.Keys:ImprintSubset);
+                 dsply ('Error: prev MPRNTN*') ' ' wait;
+            endif;
+            endif;
+       endif;
+
        // -------------------------------------------------------------------------
        AuthorKeys.ISBN = '9999999999';
        AuthorKeys.MARCTag = 100;

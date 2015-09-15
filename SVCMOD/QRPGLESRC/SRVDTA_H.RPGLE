@@ -2,6 +2,62 @@
       *-------------------------------------------------------------------------
       * BEGIN Global definitions and templates
       *-------------------------------------------------------------------------
+
+     D t_Address       DS                  qualified
+     D                                     based(pt_Template)
+     D   Line                        40A   varying
+     D                                     dim(4)
+
+     D t_AuditStamp...
+     D                 DS                  qualified
+     D                                     based(pt_Template)
+     D   CreatedByUSER...
+     D                               10A
+     D   CreatedByPGM...
+     D                               10A
+     D   CreatedDTS                    Z
+     D   EditedByUSER...
+     D                               10A
+     D   EditedByPGM...
+     D                               10A
+     D   EditedDTS                     Z
+
+     D t_ImprintKeys...
+     D                 DS                  qualified
+     D                                     based(pt_Template)
+     D   ImprintNo                    8P 0
+     D   ISBNPrefix                   8A
+     D   SearchKey                   10A
+     D t_ImprintSubset...
+     D                 DS                  qualified
+     D                                     based(pt_Template)
+     D   SearchKey                         Likeds(t_SearchKeyPfx)
+     D   Deleted                      1A
+     D t_ImprintRecord...
+     D                 DS                  qualified
+     D                                     based(pt_Template)
+     D   ImprintNo                    8P 0
+     D   ISBNPrefix                        likeds(t_ImprintPfx)
+     D   Name                        40A   varying
+     D   Address                           likeds(t_Address)
+     D   SearchKey                   10A
+     D   IsDeleted                     N
+     D   Audit                             likeds(t_AuditStamp)
+     D t_Imprint...
+     D                 DS                  qualified
+     D                                     based(pt_Template)
+     D   Keys                              likeds(t_ImprintKeys)
+     D   Record                            likeds(t_ImprintRecord)
+     D                                     dim(2)
+      /if defined(SrvDta_)
+     D t_MTIMPNSubset...
+     D                 DS                  Qualified
+     D                                     based(pt_Template)
+     D   SearchKey                         Likeds(t_SearchKeyPfx)
+     D   Deleted                      1A
+     D   ImprintNo                    8P 0
+      /endif
+
      D t_AuthorKeys...
      D                 DS                  qualified
      D                                     based(pt_Template)
@@ -9,7 +65,7 @@
      D   MARCTag                      3P 0
      D   Sequence                     3P 0
      D t_AuthorSubset...
-     D                 DS                  Likeds(T_AuthorKeys)
+     D                 DS                  Likeds(t_AuthorKeys)
      D                                     based(pt_Template)
      D t_AuthorRecord...
      D                 DS                  qualified
@@ -28,7 +84,7 @@
      D                                     dim(2)
       /if defined(SrvDta_)
      D t_MTAUTHSubset...
-     D                 DS                  Likeds(T_AuthorSubset)
+     D                 DS                  Likeds(t_AuthorSubset)
      D                                     based(pt_Template)
       /endif
 
@@ -79,6 +135,107 @@
       /endif
       *-------------------------------------------------------------------------
       * END Global definitions and templates
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetImprint
+      * Description     : Get Imprint
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetImprint...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetImprintFirst
+      * Description     : Get Imprint
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetImprintFirst...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetImprintFirst
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetImprintLast
+      * Description     : Get Imprint
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetImprintLast...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetImprintLast
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetImprintNext
+      * Description     : Get Imprint
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetImprintNext...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetImprintNext
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetImprintPrevious
+      * Description     : Get Imprint
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetImprintPrevious...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetImprintPrevious
       *-------------------------------------------------------------------------
       /endif
 
@@ -289,6 +446,124 @@
       *-------------------------------------------------------------------------
       * BEGIN Internal procedures
       *-------------------------------------------------------------------------
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetImprint
+      * Description     : Get Imprint
+      * Returns         :< IsFound
+      * Parameter      >:< p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetImprint...
+     D                 PR                  like(*in)
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetImprintRecord
+      * Description     : Get Imprint record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetImprintRecord...
+     D                 PR                  like(*in)
+     D  Record                             likeds(t_ImprintRecord)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetImprintRecord
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTIMPNF
+      * Description     : Get MTBIBLF data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTIMPNF...
+     D                 PR                  like(*in)
+     D  Record                             likeds(t_ImprintRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTIMPNSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTIMPNF
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTIMPNF2
+      * Description     : Get MTIMPNF2 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTIMPNF2...
+     D                 PR                  like(*in)
+     D  Record                             likeds(t_ImprintRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTIMPNSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkMTIMPNIsValid
+      * Description     : Check MTIMPN record is valid
+      * Returns         :< IsValid
+      *                >:  Record
+      *                >:  Subset
+      *-------------------------------------------------------------------------
+     D ChkMTIMPNIsValid...
+     D                 PR              N
+     D  Record                             likerec(MTIMPNF:*input)
+     D  Subset                             likeds(t_MTIMPNSubset)
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkMTIMPNIsValid
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTIMPNSequence
+      * Description     : Get file assess sequence
+      * Returns         :< Sequence
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTIMPNSequence...
+     D                 PR             3I 0
+     D  Subset                             likeds(t_MTIMPNSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTIMPNSequence
+      *-------------------------------------------------------------------------
+      /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
@@ -659,6 +934,23 @@
      D  SEQN2                         3P 0
       *-------------------------------------------------------------------------
       * END Prototype   : ChkMARCSequence
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkImprintNo
+      * Description     : Check Imprint number
+      * Returns         :< IsValid
+      *                >:  ImprintNo1
+      *                >:  ImprintNo2
+      *-------------------------------------------------------------------------
+     D ChkImprintNo...
+     D                 PR              N
+     D  ImprintNo1                    8P 0
+     D  ImprintNo2                    8P 0
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkImprintNo
       *-------------------------------------------------------------------------
       /endif
 

@@ -23,6 +23,9 @@
       *-------------------------------------------------------------------------
       * [IP] Imprint
      FMTIMPNP   IF   E           K DISK    usropn
+     F                                     rename(MTIMPNF:MTIMPNF)
+     FMTIMPNL2  IF   E           K DISK    usropn
+     F                                     rename(MTIMPNF:MTIMPNF2)
       *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
@@ -33,6 +36,277 @@
       /define SrvDta_
       * Header file
       /include SrvDta_h
+
+      *-------------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetImprint
+      * Description     : Get Imprint data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetImprint
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetImprint...
+     P                 B                   export
+     D SRVDTA_GetImprint...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetImprint
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*unique')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetImprint
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetImprint(p_Data:
+                         p_Keys:
+                         p_Subset:
+                         GetAction);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetImprint
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetImprintFirst
+      * Description     : Get Imprint data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetImprintFirst
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetImprintFirst...
+     P                 B                   export
+     D SRVDTA_GetImprintFirst...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetImprintFirst
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*first')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetImprintFirst
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+
+       // Keys never passed.
+
+       if %parms >= 2;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetImprint(p_Data:
+                         p_Keys:
+                         p_Subset:
+                         GetAction);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetImprintFirst
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetImprintLast
+      * Description     : Get Imprint data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetImprintLast
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetImprintLast...
+     P                 B                   export
+     D SRVDTA_GetImprintLast...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetImprintLast
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*last')
+      *----------------------------------------------------------------------
+      * Program code    : SRVDTA_GetImprintLast
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+
+       // Keys never passed.
+
+       if %parms >= 2;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetImprint(p_Data:
+                         p_Keys:
+                         p_Subset:
+                         GetAction);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetImprintLast
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetImprintNext
+      * Description     : Get Imprint data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetImprintNext
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetImprintNext...
+     P                 B                   export
+     D SRVDTA_GetImprintNext...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetImprintNext
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*next')
+      *----------------------------------------------------------------------
+      * Program code    : SRVDTA_GetImprintNext
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetImprint(p_Data:
+                         p_Keys:
+                         p_Subset:
+                         GetAction);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetImprintNext
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetImprintPrevious
+      * Description     : Get Imprint data
+      * Returns         :< IsFound
+      * Parameter      >:< Data
+      *                >:  Keys
+      *                ?:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetImprintPrevious
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetImprintPrevious...
+     P                 B                   export
+     D SRVDTA_GetImprintPrevious...
+     D                 PI                  like(*in)
+     D  Data                               likeds(t_Imprint)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  Subset                             likeds(t_ImprintSubset)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetImprintPrevious
+      *-------------------------------------------------------------------------
+     D p_Data          S               *
+     D p_Keys          S               *
+     D p_Subset        S               *
+     D GetAction       S             10A   varying
+     D                                     inz('*previous')
+      *----------------------------------------------------------------------
+      * Program code    : SRVDTA_GetImprintPrevious
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Data = %addr(Data);
+       endif;
+       if %parms >= 2;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 3;
+            p_Subset = %addr(Subset);
+       endif;
+
+       return GetImprint(p_Data:
+                         p_Keys:
+                         p_Subset:
+                         GetAction);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetImprintPrevious
+      *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
       * Procedure       : SRVDTA_GetAuthor
@@ -579,6 +853,429 @@
       **************************************************************************
       * BEGIN Internal procedures
       **************************************************************************
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetImprint
+      * Description     : Get Imprint data
+      * Returns         :< IsFound
+      * Parameter      >:< p_Data
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetImprint
+      *-------------------------------------------------------------------------
+     P GetImprint...
+     P                 B
+     D GetImprint...
+     D                 PI                  like(*in)
+     D  p_Data                         *
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetImprint
+      *-------------------------------------------------------------------------
+     D Data            DS                  likeds(t_Imprint)
+     D                                     based(p_Data)
+     D Record          DS                  likeds(t_ImprintRecord)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetImprint
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       ChkGetParms(p_Data:
+                   p_Keys:
+                   p_Subset:
+                   GetAction);
+
+       // Process request
+       if not GetImprintRecord(Record:
+                               p_Keys:
+                               p_Subset:
+                               GetAction);
+            return *off;
+       endif;
+
+       // Update keys within data, data structure
+       Data.Keys.ImprintNo = Record.ImprintNo;
+       Data.Keys.ISBNPrefix = Record.ISBNPrefix;
+       Data.Keys.SearchKey = Record.SearchKey;
+
+       // Update record formats within data structure
+       Data.Record(1) = Record;
+       Data.Record(2) = Data.Record(1);
+
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetImprint
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetImprintRecord
+      * Description     : Get Imprint record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetImprintRecord
+      *-------------------------------------------------------------------------
+     P GetImprintRecord...
+     P                 B
+     D GetImprintRecord...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_ImprintRecord)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetImprintRecord
+      *-------------------------------------------------------------------------
+     D Subset          DS                  likeds(t_ImprintSubset)
+     D                                     based(p_Subset)
+     D Sequence        S              3I 0
+     D RecordSubset    DS                  likeds(t_MTIMPNSubset)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetImprintRecord
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+
+       // Initialise record specific subset - defaults.
+       RecordSubset.SearchKey = GetSearchKeyPfx('*ALL');
+       RecordSubset.Deleted = '*';
+       RecordSubset.ImprintNo = 0;
+
+       // Initialise record specific subset - passed subset.
+       if p_Subset <> *null;
+            RecordSubset.SearchKey = Subset.SearchKey;
+            RecordSubset.Deleted = Subset.Deleted;
+       endif;
+
+       Sequence = GetMTIMPNSequence(RecordSubset:GetAction);
+       select;
+       when Sequence = 1;
+            return GetMTIMPNF(Record:
+                              p_Keys:
+                              RecordSubset:
+                              GetAction);
+       when Sequence = 2;
+            return GetMTIMPNF2(Record:
+                               p_Keys:
+                               RecordSubset:
+                               GetAction);
+       endsl;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetImprintRecord
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTIMPNF
+      * Description     : Get MTIMPNF data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTIMPNF
+      *-------------------------------------------------------------------------
+     P GetMTIMPNF...
+     P                 B
+     D GetMTIMPNF...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_ImprintRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTIMPNSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTIMPNF
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D FileRecord      DS                  likerec(MTIMPNF:*input)
+     D FileKeys        DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTIMPNF
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       // Initialise record specific subset - key selection.
+       if GetAction = '*unique';
+            Subset.ImprintNo = Keys.ImprintNo;
+       endif;
+
+       // Setup keys for record access.
+       FileKeys.IPIMPN = Subset.ImprintNo;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.IPIMPN = *hival;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.IPIMPN = Keys.ImprintNo;
+       endif;
+
+       select;
+       when GetAction = '*first'
+       or   GetAction = '*previous'
+       or   GetAction = '*unique';
+            setll %kds(FileKeys:1) MTIMPNF;
+       when GetAction = '*next'
+       or   GetAction = '*last';
+            setgt %kds(fileKeys:1) MTIMPNF;
+       other;
+            return *off;
+       endsl;
+       dou %eof(MTIMPNP);
+            if GetAction = '*first'
+            or GetAction = '*next'
+            or GetAction = '*unique';
+                 read MTIMPNF FileRecord;
+            else;
+                 readp MTIMPNF FileRecord;
+            endif;
+            if %eof(MTIMPNP)
+            or not ChkImprintNo(Subset.ImprintNo:FileRecord.IPIMPN);
+                 return *off;
+            endif;
+            if ChkMTIMPNIsValid(FileRecord:
+                                Subset);
+                 Record.ImprintNo = FileRecord.IPIMPN;
+                 Record.ISBNPrefix.IsGeneric = *on;
+                 Record.ISBNPrefix.Prefix = %trimr(FileRecord.IPISBP);
+                 Record.Name = FileRecord.IPIPNM;
+                 Record.Address.Line(1) = FileRecord.IPADR1;
+                 Record.Address.Line(2) = FileRecord.IPADR2;
+                 Record.Address.Line(3) = FileRecord.IPADR3;
+                 Record.Address.Line(4) = FileRecord.IPADR4;
+                 Record.SearchKey = FileRecord.IPSKSN;
+                 Record.IsDeleted = (FileRecord.IPDLTD = 'Y');
+                 Record.Audit.CreatedByUSER = FileRecord.IPCUSR;
+                 Record.Audit.CreatedByPGM = FileRecord.IPCPGM;
+                 Record.Audit.CreatedDTS = FileRecord.IPCDTS;
+                 Record.Audit.EditedByUSER = FileRecord.IPEUSR;
+                 Record.Audit.EditedByPGM = FileRecord.IPEPGM;
+                 Record.Audit.EditedDTS = FileRecord.IPEDTS;
+                 return *on;
+            endif;
+       enddo;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTIMPNF
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTIMPNF2
+      * Description     : Get MTIMPNF2 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+     P GetMTIMPNF2...
+     P                 B
+     D GetMTIMPNF2...
+     D                 PI                  like(*in)
+     D  Record                             likeds(t_ImprintRecord)
+     D  p_Keys                         *
+     D  Subset                             likeds(t_MTIMPNSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+     D Keys            DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D SKSNHi          S             10A   inz(*allx'FF')
+     D FileRecord      DS                  likerec(MTIMPNF2:*input)
+     D FileKeys        DS                  likerec(MTIMPNF2:*key)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       // Setup keys for record access.
+       FileKeys.IPSKSN = Subset.SearchKey.Prefix;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            if Subset.SearchKey.IsGeneric;
+                 FileKeys.IPSKSN = %trimr(FileKeys.IPSKSN) + SKSNHi;
+            endif;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.IPSKSN = Keys.SearchKey;
+            FileKeys.IPIMPN = Keys.ImprintNo;
+       endif;
+
+       select;
+       when GetAction = '*first'
+       or   GetAction = '*previous';
+            setll %kds(FileKeys:2) MTIMPNF2;
+       when GetAction = '*next'
+       or   GetAction = '*last';
+            setgt %kds(FileKeys:2) MTIMPNF2;
+       other;
+            return *off;
+       endsl;
+       dou %eof(MTIMPNL2);
+            if GetAction ='*first'
+            or GetAction ='*next';
+                 read MTIMPNF2 FileRecord;
+            else;
+                 readp MTIMPNF2 FileRecord;
+            endif;
+            if %eof(MTIMPNL2)
+            or not ChkSearchKeyPfx(Subset.SearchKey:FileRecord.IPSKSN);
+                 return *off;
+            endif;
+            if ChkMTIMPNIsValid(FileRecord:
+                                Subset);
+                 Record.ImprintNo = FileRecord.IPIMPN;
+                 Record.ISBNPrefix.IsGeneric = *on;
+                 Record.ISBNPrefix.Prefix = %trimr(FileRecord.IPISBP);
+                 Record.Name = FileRecord.IPIPNM;
+                 Record.Address.Line(1) = FileRecord.IPADR1;
+                 Record.Address.Line(2) = FileRecord.IPADR2;
+                 Record.Address.Line(3) = FileRecord.IPADR3;
+                 Record.Address.Line(4) = FileRecord.IPADR4;
+                 Record.SearchKey = FileRecord.IPSKSN;
+                 Record.IsDeleted = (FileRecord.IPDLTD = 'Y');
+                 Record.Audit.CreatedByUSER = FileRecord.IPCUSR;
+                 Record.Audit.CreatedByPGM = FileRecord.IPCPGM;
+                 Record.Audit.CreatedDTS = FileRecord.IPCDTS;
+                 Record.Audit.EditedByUSER = FileRecord.IPEUSR;
+                 Record.Audit.EditedByPGM = FileRecord.IPEPGM;
+                 Record.Audit.EditedDTS = FileRecord.IPEDTS;
+                 return *on;
+            endif;
+       enddo;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : ChkMTIMPNIsValid
+      * Description     : Check MTIMPN record is valid.
+      * Returns         :< IsValid
+      * Parameter      >:  Record
+      *                >:  Subset
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkMTIMPNIsValid
+      *-------------------------------------------------------------------------
+     P ChkMTIMPNIsValid...
+     P                 B
+     D ChkMTIMPNIsValid...
+     D                 PI              N
+     D  Record                             likerec(MTIMPNF:*input)
+     D  Subset                             likeds(t_MTIMPNSubset)
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkMTIMPNIsValid
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkMTIMPNIsValid
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if not ChkImprintNo(Subset.ImprintNo:Record.IPIMPN);
+            return *off;
+       endif;
+
+       If Subset.Deleted = 'N'
+       and Record.IPDLTD <> *blanks
+       or Subset.Deleted = 'Y'
+       and Record.IPDLTD = *blanks;
+            return *off;
+       endif;
+
+       if not ChkSearchKeyPfx(Subset.SearchKey:Record.IPSKSN);
+            return *off;
+       endif;
+
+       return *on; // Assume valid
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTIMPNIsValid
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTIMPNSequence
+      * Description     : Get Logical index based on subset.
+      * Returns         :< Sequence
+      * Parameter      >:  Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTIMPNSequence
+      *-------------------------------------------------------------------------
+     P GetMTIMPNSequence...
+     P                 B
+     D GetMTIMPNSequence...
+     D                 PI             3I 0
+     D  Subset                             likeds(t_MTIMPNSubset)
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTIMPNSequence
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTIMPNSequence
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return 1;
+       endif;
+
+       if GetAction = '*unique';
+            return 1;
+       endif;
+
+       if %len(Subset.SearchKey.Prefix) <> 0;
+            return 2;
+       endif;
+
+       return 1;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTIMPNSequence
+      *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
       * Procedure       : GetAuthor
@@ -1817,6 +2514,44 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
+      * Procedure       : ChkImprintNo
+      * Description     : Check Imprint number
+      * Returns         :< IsValid
+      * Parameter      >:  ImprintNo1
+      *                >:  ImprintNo2
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkImprintNo
+      *-------------------------------------------------------------------------
+     P ChkImprintNo...
+     P                 B
+     D ChkImprintNo...
+     D                 PI              N
+     D  ImprintNo1                    8P 0
+     D  ImprintNo2                    8P 0
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkImprintNo
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkImprintNo
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if ImprintNo1 = *zero
+       or ImprintNo1 = ImprintNo2;
+            return *on;
+       endif;
+
+       return *off;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkImprintNo
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
       * Procedure       : ChkGetParms
       * Description     : Check the parameters for the accesors are valid
       * Returns         :< IsValid
@@ -1912,6 +2647,9 @@
             endif;
             if not %open(MTIMPNP);
                  open MTIMPNP;  // Imprint
+            endif;
+            if not %open(MTIMPNL2);
+                 open MTIMPNL2;  // Imprint
             endif;
        on-error;
             OpenError = *on;
