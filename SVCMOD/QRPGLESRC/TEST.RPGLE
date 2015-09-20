@@ -89,8 +89,8 @@
             endif;
        endif;
 
-       ImprintSubset.SearchKey.IsGeneric = *on;
-       ImprintSubset.SearchKey.Prefix = 'MPRNTN';
+       ImprintSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('MPRNTN*');
 
        if not SRVDTA_GetImprintFirst(Imprint:ImprintSubset);
             dsply ('Error: no first MPRNTN*') '' wait;
@@ -113,8 +113,8 @@
             endif;
        endif;
 
-       ImprintSubset.SearchKey.IsGeneric = *on;
-       ImprintSubset.SearchKey.Prefix = 'MPRNTN';
+       ImprintSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('MPRNTN*');
        ImprintSubset.Deleted = 'N';
 
        if not SRVDTA_GetImprintFirst(Imprint:ImprintSubset);
@@ -217,7 +217,9 @@
             dsply ('Error, no input, no records in Bibl') ' ' wait;
        endif;
 
-       BiblSubset.SearchKey = '*BLANKS';
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('*BLANKS');
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=*BLANKS, no records in Bibl') ' ' wait;
@@ -235,7 +237,9 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = '*ALL';
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('*ALL');
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=*ALL, no records in Bibl') ' ' wait;
@@ -253,8 +257,10 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = '*ALL';
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('*ALL');
        BiblSubset.SupplierNo = 2;
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=*ALL:SUPN=2, no records in Bibl') ' ' wait;
@@ -272,8 +278,10 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = 'C*';
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('C*');
        BiblSubset.SupplierNo = 2;
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=C*:SUPN=2, no records in Bibl') ' ' wait;
@@ -289,8 +297,10 @@
 
        endif;
 
-       BiblSubset.SearchKey = 'CCC*';
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('CCC*');
        BiblSubset.SupplierNo = 0;
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=CCC*:SUPN=0, no records in Bibl') ' ' wait;
@@ -305,9 +315,14 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = '*ALL';
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('*ALL');
        BiblSubset.SupplierNo = 0;
-       BiblSubset.ImprintNo = 2;
+       ImprintKeys.ImprintNo = 2;
+       if SRVDTA_GetImprint(Imprint:ImprintKeys:*omit);
+            BiblSubset.ISBNImprint = Imprint.Record(1).ISBNImprint;
+       endif;
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=*ALL:IMPN=2, no records in Bibl') ' ' wait;
@@ -325,9 +340,13 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = 'FF';
-       BiblSubset.SupplierNo = 0;
-       BiblSubset.ImprintNo = 1;
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('FF');
+       ImprintKeys.ImprintNo = 1;
+       if SRVDTA_GetImprint(Imprint:ImprintKeys:*omit);
+            BiblSubset.ISBNImprint = Imprint.Record(1).ISBNImprint;
+       endif;
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=FF:IMPN=1, no records in Bibl') ' ' wait;
@@ -345,9 +364,10 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = '*';
-       BiblSubset.SupplierNo = 0;
-       BiblSubset.ImprintNo = 0;
+       reset BiblSubset;
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('*');
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=*:IMPN=0, no records in Bibl') ' ' wait;
@@ -365,9 +385,13 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = 'R*';
-       BiblSubset.SupplierNo = 0;
-       BiblSubset.ImprintNo = 1;
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('R*');
+       ImprintKeys.ImprintNo = 1;
+       if SRVDTA_GetImprint(Imprint:ImprintKeys:*omit);
+            BiblSubset.ISBNImprint = Imprint.Record(1).ISBNImprint;
+       endif;
+
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);
             dsply ('Error, SKSN=R*:IMPN=1, no records in Bibl') ' ' wait;
@@ -382,9 +406,9 @@
             endif;
        endif;
 
-       BiblSubset.SearchKey = 'RR*';
-       BiblSubset.SupplierNo = 0;
-       BiblSubset.ImprintNo = 1;
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('RR*');
+
        if SRVDTA_GetBibliographicFirst(Bibl:
                                        BiblSubset);
             dsply ('Error, SKSN=RR*:IMPN=1, Record in Bibl ' +
@@ -426,9 +450,13 @@
 
        endif;
 
-       BiblSubset.SearchKey = 'C*';
-       BiblSubset.SupplierNo = 0;
-       BiblSubset.ImprintNo = 1;
+       BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('C*');
+       ImprintKeys.ImprintNo = 1;
+       if SRVDTA_GetImprint(Imprint:ImprintKeys:*omit);
+            BiblSubset.ISBNImprint = Imprint.Record(1).ISBNImprint;
+       endif;
+
        i = 1;
        if not SRVDTA_GetBibliographicLast(Bibl:
                                           BiblSubset);

@@ -26,21 +26,21 @@
      D                 DS                  qualified
      D                                     based(pt_Template)
      D   ImprintNo                    8P 0
-     D   ISBNPrefix                   8A
-     D   SearchKey                   10A
+     D   ISBNImprint                 10A   varying
+     D   SearchKey                   10A   varying
      D t_ImprintSubset...
      D                 DS                  qualified
      D                                     based(pt_Template)
-     D   SearchKey                         Likeds(t_SearchKeyPfx)
+     D   SearchKey                   10A   varying
      D   Deleted                      1A
      D t_ImprintRecord...
      D                 DS                  qualified
      D                                     based(pt_Template)
      D   ImprintNo                    8P 0
-     D   ISBNPrefix                        likeds(t_ImprintPfx)
+     D   ISBNImprint                 10A   varying
      D   Name                        40A   varying
      D   Address                           likeds(t_Address)
-     D   SearchKey                   10A
+     D   SearchKey                   10A   varying
      D   IsDeleted                     N
      D   Audit                             likeds(t_AuditStamp)
      D t_Imprint...
@@ -53,7 +53,7 @@
      D t_MTIMPNSubset...
      D                 DS                  Qualified
      D                                     based(pt_Template)
-     D   SearchKey                         Likeds(t_SearchKeyPfx)
+     D   SearchKey                   10A   varying
      D   Deleted                      1A
      D   ImprintNo                    8P 0
       /endif
@@ -93,13 +93,13 @@
      D                                     based(pt_Template)
      D   ISBN                        10A
      D   SupplierNo                   7P 0
-     D   SearchKey                   10A
+     D   SearchKey                   10A   varying
      D t_BibliographicSubset...
      D                 DS                  qualified
      D                                     based(pt_Template)
      D   SupplierNo                   7P 0
-     D   SearchKey                   10A
-     D   ImprintNo                    8P 0
+     D   SearchKey                   10A   varying
+     D   ISBNImprint                 10A   varying
      D   Deleted                      1A
      D t_BibliographicRecord...
      D               E DS                  qualified
@@ -111,28 +111,17 @@
      D   Keys                              likeds(t_BibliographicKeys)
      D   Record                            likeds(t_BibliographicRecord)
      D                                     dim(2)
-
-     D t_SearchKeyPfx...
-     D                 DS                  qualified
-     D                                     based(pt_Template)
-     D  Prefix                       10    varying
-     D  IsGeneric                     1N
-     D t_ImprintPfx    DS                  qualified
-     D                                     based(pt_Template)
-     D  Prefix                       10    varying
-     D  IsGeneric                     1N
-     D
-     D
       /if defined(SrvDta_)
      D t_MTBIBLSubset...
      D                 DS                  qualified
      D                                     based(pt_Template)
-     D  SupplierNo                    7  0
-     D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
-     D  ImprintPfx                         likeds(t_ImprintPfx)
-     D  Deleted                       1A
-     D  ISBN                         10A
+     D   SupplierNo                   7  0
+     D   SearchKey                   10A   varying
+     D   ISBNImprint                 10A   varying
+     D   Deleted                      1A
+     D   ISBN                        10A
       /endif
+
       *-------------------------------------------------------------------------
       * END Global definitions and templates
       *-------------------------------------------------------------------------
@@ -439,6 +428,22 @@
      D                                             *omit)
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_GetBibliographicPrevious
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_GetQualifiedSearchKey
+      * Description     : Get Qualified SearchKey
+      * Returns         :< QualifiedSearchKey
+      * Parameter      >:  SearchKey
+      *-------------------------------------------------------------------------
+     D SRVDTA_GetQualifiedSearchKey...
+     D                 PR            10A   varying
+     D  SearchKey                    10A   varying
+     D                                     const
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_GetQualifiedSearchKey
       *-------------------------------------------------------------------------
       /endif
 
@@ -824,65 +829,51 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetSearchKeyPfx
-      * Description     : Get formatted SearchKeyPfx
-      * Returns         :< SearchKeyPfx
-      *                >:  SearchKey
+      * BEGIN Prototype : GetQualifiedGeneric
+      * Description     : Get Qualified Generic
+      * Returns         :< Qualified Generic
+      * Parameter      >:  Generic
       *-------------------------------------------------------------------------
-     D GetSearchKeyPfx...
-     D                 PR                  likeds(t_SearchKeyPfx)
-     D  SearchKey                    10    const
+     D GetQualifiedGeneric...
+     D                 PR            10A   varying
+     D  Generic                      10A   varying
+     D                                     const
       *-------------------------------------------------------------------------
-      * END Prototype   : GetSearchKeyPfx
+      * END Prototype   : GetQualifiedGeneric
       *-------------------------------------------------------------------------
       /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : ChkSearchKeyPfx
-      * Description     : Check SearchKeyPfx
+      * BEGIN Prototype : ChkSearchKey
+      * Description     : Check SearchKey
       * Returns         :< IsValid
-      *                >:  SearchKeyPfx
+      * Parameter      >:  QualifiedSearchKey
       *                >:  SearchKey
       *-------------------------------------------------------------------------
-     D ChkSearchKeyPfx...
+     D ChkSearchKey...
      D                 PR              N
-     D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
-     D  SearchKey                    10
+     D  SearchKey1                   10A   varying
+     D  SearchKey2                   10A
       *-------------------------------------------------------------------------
-      * END Prototype   : ChkSearchKeyPfx
-      *-------------------------------------------------------------------------
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetImprintPfx
-      * Description     : Get formatted ImprintPfx
-      * Returns         :< ImprintPfx
-      *                >:  ImprintNo
-      *-------------------------------------------------------------------------
-     D GetImprintPfx...
-     D                 PR                  likeds(t_ImprintPfx)
-     D  ImprintNo                     8P 0 const
-      *-------------------------------------------------------------------------
-      * END Prototype   : GetImprintPfx
+      * END Prototype   : ChkSearchKey
       *-------------------------------------------------------------------------
       /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : ChkImprintPfx
-      * Description     : Check ImprintPfx
+      * BEGIN Prototype : ChkISBNImprint
+      * Description     : Check ISBN Imprint
       * Returns         :< IsValid
-      *                >:  ImprintPfx
+      * Parameter      >:  ISBNImprint
       *                >:  ISBN
       *-------------------------------------------------------------------------
-     D ChkImprintPfx...
+     D ChkISBNImprint...
      D                 PR              N
-     D  ImprintPfx                         likeds(t_ImprintPfx)
+     D  ISBNImprint                  10A   varying
      D  ISBN                         10
       *-------------------------------------------------------------------------
-      * END Prototype   : ChkImprintPfx
+      * END Prototype   : ChkISBNImprint
       *-------------------------------------------------------------------------
       /endif
 

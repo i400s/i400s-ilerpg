@@ -850,6 +850,38 @@
       * END Procedure   : SRVDTA_GetBibliographicPrevious
       *-------------------------------------------------------------------------
 
+      *----------------------------------------------------------------------
+      * Procedure       : SRVDTA_GetQualifiedSearchKey
+      * Description     : Get Qualified SearchKey
+      * Returns         :< QualifiedSearchKey
+      * Parameter      >:  SearchKey
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SRVDTA_GetQualifiedSearchKey
+      *-------------------------------------------------------------------------
+     P SRVDTA_GetQualifiedSearchKey...
+     P                 B                   export
+     D SRVDTA_GetQualifiedSearchKey...
+     D                 PI            10A   varying
+     D  SearchKey                    10A   varying
+     D                                     const
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_GetQualifiedSearchKey
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_GetQualifiedSearchKey
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            // return *off;
+       endif;
+
+       return GetQualifiedGeneric(SearchKey);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_GetQualifiedSearchKey
+      *-------------------------------------------------------------------------
+
       **************************************************************************
       * BEGIN Internal procedures
       **************************************************************************
@@ -903,7 +935,7 @@
 
        // Update keys within data, data structure
        Data.Keys.ImprintNo = Record.ImprintNo;
-       Data.Keys.ISBNPrefix = Record.ISBNPrefix;
+       Data.Keys.ISBNImprint = Record.ISBNImprint;
        Data.Keys.SearchKey = Record.SearchKey;
 
        // Update record formats within data structure
@@ -954,7 +986,7 @@
 
 
        // Initialise record specific subset - defaults.
-       RecordSubset.SearchKey = GetSearchKeyPfx('*ALL');
+       RecordSubset.SearchKey = GetQualifiedGeneric('*ALL');
        RecordSubset.Deleted = '*';
        RecordSubset.ImprintNo = 0;
 
@@ -1063,8 +1095,8 @@
             if ChkMTIMPNIsValid(FileRecord:
                                 Subset);
                  Record.ImprintNo = FileRecord.IPIMPN;
-                 Record.ISBNPrefix.IsGeneric = *on;
-                 Record.ISBNPrefix.Prefix = %trimr(FileRecord.IPISBP);
+                 Record.ISBNImprint =
+                      GetQualifiedGeneric(%trimr(FileRecord.IPISBP) + '*');
                  Record.Name = FileRecord.IPIPNM;
                  Record.Address.Line(1) = FileRecord.IPADR1;
                  Record.Address.Line(2) = FileRecord.IPADR2;
@@ -1124,14 +1156,12 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.IPSKSN = Subset.SearchKey.Prefix;
+       FileKeys.IPSKSN = Subset.SearchKey;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *last processing.
        if GetAction = '*last';
-            if Subset.SearchKey.IsGeneric;
-                 FileKeys.IPSKSN = %trimr(FileKeys.IPSKSN) + SKSNHi;
-            endif;
+            FileKeys.IPSKSN = %trimr(FileKeys.IPSKSN) + SKSNHi;
        endif;
 
        // Replace keys if keys passed.
@@ -1158,14 +1188,14 @@
                  readp MTIMPNF2 FileRecord;
             endif;
             if %eof(MTIMPNL2)
-            or not ChkSearchKeyPfx(Subset.SearchKey:FileRecord.IPSKSN);
+            or not ChkSearchKey(Subset.SearchKey:FileRecord.IPSKSN);
                  return *off;
             endif;
             if ChkMTIMPNIsValid(FileRecord:
                                 Subset);
                  Record.ImprintNo = FileRecord.IPIMPN;
-                 Record.ISBNPrefix.IsGeneric = *on;
-                 Record.ISBNPrefix.Prefix = %trimr(FileRecord.IPISBP);
+                 Record.ISBNImprint =
+                      GetQualifiedGeneric(%trimr(FileRecord.IPISBP) + '*');
                  Record.Name = FileRecord.IPIPNM;
                  Record.Address.Line(1) = FileRecord.IPADR1;
                  Record.Address.Line(2) = FileRecord.IPADR2;
@@ -1225,7 +1255,7 @@
             return *off;
        endif;
 
-       if not ChkSearchKeyPfx(Subset.SearchKey:Record.IPSKSN);
+       if not ChkSearchKey(Subset.SearchKey:Record.IPSKSN);
             return *off;
        endif;
 
@@ -1266,7 +1296,7 @@
             return 1;
        endif;
 
-       if %len(Subset.SearchKey.Prefix) <> 0;
+       if %len(Subset.SearchKey) <> 0;
             return 2;
        endif;
 
@@ -1704,16 +1734,16 @@
 
        // Initialise record specific subset - defaults.
        RecordSubset.SupplierNo = 0;
-       RecordSubset.SearchKeyPfx = GetSearchKeyPfx('*ALL');
-       RecordSubset.ImprintPfx = GetImprintPfx(0);
+       RecordSubset.SearchKey = GetQualifiedGeneric('*ALL');
+       RecordSubset.ISBNImprint = GetQualifiedGeneric('*ALL');
        RecordSubset.Deleted = '*';
        RecordSubset.ISBN = *blanks;
 
        // Initialise record specific subset - passed subset.
        if p_Subset <> *null;
             RecordSubset.SupplierNo = Subset.SupplierNo;
-            RecordSubset.SearchKeyPfx = GetSearchKeyPfx(Subset.SearchKey);
-            RecordSubset.ImprintPfx = GetImprintPfx(Subset.ImprintNo);
+            RecordSubset.SearchKey = Subset.SearchKey;
+            RecordSubset.ISBNImprint = Subset.ISBNImprint;
             RecordSubset.Deleted = Subset.Deleted;
        endif;
 
@@ -1789,7 +1819,7 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
+       FileKeys.BLISBN = Subset.ISBNImprint;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *last processing.
@@ -1825,7 +1855,8 @@
             endif;
             if %eof(MTBIBLL1)
             or not ChkISBN(Subset.ISBN:FileRecord.BLISBN)
-            or not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
+            or not ChkISBNImprint(Subset.ISBNImprint:
+                                  FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
@@ -1879,15 +1910,13 @@
 
        // Setup keys for record access.
        FileKeys.BLSUPN = Subset.SupplierNo;
-       FileKeys.BLSKSN = Subset.SearchKeyPfx.Prefix;
-       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
+       FileKeys.BLSKSN = Subset.SearchKey;
+       FileKeys.BLISBN = Subset.ISBNImprint;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *last processing.
        if GetAction = '*last';
-            if Subset.SearchKeyPfx.IsGeneric;
-                 FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
-            endif;
+            FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
             FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
        endif;
 
@@ -1918,9 +1947,10 @@
                  readpe %kds(FileKeys:1) MTBIBLF2 FileRecord;
             endif;
             if %eof(MTBIBLL2)
-            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:FileRecord.BLSKSN)
-            or not Subset.SearchKeyPfx.IsGeneric
-            and not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
+            or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
+            or %len(Subset.SearchKey) = (%size(Subset.SearchKey) - 2)
+            and not ChkISBNImprint(Subset.ISBNImprint:
+                                   FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
@@ -1973,15 +2003,13 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.BLSKSN = Subset.SearchKeyPfx.Prefix;
-       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
+       FileKeys.BLSKSN = Subset.SearchKey;
+       FileKeys.BLISBN = Subset.ISBNImprint;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *last processing.
        if GetAction = '*last';
-            if Subset.SearchKeyPfx.IsGeneric;
-                 FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
-            endif;
+            FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
             FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
        endif;
 
@@ -2011,9 +2039,10 @@
                  readp MTBIBLF3 FileRecord;
             endif;
             if %eof(MTBIBLL3)
-            or not ChkSearchKeyPfx(Subset.SearchKeyPfx:FileRecord.BLSKSN)
-            or not Subset.SearchKeyPfx.IsGeneric
-            and not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
+            or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
+            or %len(Subset.SearchKey) = (%size(Subset.SearchKey) - 2)
+            and not ChkISBNImprint(Subset.ISBNImprint:
+                                   FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
@@ -2066,7 +2095,7 @@
 
        // Setup keys for record access.
        FileKeys.BLSUPN = Subset.SupplierNo;
-       FileKeys.BLISBN = Subset.ImprintPfx.Prefix;
+       FileKeys.BLISBN = Subset.ISBNImprint;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *last processing.
@@ -2100,7 +2129,8 @@
                  readpe %kds(FileKeys:1) MTBIBLF4 FileRecord;
             endif;
             if %eof(MTBIBLL4)
-            or not ChkImprintPfx(Subset.ImprintPfx:FileRecord.BLISBN);
+            or not ChkISBNImprint(Subset.ISBNImprint:
+                                  FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
@@ -2156,11 +2186,11 @@
             return *off;
        endif;
 
-       if not ChkSearchKeyPfx(Subset.SearchKeyPfx:Record.BLSKSN);
+       if not ChkSearchKey(Subset.SearchKey:Record.BLSKSN);
             return *off;
        endif;
 
-       if not ChkImprintPfx(Subset.ImprintPfx:Record.BLISBN);
+       if not ChkISBNImprint(Subset.ISBNImprint:Record.BLISBN);
             return *off;
        endif;
 
@@ -2202,7 +2232,7 @@
        endif;
 
        if Subset.SupplierNo <> 0
-       and %len(Subset.SearchKeyPfx.Prefix) <> 0;
+       and %len(Subset.SearchKey) <> 0;
             return 2;
        endif;
 
@@ -2210,7 +2240,7 @@
             return 4;
        endif;
 
-       if %len(Subset.SearchKeyPfx.Prefix) <> 0;
+       if %len(Subset.SearchKey) <> 0;
             return 3;
        endif;
 
@@ -2222,89 +2252,83 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : GetSearchKeyPfx
-      * Description     : Get formatted SearckKeyPfx
-      * Returns         :< SearchKeyPfx
-      * Parameter      >:  SearchKey
+      * Procedure       : GetQualifiedGeneric
+      * Description     : Get Qualified Generic
+      * Returns         :< QualifiedGeneric
+      * Parameter      >:  Generic
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetSearchKeyPfx
+      * BEGIN Procedure : GetQualifiedGeneric
       *-------------------------------------------------------------------------
-     P GetSearchKeyPfx...
+     P GetQualifiedGeneric...
      P                 B
-     D GetSearchKeyPfx...
-     D                 PI                  likeds(t_SearchKeyPfx)
-     D  SearchKey                    10    const
+     D GetQualifiedGeneric...
+     D                 PI            10A   varying
+     D  Generic                      10A   varying
+     D                                     const
       *-------------------------------------------------------------------------
-      * Local Variables : GetSearchKeyPfx
+      * Local Variables : GetQualifiedGeneric
       *-------------------------------------------------------------------------
-     D SearchKeyPfx    DS                  likeds(t_SearchKeyPfx)
+     D QualifiedGeneric...
+     D                 S             10A   varying
      D                                     inz
      D i               S              3I 0
       *-------------------------------------------------------------------------
-      * Program code    : GetSearchKeyPfx
+      * Program code    : GetQualifiedGeneric
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
-            return SearchKeyPfx;
+            return '';
        endif;
 
-       if SearchKey = '*BLANKS';
-            SearchKeyPfx.Prefix = *BLANKS;
-            SearchKeyPfx.IsGeneric = *off;
-            return SearchKeyPfx;
+       if Generic = '*BLANKS';
+            return *BLANKS;
        endif;
 
-       if SearchKey = '*ALL';
-            SearchKeyPfx.Prefix = '';
-            SearchKeyPfx.IsGeneric = *on;
+       if Generic = '*ALL';
+            return '';
        endif;
 
-       i = %scan('*':SearchKey);
+       i = %scan('*':Generic);
        if i = 0;
-            i = 10;
-            SearchKeyPfx.IsGeneric = *off;
+            QualifiedGeneric = *BLANKS;
+            return Generic + QualifiedGeneric;
        else;
             i -= 1;
-            SearchKeyPfx.IsGeneric = *on;
+            return %subst(Generic:1:i);
        endif;
-       SearchKeyPfx.Prefix = %subst(SearchKey:1:i);
-       return SearchKeyPfx;
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetSearchKeyPfx
+      * END Procedure   : GetQualifiedGeneric
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : ChkSearchKeyPfx
-      * Description     : Check SearchKeyPfx
+      * Procedure       : ChkSearchKey
+      * Description     : Check SearchKey
       * Returns         :< IsValid
-      * Parameter      >:  SearchKeyPfx
+      * Parameter      >:  SearchKey
       *                >:  SearchKey
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : ChkSearchKeyPfx
+      * BEGIN Procedure : ChkSearchKey
       *-------------------------------------------------------------------------
-     P ChkSearchKeyPfx...
+     P ChkSearchKey...
      P                 B
-     D ChkSearchKeyPfx...
+     D ChkSearchKey...
      D                 PI              N
-     D  SearchKeyPfx                       likeds(t_SearchKeyPfx)
-     D  SearchKey                    10
+     D  SearchKey1                   10A   varying
+     D  SearchKey2                   10A
       *-------------------------------------------------------------------------
-      * Local Variables : ChkSearchKeyPfx
+      * Local Variables : ChkSearchKey
       *-------------------------------------------------------------------------
       *-------------------------------------------------------------------------
-      * Program code    : ChkSearchKeyPfx
+      * Program code    : ChkSearchKey
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
             return *off;
        endif;
 
-       if SearchKeyPfx.IsGeneric
-       and %subst(SearchKey:1:
-                  %len(SearchKeyPfx.Prefix)) = SearchKeyPfx.Prefix
-       or SearchKey = SearchKeyPfx.Prefix;
+       if SearchKey1 = %subst(SearchKey2:1:%len(SearchKey1));
             return *on;
        endif;
 
@@ -2312,83 +2336,36 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : ChkSearckKeyPfx
+      * END Procedure   : ChkSearckKey
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : GetImprintPfx
-      * Description     : Get formatted ImprintPfx
-      * Returns         :< ImprintPfx
-      * Parameter      >:  ImprintNo
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetImprintPfx
-      *-------------------------------------------------------------------------
-     P GetImprintPfx...
-     P                 B
-     D GetImprintPfx...
-     D                 PI                  likeds(t_ImprintPfx)
-     D  ImprintNo                     8P 0 const
-      *-------------------------------------------------------------------------
-      * Local Variables : GetImprintPfx
-      *-------------------------------------------------------------------------
-     D ImprintPfx      DS                  likeds(t_ImprintPfx)
-     D                                     inz
-      *-------------------------------------------------------------------------
-      * Program code    : GetImprintPfx
-      *-------------------------------------------------------------------------
-      /free
-       if not InzSrvPgm;
-            return ImprintPfx;
-       endif;
-
-       ImprintPfx.IsGeneric = *on;
-
-       if ImprintNo <> IPIMPN; // Cache check, file rarely changes
-            chain ImprintNo MTIMPNF;
-            if not %found(MTIMPNP);
-                 return ImprintPfx;
-            endif;
-       endif;
-
-       ImprintPfx.Prefix = %trimr(IPISBP);
-
-       return ImprintPfx;
-      /end-free
-     P                 E
-      *-------------------------------------------------------------------------
-      * END Procedure   : GetImprintPfx
-      *-------------------------------------------------------------------------
-
-      *----------------------------------------------------------------------
-      * Procedure       : ChkImprintPfx
-      * Description     : Check ImprintPfx
+      * Procedure       : ChkISBNImprint
+      * Description     : Check ISBN Imprint
       * Returns         :< IsValid
-      * Parameter      >:  ImprintPfx
+      * Parameter      >:  ISBNImprint
       *                >:  ISBN
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : ChkImprintPfx
+      * BEGIN Procedure : ChkISBNImprint
       *-------------------------------------------------------------------------
-     P ChkImprintPfx...
+     P ChkISBNImprint...
      P                 B
-     D ChkImprintPfx...
+     D ChkISBNImprint...
      D                 PI              N
-     D  ImprintPfx                         likeds(t_imprintPfx)
-     D  ISBN                         10
+     D  ISBNImprint                  10A   varying
+     D  ISBN                         10A
       *-------------------------------------------------------------------------
-      * Local Variables : ChkImprintPfx
+      * Local Variables : ChkISBNImprint
       *-------------------------------------------------------------------------
       *-------------------------------------------------------------------------
-      * Program code    : ChkImprintPfx
+      * Program code    : ChkISBNImprint
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
             return *off;
        endif;
 
-       if ImprintPfx.IsGeneric
-       and %subst(ISBN:1:
-                  %len(ImprintPfx.Prefix)) = ImprintPfx.Prefix
-       or ISBN = ImprintPfx.Prefix;
+       if ISBNImprint = %subst(ISBN:1:%len(ISBNImprint));
             return *on;
        endif;
 
@@ -2396,7 +2373,7 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : ChkImprintPfx
+      * END Procedure   : ChkISBNImprint
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
