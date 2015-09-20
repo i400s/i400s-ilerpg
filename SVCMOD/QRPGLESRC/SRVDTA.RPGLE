@@ -996,7 +996,7 @@
             RecordSubset.Deleted = Subset.Deleted;
        endif;
 
-       Sequence = GetMTIMPNSequence(RecordSubset:GetAction);
+       Sequence = GetMTIMPNSequence(p_Subset:GetAction);
        select;
        when Sequence = 1;
             return GetMTIMPNF(Record:
@@ -1279,11 +1279,13 @@
      P                 B
      D GetMTIMPNSequence...
      D                 PI             3I 0
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTIMPNSequence
       *-------------------------------------------------------------------------
+     D  Subset         DS                  likeds(t_ImprintSubset)
+     D                                     based(p_Subset)
       *-------------------------------------------------------------------------
       * Program code    : GetMTIMPNSequence
       *-------------------------------------------------------------------------
@@ -1292,7 +1294,8 @@
             return 1;
        endif;
 
-       if GetAction = '*unique';
+       if GetAction = '*unique'
+       or p_Subset = *null;
             return 1;
        endif;
 
@@ -1417,7 +1420,7 @@
             RecordSubset.Sequence = Subset.Sequence;
        endif;
 
-       Sequence = GetMTAUTHSequence(RecordSubset:GetAction);
+       Sequence = GetMTAUTHSequence(p_Subset:GetAction);
 
        select;
        when Sequence = 1;
@@ -1609,11 +1612,13 @@
      P                 B
      D GetMTAUTHSequence...
      D                 PI             3I 0
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTAUTHSequence
       *-------------------------------------------------------------------------
+     D  Subset         DS                  likeds(t_AuthorSubset)
+     D                                     based(p_Subset)
       *-------------------------------------------------------------------------
       * Program code    : GetMTAUTHSequence
       *-------------------------------------------------------------------------
@@ -1622,7 +1627,8 @@
             return 1;
        endif;
 
-       if GetAction = '*unique';
+       if GetAction = '*unique'
+       or p_Subset = *null;
             return 1;
        endif;
 
@@ -1747,7 +1753,7 @@
             RecordSubset.Deleted = Subset.Deleted;
        endif;
 
-       Sequence = GetMTBIBLSequence(RecordSubset:GetAction);
+       Sequence = GetMTBIBLSequence(p_Subset:GetAction);
        select;
        when Sequence = 1;
             return GetMTBIBLF1(Record:
@@ -2214,11 +2220,13 @@
      P                 B
      D GetMTBIBLSequence...
      D                 PI             3I 0
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLSequence
       *-------------------------------------------------------------------------
+     D  Subset         DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
       *-------------------------------------------------------------------------
       * Program code    : GetMTBIBLSequence
       *-------------------------------------------------------------------------
@@ -2227,7 +2235,8 @@
             return 1;
        endif;
 
-       if GetAction = '*unique';
+       if GetAction = '*unique'
+       or p_Subset = *null;
             return 1;
        endif;
 

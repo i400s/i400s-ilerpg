@@ -563,7 +563,7 @@
       *-------------------------------------------------------------------------
      D GetMTIMPNSequence...
      D                 PR             3I 0
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTIMPNSequence
@@ -660,7 +660,7 @@
       *-------------------------------------------------------------------------
      D GetMTAUTHSequence...
      D                 PR             3I 0
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTAUTHSequence
@@ -820,7 +820,7 @@
       *-------------------------------------------------------------------------
      D GetMTBIBLSequence...
      D                 PR             3I 0
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTBIBLSequence
