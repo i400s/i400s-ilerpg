@@ -49,14 +49,6 @@
      D   Keys                              likeds(t_ImprintKeys)
      D   Record                            likeds(t_ImprintRecord)
      D                                     dim(2)
-      /if defined(SrvDta_)
-     D t_MTIMPNSubset...
-     D                 DS                  Qualified
-     D                                     based(pt_Template)
-     D   SearchKey                   10A   varying
-     D   Deleted                      1A
-     D   ImprintNo                    8P 0
-      /endif
 
      D t_AuthorKeys...
      D                 DS                  qualified
@@ -82,11 +74,6 @@
      D   Keys                              likeds(t_AuthorKeys)
      D   Record                            likeds(t_AuthorRecord)
      D                                     dim(2)
-      /if defined(SrvDta_)
-     D t_MTAUTHSubset...
-     D                 DS                  Likeds(t_AuthorSubset)
-     D                                     based(pt_Template)
-      /endif
 
      D t_BibliographicKeys...
      D                 DS                  qualified
@@ -111,16 +98,6 @@
      D   Keys                              likeds(t_BibliographicKeys)
      D   Record                            likeds(t_BibliographicRecord)
      D                                     dim(2)
-      /if defined(SrvDta_)
-     D t_MTBIBLSubset...
-     D                 DS                  qualified
-     D                                     based(pt_Template)
-     D   SupplierNo                   7  0
-     D   SearchKey                   10A   varying
-     D   ISBNImprint                 10A   varying
-     D   Deleted                      1A
-     D   ISBN                        10A
-      /endif
 
       *-------------------------------------------------------------------------
       * END Global definitions and templates
@@ -501,14 +478,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTIMPNF...
      D                 PR                  like(*in)
      D  Record                             likeds(t_ImprintRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTIMPNF
@@ -522,14 +499,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTIMPNF2...
      D                 PR                  like(*in)
      D  Record                             likeds(t_ImprintRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTIMPNF2
@@ -547,7 +524,7 @@
      D ChkMTIMPNIsValid...
      D                 PR              N
      D  Record                             likerec(MTIMPNF:*input)
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  Subset                             likeds(t_ImprintSubset)
       *-------------------------------------------------------------------------
       * END Prototype   : ChkMTIMPNIsValid
       *-------------------------------------------------------------------------
@@ -558,7 +535,7 @@
       * BEGIN Prototype : GetMTIMPNSequence
       * Description     : Get file assess sequence
       * Returns         :< Sequence
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTIMPNSequence...
@@ -619,14 +596,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTAUTHF...
      D                 PR                  like(*in)
      D  Record                             likeds(t_AuthorRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTAUTHF
@@ -644,7 +621,7 @@
      D ChkMTAUTHIsValid...
      D                 PR              N
      D  Record                             likerec(MTAUTHF:*input)
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  Subset                             likeds(t_AuthorSubset)
       *-------------------------------------------------------------------------
       * END Prototype   : ChkMTAUTHIsValid
       *-------------------------------------------------------------------------
@@ -655,7 +632,7 @@
       * BEGIN Prototype : GetMTAUTHSequence
       * Description     : Get file assess sequence
       * Returns         :< Sequence
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTAUTHSequence...
@@ -716,14 +693,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF1...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTBIBLF1
@@ -737,14 +714,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF2...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTBIBLF2
@@ -758,14 +735,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF3...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTBIBLF3
@@ -779,14 +756,14 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLF4...
      D                 PR                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTBIBLF4
@@ -803,8 +780,8 @@
       *-------------------------------------------------------------------------
      D ChkMTBIBLIsValid...
      D                 PR              N
-     D  Record                             likeds(t_BibliographicRecord)
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  Record                             likerec(MTBIBLF1:*input)
+     D  Subset                             likeds(t_BibliographicSubset)
       *-------------------------------------------------------------------------
       * END Prototype   : ChkMTBIBLIsValid
       *-------------------------------------------------------------------------
@@ -815,7 +792,7 @@
       * BEGIN Prototype : GetMTBIBLSequence
       * Description     : Get file assess sequence
       * Returns         :< Sequence
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLSequence...

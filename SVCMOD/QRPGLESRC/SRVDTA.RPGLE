@@ -974,8 +974,6 @@
      D Subset          DS                  likeds(t_ImprintSubset)
      D                                     based(p_Subset)
      D Sequence        S              3I 0
-     D RecordSubset    DS                  likeds(t_MTIMPNSubset)
-     D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetImprintRecord
       *-------------------------------------------------------------------------
@@ -984,29 +982,17 @@
             return *off;
        endif;
 
-
-       // Initialise record specific subset - defaults.
-       RecordSubset.SearchKey = GetQualifiedGeneric('*ALL');
-       RecordSubset.Deleted = '*';
-       RecordSubset.ImprintNo = 0;
-
-       // Initialise record specific subset - passed subset.
-       if p_Subset <> *null;
-            RecordSubset.SearchKey = Subset.SearchKey;
-            RecordSubset.Deleted = Subset.Deleted;
-       endif;
-
        Sequence = GetMTIMPNSequence(p_Subset:GetAction);
        select;
        when Sequence = 1;
             return GetMTIMPNF(Record:
                               p_Keys:
-                              RecordSubset:
+                              p_Subset:
                               GetAction);
        when Sequence = 2;
             return GetMTIMPNF2(Record:
                                p_Keys:
-                               RecordSubset:
+                               p_Subset:
                                GetAction);
        endsl;
       /end-free
@@ -1021,7 +1007,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTIMPNF
@@ -1032,15 +1018,21 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_ImprintRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTIMPNF
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_ImprintKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_ImprintSubset)
+     D                                     based(p_Subset)
      D FileRecord      DS                  likerec(MTIMPNF:*input)
      D FileKeys        DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D SubsetKeys      DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_ImprintSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTIMPNF
@@ -1050,23 +1042,24 @@
             return *off;
        endif;
 
-       // Initialise record specific subset - key selection.
-       if GetAction = '*unique';
-            Subset.ImprintNo = Keys.ImprintNo;
-       endif;
-
-       // Setup keys for record access.
-       FileKeys.IPIMPN = Subset.ImprintNo;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            FileKeys.IPIMPN = *hival;
+       if p_Subset <> *null;
+            FileSubset = Subset;
        endif;
 
        // Replace keys if keys passed.
        if p_Keys <> *null;
             FileKeys.IPIMPN = Keys.ImprintNo;
+       endif;
+
+       // Initialise record specific subset - key selection.
+       if GetAction = '*unique';
+            SubsetKeys.IPIMPN = FileKeys.IPIMPN;
+       endif;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.IPIMPN = *hival;
        endif;
 
        select;
@@ -1089,11 +1082,11 @@
                  readp MTIMPNF FileRecord;
             endif;
             if %eof(MTIMPNP)
-            or not ChkImprintNo(Subset.ImprintNo:FileRecord.IPIMPN);
+            or not ChkImprintNo(SubsetKeys.IPIMPN:FileRecord.IPIMPN);
                  return *off;
             endif;
             if ChkMTIMPNIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  Record.ImprintNo = FileRecord.IPIMPN;
                  Record.ISBNImprint =
                       GetQualifiedGeneric(%trimr(FileRecord.IPISBP) + '*');
@@ -1125,7 +1118,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTIMPNF2
@@ -1136,16 +1129,20 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_ImprintRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTIMPNF2
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_ImprintKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_ImprintSubset)
+     D                                     based(p_Subset)
      D SKSNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTIMPNF2:*input)
      D FileKeys        DS                  likerec(MTIMPNF2:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_ImprintSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTIMPNF2
@@ -1156,18 +1153,21 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.IPSKSN = Subset.SearchKey;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            FileKeys.IPSKSN = %trimr(FileKeys.IPSKSN) + SKSNHi;
+       if p_Subset <> *null;
+            FileSubset = Subset;
+            FileKeys.IPSKSN = FileSubset.SearchKey;
        endif;
 
        // Replace keys if keys passed.
        if p_Keys <> *null;
             FileKeys.IPSKSN = Keys.SearchKey;
             FileKeys.IPIMPN = Keys.ImprintNo;
+       endif;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.IPSKSN = %trimr(FileKeys.IPSKSN) + SKSNHi;
        endif;
 
        select;
@@ -1188,11 +1188,11 @@
                  readp MTIMPNF2 FileRecord;
             endif;
             if %eof(MTIMPNL2)
-            or not ChkSearchKey(Subset.SearchKey:FileRecord.IPSKSN);
+            or not ChkSearchKey(FileSubset.SearchKey:FileRecord.IPSKSN);
                  return *off;
             endif;
             if ChkMTIMPNIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  Record.ImprintNo = FileRecord.IPIMPN;
                  Record.ISBNImprint =
                       GetQualifiedGeneric(%trimr(FileRecord.IPISBP) + '*');
@@ -1232,7 +1232,7 @@
      D ChkMTIMPNIsValid...
      D                 PI              N
      D  Record                             likerec(MTIMPNF:*input)
-     D  Subset                             likeds(t_MTIMPNSubset)
+     D  Subset                             likeds(t_ImprintSubset)
       *-------------------------------------------------------------------------
       * Local Variables : ChkMTIMPNIsValid
       *-------------------------------------------------------------------------
@@ -1241,10 +1241,6 @@
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
-            return *off;
-       endif;
-
-       if not ChkImprintNo(Subset.ImprintNo:Record.IPIMPN);
             return *off;
        endif;
 
@@ -1270,7 +1266,7 @@
       * Procedure       : GetMTIMPNSequence
       * Description     : Get Logical index based on subset.
       * Returns         :< Sequence
-      * Parameter      >:  Subset
+      * Parameter      >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTIMPNSequence
@@ -1398,8 +1394,6 @@
      D Subset          DS                  likeds(t_AuthorSubset)
      D                                     based(p_Subset)
      D Sequence        S              3I 0
-     D RecordSubset    DS                  likeds(t_MTAUTHSubset)
-     D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetAuthorRecord
       *-------------------------------------------------------------------------
@@ -1408,25 +1402,13 @@
             return *off;
        endif;
 
-       // Initialise record specific subset - defaults.
-       RecordSubset.ISBN = *blanks;
-       RecordSubset.MARCTag = 0;
-       RecordSubset.Sequence = 0;
-
-       // Initialise record specific subset - passed subset.
-       if p_Subset <> *null;
-            RecordSubset.ISBN = Subset.ISBN;
-            RecordSubset.MARCTag = Subset.MARCTag;
-            RecordSubset.Sequence = Subset.Sequence;
-       endif;
-
        Sequence = GetMTAUTHSequence(p_Subset:GetAction);
 
        select;
        when Sequence = 1;
             return GetMTAUTHF(Record:
                               p_Keys:
-                              RecordSubset:
+                              p_Subset:
                               GetAction);
        endsl;
       /end-free
@@ -1441,7 +1423,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTAUTHF
@@ -1452,17 +1434,23 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_AuthorRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTAUTHF
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_AuthorKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_AuthorSubset)
+     D                                     based(p_Subset)
      D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTAUTHF:*input)
      D                                     inz
      D FileKeys        DS                  likerec(MTAUTHF:*key)
+     D                                     inz
+     D SubsetKeys      DS                  likerec(MTAUTHF:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_AuthorSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTAUTHF
@@ -1472,17 +1460,27 @@
             return *off;
        endif;
 
-       // Initialise record specific subset - key selection.
-       if GetAction = '*unique';
-            Subset.ISBN = Keys.ISBN;
-            Subset.MARCTag = Keys.MARCTag;
-            Subset.Sequence = Keys.Sequence;
+       // Setup keys for record access.
+       if p_Subset <> *null;
+            FileSubset = Subset;
+            FileKeys.AUISBN = FileSubset.ISBN;
+            FileKeys.AUTAGC = FileSubset.MARCTag;
+            FileKeys.AUSEQN = FileSubset.Sequence;
        endif;
 
-       // Setup keys for record access.
-       FileKeys.AUISBN = Subset.ISBN;
-       FileKeys.AUTAGC = Subset.MARCTag;
-       FileKeys.AUSEQN = Subset.Sequence;
+       // Replace keys if keys passed.
+       if p_Keys <> *null;
+            FileKeys.AUISBN = Keys.ISBN;
+            FileKeys.AUTAGC = Keys.MARCTag;
+            FileKeys.AUSEQN = Keys.Sequence;
+       endif;
+
+       // Initialise record specific subset - key selection.
+       if GetAction = '*unique';
+            SubsetKeys.AUISBN = FileKeys.AUISBN;
+            SubsetKeys.AUTAGC = FileKeys.AUTAGC;
+            SubsetKeys.AUSEQN = FileKeys.AUSEQN;
+       endif;
 
        // Generic* options need padding, otherwise file positioning
        //   is incorrect for *last processing.
@@ -1494,13 +1492,6 @@
             if FileKeys.AUSEQN = 0;
                  FileKeys.AUSEQN = *hival;
             endif;
-       endif;
-
-       // Replace keys if keys passed.
-       if p_Keys <> *null;
-            FileKeys.AUISBN = Keys.ISBN;
-            FileKeys.AUTAGC = Keys.MARCTag;
-            FileKeys.AUSEQN = Keys.Sequence;
        endif;
 
        select;
@@ -1523,13 +1514,13 @@
                  readp MTAUTHF FileRecord;
             endif;
             if %eof(MTAUTHP)
-            or not ChkISBN(Subset.ISBN:FileRecord.AUISBN)
-            or not ChkMARCTag(Subset.MARCTag:FileRecord.AUTAGC)
-            or not ChkMARCsequence(Subset.Sequence:FileRecord.AUSEQN);
+            or not ChkISBN(SubsetKeys.AUISBN:FileRecord.AUISBN)
+            or not ChkMARCTag(SubsetKeys.AUTAGC:FileRecord.AUTAGC)
+            or not ChkMARCsequence(SubsetKeys.AUSEQN:FileRecord.AUSEQN);
                  return *off;
             endif;
             if ChkMTAUTHIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  // Assemble data to return
                  FileKeys.AUISBN = FileRecord.AUISBN;
                  FileKeys.AUTAGC = FileRecord.AUTAGC;
@@ -1568,7 +1559,7 @@
      D ChkMTAUTHIsValid...
      D                 PI              N
      D  Record                             likerec(MTAUTHF:*input)
-     D  Subset                             likeds(t_MTAUTHSubset)
+     D  Subset                             likeds(t_AuthorSubset)
       *-------------------------------------------------------------------------
       * Local Variables : ChkMTAUTHIsValid
       *-------------------------------------------------------------------------
@@ -1603,7 +1594,7 @@
       * Procedure       : GetMTAUTHSequence
       * Description     : Get Logical index based on subset.
       * Returns         :< Sequence
-      * Parameter      >:  Subset
+      * Parameter      >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTAUTHSequence
@@ -1727,8 +1718,6 @@
      D Subset          DS                  likeds(t_BibliographicSubset)
      D                                     based(p_Subset)
      D Sequence        S              3I 0
-     D RecordSubset    DS                  likeds(t_MTBIBLSubset)
-     D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetBibliographicRecord
       *-------------------------------------------------------------------------
@@ -1737,43 +1726,27 @@
             return *off;
        endif;
 
-
-       // Initialise record specific subset - defaults.
-       RecordSubset.SupplierNo = 0;
-       RecordSubset.SearchKey = GetQualifiedGeneric('*ALL');
-       RecordSubset.ISBNImprint = GetQualifiedGeneric('*ALL');
-       RecordSubset.Deleted = '*';
-       RecordSubset.ISBN = *blanks;
-
-       // Initialise record specific subset - passed subset.
-       if p_Subset <> *null;
-            RecordSubset.SupplierNo = Subset.SupplierNo;
-            RecordSubset.SearchKey = Subset.SearchKey;
-            RecordSubset.ISBNImprint = Subset.ISBNImprint;
-            RecordSubset.Deleted = Subset.Deleted;
-       endif;
-
        Sequence = GetMTBIBLSequence(p_Subset:GetAction);
        select;
        when Sequence = 1;
             return GetMTBIBLF1(Record:
                                p_Keys:
-                               RecordSubset:
+                               p_Subset:
                                GetAction);
        when Sequence = 2;
             return GetMTBIBLF2(Record:
                                p_Keys:
-                               RecordSubset:
+                               p_Subset:
                                GetAction);
        when Sequence = 3;
             return GetMTBIBLF3(Record:
                                p_Keys:
-                               RecordSubset:
+                               p_Subset:
                                GetAction);
        when Sequence = 4;
             return GetMTBIBLF4(Record:
                                p_Keys:
-                               RecordSubset:
+                               p_Subset:
                                GetAction);
        endsl;
       /end-free
@@ -1788,7 +1761,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTBIBLF1
@@ -1799,17 +1772,23 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF1
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_BibliographicKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
      D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF1:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF1:*key)
+     D                                     inz
+     D SubsetKeys      DS                  likerec(MTBIBLF1:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_BibliographicSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTBIBLF1
@@ -1819,23 +1798,26 @@
             return *off;
        endif;
 
-       // Initialise record specific subset - key selection.
-       if GetAction = '*unique';
-            Subset.ISBN = Keys.ISBN;
-       endif;
-
        // Setup keys for record access.
-       FileKeys.BLISBN = Subset.ISBNImprint;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       if p_Subset <> *null;
+            FileSubset = Subset;
+            FileKeys.BLISBN = FileSubset.ISBNImprint;
        endif;
 
        // Replace keys if keys passed.
        if p_Keys <> *null;
             FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       // Initialise record specific subset - key selection.
+       if GetAction = '*unique';
+            SubsetKeys.BLISBN = FileKeys.BLISBN;
+       endif;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
        endif;
 
        p_MTBIBLF = %addr(Record);
@@ -1860,13 +1842,13 @@
                  readp MTBIBLF1 FileRecord;
             endif;
             if %eof(MTBIBLL1)
-            or not ChkISBN(Subset.ISBN:FileRecord.BLISBN)
-            or not ChkISBNImprint(Subset.ISBNImprint:
+            or not ChkISBN(SubsetKeys.BLISBN:FileRecord.BLISBN)
+            or not ChkISBNImprint(FileSubset.ISBNImprint:
                                   FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  return *on;
             endif;
        enddo;
@@ -1882,7 +1864,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTBIBLF2
@@ -1893,18 +1875,22 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF2
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_BibliographicKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
      D SKSNHi          S             10A   inz(*allx'FF')
      D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF2:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF2:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_BibliographicSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTBIBLF2
@@ -1915,15 +1901,11 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.BLSUPN = Subset.SupplierNo;
-       FileKeys.BLSKSN = Subset.SearchKey;
-       FileKeys.BLISBN = Subset.ISBNImprint;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
-            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       if p_Subset <> *null;
+            FileSubset = Subset;
+            FileKeys.BLSUPN = FileSubset.SupplierNo;
+            FileKeys.BLSKSN = FileSubset.SearchKey;
+            FileKeys.BLISBN = FileSubset.ISBNImprint;
        endif;
 
        // Replace keys if keys passed.
@@ -1931,6 +1913,13 @@
             FileKeys.BLSUPN = Keys.SupplierNo;
             FileKeys.BLSKSN = Keys.SearchKey;
             FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
        endif;
 
        p_MTBIBLF = %addr(Record);
@@ -1953,14 +1942,14 @@
                  readpe %kds(FileKeys:1) MTBIBLF2 FileRecord;
             endif;
             if %eof(MTBIBLL2)
-            or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
-            or %len(Subset.SearchKey) = (%size(Subset.SearchKey) - 2)
-            and not ChkISBNImprint(Subset.ISBNImprint:
+            or not ChkSearchKey(FileSubset.SearchKey:FileRecord.BLSKSN)
+            or %len(FileSubset.SearchKey) = (%size(FileSubset.SearchKey) - 2)
+            and not ChkISBNImprint(FileSubset.ISBNImprint:
                                    FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  return *on;
             endif;
        enddo;
@@ -1976,7 +1965,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTBIBLF3
@@ -1987,18 +1976,22 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF3
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_BibliographicKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
      D SKSNHi          S             10A   inz(*allx'FF')
      D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF3:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF3:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_BibliographicSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTBIBLF3
@@ -2009,20 +2002,23 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.BLSKSN = Subset.SearchKey;
-       FileKeys.BLISBN = Subset.ISBNImprint;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
-            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       if p_Subset <> *null;
+            FileSubset = Subset;
+            FileKeys.BLSKSN = FileSubset.SearchKey;
+            FileKeys.BLISBN = FileSubset.ISBNImprint;
        endif;
 
        // Replace keys if keys passed.
        if p_Keys <> *null;
             FileKeys.BLSKSN = Keys.SearchKey;
             FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.BLSKSN = %trimr(FileKeys.BLSKSN) + SKSNHi;
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
        endif;
 
        p_MTBIBLF = %addr(Record);
@@ -2045,14 +2041,14 @@
                  readp MTBIBLF3 FileRecord;
             endif;
             if %eof(MTBIBLL3)
-            or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
-            or %len(Subset.SearchKey) = (%size(Subset.SearchKey) - 2)
-            and not ChkISBNImprint(Subset.ISBNImprint:
+            or not ChkSearchKey(FileSubset.SearchKey:FileRecord.BLSKSN)
+            or %len(FileSubset.SearchKey) = (%size(FileSubset.SearchKey) - 2)
+            and not ChkISBNImprint(FileSubset.ISBNImprint:
                                    FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  return *on;
             endif;
        enddo;
@@ -2068,7 +2064,7 @@
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
-      *                >:  Subset
+      *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTBIBLF4
@@ -2079,17 +2075,21 @@
      D                 PI                  like(*in)
      D  Record                             likeds(t_BibliographicRecord)
      D  p_Keys                         *
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * Local Variables : GetMTBIBLF4
       *-------------------------------------------------------------------------
      D Keys            DS                  likeds(t_BibliographicKeys)
      D                                     based(p_keys)
+     D Subset          DS                  likeds(t_BibliographicSubset)
+     D                                     based(p_Subset)
      D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF4:*input)
      D                                     based(p_MTBIBLF)
      D FileKeys        DS                  likerec(MTBIBLF4:*key)
+     D                                     inz
+     D FileSubset      DS                  likeds(t_BibliographicSubset)
      D                                     inz
       *-------------------------------------------------------------------------
       * Program code    : GetMTBIBLF4
@@ -2100,19 +2100,22 @@
        endif;
 
        // Setup keys for record access.
-       FileKeys.BLSUPN = Subset.SupplierNo;
-       FileKeys.BLISBN = Subset.ISBNImprint;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
+       if p_Subset <> *null;
+            FileSubset = Subset;
+            FileKeys.BLSUPN = FileSubset.SupplierNo;
+            FileKeys.BLISBN = FileSubset.ISBNImprint;
        endif;
 
        // Replace keys if keys passed.
        if p_Keys <> *null;
             FileKeys.BLSUPN = Keys.SupplierNo;
             FileKeys.BLISBN = Keys.ISBN;
+       endif;
+
+       // Generic* options need padding, otherwise file positioning
+       //   is incorrect for *last processing.
+       if GetAction = '*last';
+            FileKeys.BLISBN = %trimr(FileKeys.BLISBN) + ISBNHi;
        endif;
 
        p_MTBIBLF = %addr(Record);
@@ -2135,12 +2138,12 @@
                  readpe %kds(FileKeys:1) MTBIBLF4 FileRecord;
             endif;
             if %eof(MTBIBLL4)
-            or not ChkISBNImprint(Subset.ISBNImprint:
+            or not ChkISBNImprint(FileSubset.ISBNImprint:
                                   FileRecord.BLISBN);
                  return *off;
             endif;
             if ChkMTBIBLIsValid(FileRecord:
-                                Subset);
+                                FileSubset);
                  return *on;
             endif;
        enddo;
@@ -2163,8 +2166,8 @@
      P                 B
      D ChkMTBIBLIsValid...
      D                 PI              N
-     D  Record                             likeds(t_BibliographicRecord)
-     D  Subset                             likeds(t_MTBIBLSubset)
+     D  Record                             likerec(MTBIBLF1:*input)
+     D  Subset                             likeds(t_BibliographicSubset)
       *-------------------------------------------------------------------------
       * Local Variables : ChkMTBIBLIsValid
       *-------------------------------------------------------------------------
@@ -2173,10 +2176,6 @@
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
-            return *off;
-       endif;
-
-       if not ChkISBN(Subset.ISBN:Record.BLISBN);
             return *off;
        endif;
 
@@ -2211,7 +2210,7 @@
       * Procedure       : GetMTBIBLSequence
       * Description     : Get Logical index based on subset.
       * Returns         :< Sequence
-      * Parameter      >:  Subset
+      * Parameter      >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
       * BEGIN Procedure : GetMTBIBLSequence
