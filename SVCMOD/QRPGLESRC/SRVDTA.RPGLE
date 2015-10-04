@@ -1046,6 +1046,11 @@
             Subset = InSubset;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            Keys.IPIMPN = *hival;
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.IPIMPN = InKeys.ImprintNo;
@@ -1056,20 +1061,14 @@
             ByKeys.IPIMPN = Keys.IPIMPN;
        endif;
 
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.IPIMPN = *hival;
-       endif;
-
        select;
        when GetAction = '*first'
        or   GetAction = '*previous'
        or   GetAction = '*bykeys';
-            setll %kds(Keys:1) MTIMPNF;
+            setll %kds(Keys) MTIMPNF;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt %kds(Keys:1) MTIMPNF;
+            setgt %kds(Keys) MTIMPNF;
        other;
             return *off;
        endsl;
@@ -1138,7 +1137,6 @@
      D                                     based(p_Inkeys)
      D InSubset        DS                  likeds(t_ImprintSubset)
      D                                     based(p_InSubset)
-     D SKSNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTIMPNF2:*input)
      D Keys            DS                  likerec(MTIMPNF2:*key)
      D                                     inz
@@ -1158,25 +1156,25 @@
             Keys.IPSKSN = Subset.SearchKey;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            Keys.IPSKSN = GetPartialHiValue(Subset.SearchKey);
+            Keys.IPIMPN = *hival;
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.IPSKSN = InKeys.SearchKey;
             Keys.IPIMPN = InKeys.ImprintNo;
        endif;
 
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.IPSKSN = %trimr(Keys.IPSKSN) + SKSNHi;
-       endif;
-
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll %kds(Keys:2) MTIMPNF2;
+            setll %kds(Keys) MTIMPNF2;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt %kds(Keys:2) MTIMPNF2;
+            setgt %kds(Keys) MTIMPNF2;
        other;
             return *off;
        endsl;
@@ -1244,10 +1242,7 @@
             return *off;
        endif;
 
-       If Subset.Deleted = 'N'
-       and Record.IPDLTD <> *blanks
-       or Subset.Deleted = 'Y'
-       and Record.IPDLTD = *blanks;
+       if not ChkDeleted(Subset.Deleted:Record.IPDLTD);
             return *off;
        endif;
 
@@ -1443,7 +1438,6 @@
      D                                     based(p_Inkeys)
      D InSubset        DS                  likeds(t_AuthorSubset)
      D                                     based(p_InSubset)
-     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTAUTHF:*input)
      D                                     inz
      D Keys            DS                  likerec(MTAUTHF:*key)
@@ -1468,6 +1462,19 @@
             Keys.AUSEQN = Subset.Sequence;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            if Subset.ISBN = *blanks;
+                 Keys.AUISBN = GetPartialHiValue;
+            endif;
+            if Subset.MARCTag = 0;
+                 Keys.AUTAGC = *hival;
+            endif;
+            if Subset.Sequence = 0;
+                 Keys.AUSEQN = *hival;
+            endif;
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.AUISBN = InKeys.ISBN;
@@ -1480,18 +1487,6 @@
             ByKeys.AUISBN = Keys.AUISBN;
             ByKeys.AUTAGC = Keys.AUTAGC;
             ByKeys.AUSEQN = Keys.AUSEQN;
-       endif;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.AUISBN = %trimr(Keys.AUISBN) + ISBNHi;
-            if Keys.AUTAGC = 0;
-                 Keys.AUTAGC = *hival;
-            endif;
-            if Keys.AUSEQN = 0;
-                 Keys.AUSEQN = *hival;
-            endif;
        endif;
 
        select;
@@ -1781,7 +1776,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF1:*input)
      D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF1:*key)
@@ -1804,6 +1798,11 @@
             Keys.BLISBN = Subset.ISBNImprint;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            Keys.BLISBN = GetPartialHiValue(Subset.ISBNImprint);
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.BLISBN = InKeys.ISBN;
@@ -1814,22 +1813,16 @@
             ByKeys.BLISBN = Keys.BLISBN;
        endif;
 
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.BLISBN = %trimr(Keys.BLISBN) + ISBNHi;
-       endif;
-
        p_MTBIBLF = %addr(Record);
 
        select;
        when GetAction = '*first'
        or   GetAction = '*previous'
        or   GetAction = '*bykeys';
-            setll %kds(Keys:1) MTBIBLF1;
+            setll %kds(Keys) MTBIBLF1;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt %kds(Keys:1) MTBIBLF1;
+            setgt %kds(Keys) MTBIBLF1;
        other;
             return *off;
        endsl;
@@ -1884,8 +1877,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D SKSNHi          S             10A   inz(*allx'FF')
-     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF2:*input)
      D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF2:*key)
@@ -1908,6 +1899,12 @@
             Keys.BLISBN = Subset.ISBNImprint;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            Keys.BLSKSN = GetPartialHiValue(Subset.SearchKey);
+            Keys.BLISBN = GetPartialHiValue(Subset.ISBNImprint);
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.BLSUPN = InKeys.SupplierNo;
@@ -1915,22 +1912,15 @@
             Keys.BLISBN = InKeys.ISBN;
        endif;
 
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.BLSKSN = %trimr(Keys.BLSKSN) + SKSNHi;
-            Keys.BLISBN = %trimr(Keys.BLISBN) + ISBNHi;
-       endif;
-
        p_MTBIBLF = %addr(Record);
 
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll %kds(Keys:3) MTBIBLF2;
+            setll %kds(Keys) MTBIBLF2;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt %kds(Keys:3) MTBIBLF2;
+            setgt %kds(Keys) MTBIBLF2;
        other;
             return *off;
        endsl;
@@ -1943,7 +1933,7 @@
             endif;
             if %eof(MTBIBLL2)
             or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
-            or %len(Subset.SearchKey) = (%size(Subset.SearchKey) - 2)
+            or not ChkIsPartial(Subset.SearchKey)
             and not ChkISBNImprint(Subset.ISBNImprint:
                                    FileRecord.BLISBN);
                  return *off;
@@ -1985,8 +1975,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D SKSNHi          S             10A   inz(*allx'FF')
-     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF3:*input)
      D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF3:*key)
@@ -2008,17 +1996,16 @@
             Keys.BLISBN = Subset.ISBNImprint;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            Keys.BLSKSN = GetPartialHiValue(Subset.SearchKey);
+            Keys.BLISBN = GetPartialHiValue(Subset.ISBNImprint);
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.BLSKSN = InKeys.SearchKey;
             Keys.BLISBN = InKeys.ISBN;
-       endif;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.BLSKSN = %trimr(Keys.BLSKSN) + SKSNHi;
-            Keys.BLISBN = %trimr(Keys.BLISBN) + ISBNHi;
        endif;
 
        p_MTBIBLF = %addr(Record);
@@ -2026,10 +2013,10 @@
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll %kds(Keys:2) MTBIBLF3;
+            setll %kds(Keys) MTBIBLF3;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt %kds(Keys:2) MTBIBLF3;
+            setgt %kds(Keys) MTBIBLF3;
        other;
             return *off;
        endsl;
@@ -2042,7 +2029,7 @@
             endif;
             if %eof(MTBIBLL3)
             or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
-            or %len(Subset.SearchKey) = (%size(Subset.SearchKey) - 2)
+            or not ChkIsPartial(Subset.SearchKey)
             and not ChkISBNImprint(Subset.ISBNImprint:
                                    FileRecord.BLISBN);
                  return *off;
@@ -2084,7 +2071,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D ISBNHi          S             10A   inz(*allx'FF')
      D FileRecord      DS                  likerec(MTBIBLF4:*input)
      D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF4:*key)
@@ -2106,16 +2092,15 @@
             Keys.BLISBN = Subset.ISBNImprint;
        endif;
 
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            Keys.BLISBN = GetPartialHiValue(Subset.ISBNImprint);
+       endif;
+
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.BLSUPN = InKeys.SupplierNo;
             Keys.BLISBN = InKeys.ISBN;
-       endif;
-
-       // Generic* options need padding, otherwise file positioning
-       //   is incorrect for *last processing.
-       if GetAction = '*last';
-            Keys.BLISBN = %trimr(Keys.BLISBN) + ISBNHi;
        endif;
 
        p_MTBIBLF = %addr(Record);
@@ -2123,10 +2108,10 @@
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
-            setll %kds(Keys:2) MTBIBLF4;
+            setll %kds(Keys) MTBIBLF4;
        when GetAction = '*next'
        or   GetAction = '*last';
-            setgt %kds(Keys:2) MTBIBLF4;
+            setgt %kds(Keys) MTBIBLF4;
        other;
             return *off;
        endsl;
@@ -2179,15 +2164,11 @@
             return *off;
        endif;
 
-       If Subset.Deleted = 'N'
-       and Record.BLDLTD <> *blanks
-       or Subset.Deleted = 'Y'
-       and Record.BLDLTD = *blanks;
+       if not ChkDeleted(Subset.Deleted:Record.BLDLTD);
             return *off;
        endif;
 
-       if Subset.SupplierNo <> 0
-       and Subset.SupplierNo <> Record.BLSUPN;
+       if not ChkSupplierNo(Subset.SupplierNo:Record.BLSUPN);
             return *off;
        endif;
 
@@ -2308,6 +2289,101 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : GetQualifiedGeneric
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetPartialHiValue
+      * Description     : Get Partial and/or Hi-Value
+      * Returns         :< PartialHiValue
+      * Parameter      ?:  Partial
+      *                ?:  Size
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetPartialHiValue
+      *-------------------------------------------------------------------------
+     P GetPartialHiValue...
+     P                 B
+     D GetPartialHiValue...
+     D                 PI           256A   opdesc
+     D                                     varying
+     D  Partial                     256A   varying
+     D                                     options(*varsize:
+     D                                             *nopass:
+     D                                             *omit)
+     D                                     const
+     D  Size                         10I 0 options(*nopass)
+     D                                     const
+      *-------------------------------------------------------------------------
+      * Local Variables : GetPartialHiValue
+      *-------------------------------------------------------------------------
+     D PartialPassed   S               N
+     D ReturnSize      S             10I 0
+     D HiValue         S                   like(Partial)
+     D                                     inz(*allx'FF')
+     D                                     static
+     D PartialHiValue  S                   like(Partial)
+     D MaxReturn       S             10I 0 inz(%size(Partial))
+     D CEEDODds        DS                  likeds(t_CEEDOD)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetPartialHiValue
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return HiValue;
+       endif;
+
+       PartialPassed = (%parms >= 1 and %addr(Partial) <> *null);
+
+       if %parms >= 2;
+            ReturnSize = Size;
+            if ReturnSize > MaxReturn - 2;
+                 QmhSndPgmMsg('MSG2013':      // Return size > HiValue storage
+                              MsgFileLMMSGF:  // Message file
+                              '':             // Message data
+                              0:              // Length of message data
+                              '*ESCAPE':      // Message type
+                              '*PGMBDY':      // Call stack entry
+                              1:              // Call stack count
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
+       endif;
+
+       if not PartialPassed;
+            if ReturnSize = 0;
+                 return HiValue;
+            else;
+                 return %subst(HiValue:1:ReturnSize);
+            endif;
+       else; // PartialPassed;
+            CEEDOD(1:
+                   CEEDODds.DescType:
+                   CEEDODds.DataType:
+                   CEEDODds.DescInfo1:
+                   CEEDODds.DescInfo2:
+                   CEEDODds.ParmLength:
+                   *omit);
+
+            if ReturnSize = 0;
+                 ReturnSize = CEEDODds.ParmLength;
+            elseif ReturnSize < CEEDODds.ParmLength;
+                 QmhSndPgmMsg('MSG2014':      // Return size < input value
+                              MsgFileLMMSGF:  // Message file
+                              '':             // Message data
+                              0:              // Length of message data
+                              '*ESCAPE':      // Message type
+                              '*PGMBDY':      // Call stack entry
+                              1:              // Call stack count
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
+
+            return Partial + %subst(HiValue:1:(ReturnSize - %len(Partial)));
+       endif;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetPartialHiValue
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -2534,6 +2610,127 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : ChkImprintNo
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : ChkSupplierNo
+      * Description     : Check Supplier number
+      * Returns         :< IsValid
+      * Parameter      >:  SupplierNo1
+      *                >:  SupplierNo2
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkSupplierNo
+      *-------------------------------------------------------------------------
+     P ChkSupplierNo...
+     P                 B
+     D ChkSupplierNo...
+     D                 PI              N
+     D  SupplierNo1                   7P 0
+     D  SupplierNo2                   7P 0
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkSupplierNo
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkSupplierNo
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if SupplierNo1 = *zero
+       or SupplierNo1 = SupplierNo2;
+            return *on;
+       endif;
+
+       return *off;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkSupplierNo
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : ChkDeleted
+      * Description     : Check deleted status
+      * Returns         :< IsValid
+      * Parameter      >:  Deleted1
+      *                >:  Deleted2
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkDeleted
+      *-------------------------------------------------------------------------
+     P ChkDeleted...
+     P                 B
+     D ChkDeleted...
+     D                 PI              N
+     D  Deleted1                      1A
+     D  Deleted2                      1A
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkDeleted
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : ChkDeleted
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if Deleted1 = 'Y' and Deleted2 = *blanks
+       or Deleted1 = 'N' and Deleted2 <> *blanks;
+            return *off;
+       endif;
+
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkDeleted
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : ChkIsPartial
+      * Description     : Check length verses size
+      * Returns         :< IsValid
+      * Parameter      >:  Data
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkIsPartial
+      *-------------------------------------------------------------------------
+     P ChkIsPartial...
+     P                 B
+     D ChkIsPartial...
+     D                 PI              N   opdesc
+     D  Data                        256A   varying
+     D                                     options(*varsize)
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkIsPartial
+      *-------------------------------------------------------------------------
+     D CEEDODds        DS                  likeds(t_CEEDOD)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : ChkIsPartial
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       CEEDOD(1:
+              CEEDODds.DescType:
+              CEEDODds.DataType:
+              CEEDODds.DescInfo1:
+              CEEDODds.DescInfo2:
+              CEEDODds.ParmLength:
+              *omit);
+       if %len(Data) < CEEDODds.ParmLength;
+            return *on;
+       endif;
+
+       return *off;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkIsPartial
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------

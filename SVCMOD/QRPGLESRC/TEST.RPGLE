@@ -132,6 +132,30 @@
             endif;
        endif;
 
+       if not SRVDTA_GetImprintLast(Imprint:ImprintSubset);
+            dsply ('Error: no last MPRNTN*') '' wait;
+       elseif Imprint.Keys.ImprintNo <> 2;
+            dsply ('Error: ImpNo lst MPRNTN* not 2 ' +
+                   %char(Imprint.Keys.ImprintNo)) ' ' wait;
+       else;
+            if SRVDTA_GetImprintPrevious(Imprint:Imprint.Keys:ImprintSubset);
+                 dsply ('Error: Prevlst MPRNTN* ') ' ' wait;
+            else;
+            if SRVDTA_GetImprintNext(Imprint:Imprint.Keys:ImprintSubset);
+                 dsply ('Error: nextlst MPRNTN*') ' ' wait;
+            endif;
+            endif;
+       endif;
+
+       ImprintSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('MPRNTNM2');
+       if not SRVDTA_GetImprintLast(Imprint:ImprintSubset);
+            dsply ('Error: no last MPRNTNM2') '' wait;
+       elseif Imprint.Keys.ImprintNo <> 2;
+            dsply ('Error: ImpNo lst MPRNTNM2 not 2 ' +
+                   %char(Imprint.Keys.ImprintNo)) ' ' wait;
+       endif;
+
        // -------------------------------------------------------------------------
        AuthorKeys.ISBN = '9999999999';
        AuthorKeys.MARCTag = 100;
@@ -298,8 +322,35 @@
        endif;
 
        BiblSubset.SearchKey =
+            SRVDTA_GetQualifiedSearchKey('F*');
+       ImprintKeys.ImprintNo = 3;
+       if SRVDTA_GetImprint(Imprint:ImprintKeys:*omit);
+            BiblSubset.ISBNImprint = Imprint.Record(1).ISBNImprint;
+       endif;
+
+       if not SRVDTA_GetBibliographicLast(Bibl:
+                                          BiblSubset);
+            dsply ('Error, SKSN=F*:SUPN=2:IMPN=3 NoRcdin Bibl') ' ' wait;
+       elseif Bibl.Keys.ISBN <> '0004567890';
+            dsply ('Err:SKSN=F*:SUPN=2,IMPN=3 not 0004567890 ' +
+                   Bibl.Keys.ISBN) ' ' wait;
+       else;
+            if SRVDTA_GetBibliographicNext(Bibl:
+                                          Bibl.Keys:
+                                          BiblSubset);
+                 dsply ('ErNxt, SKSN=F*:SUPN=2:IMPN=3 record in Bibl') ' ' wait;
+            endif;
+            if not SRVDTA_GetBibliographicPrevious(Bibl:
+                                                   Bibl.Keys:
+                                                   BiblSubset);
+                 dsply ('ErNxt, SKSN=F*:SUPN=2:IMPN=3 NoRcdin Bibl') ' ' wait;
+            endif;
+
+       endif;
+
+       reset BiblSubset;
+       BiblSubset.SearchKey =
             SRVDTA_GetQualifiedSearchKey('CCC*');
-       BiblSubset.SupplierNo = 0;
 
        if not SRVDTA_GetBibliographicFirst(Bibl:
                                            BiblSubset);

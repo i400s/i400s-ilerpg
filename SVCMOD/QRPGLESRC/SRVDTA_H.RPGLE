@@ -822,6 +822,29 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetPartialHiValue
+      * Description     : Get Partial and/or Hi-Value
+      * Returns         :< PartialHiValue
+      * Parameter      ?:  Partial
+      *                ?:  Size
+      *-------------------------------------------------------------------------
+     D GetPartialHiValue...
+     D                 PR           256A   opdesc
+     D                                     varying
+     D  Partial                     256A   varying
+     D                                     options(*varsize:
+     D                                             *nopass:
+     D                                             *omit)
+     D                                     const
+     D  Size                         10I 0 options(*nopass)
+     D                                     const
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetPartialHiValue
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : ChkSearchKey
       * Description     : Check SearchKey
       * Returns         :< IsValid
@@ -919,6 +942,58 @@
      D  ImprintNo2                    8P 0
       *-------------------------------------------------------------------------
       * END Prototype   : ChkImprintNo
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkSupplierNo
+      * Description     : Check Supplier number
+      * Returns         :< IsValid
+      *                >:  SupplierNo1
+      *                >:  SupplierNo2
+      *-------------------------------------------------------------------------
+     D ChkSupplierNo...
+     D                 PR              N
+     D  SupplierNo1                   7P 0
+     D  SupplierNo2                   7P 0
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkSupplierNo
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkDeleted
+      * Description     : Check deleted status
+      * Returns         :< IsValid
+      *                >:  Deleted1
+      *                >:  Deleted2
+      *-------------------------------------------------------------------------
+     D ChkDeleted...
+     D                 PR              N
+     D  Deleted1                      1A
+     D  Deleted2                      1A
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkDeleted
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkIsPartial
+      * Description     : Check length verses size
+      * Returns         : IsValid
+      * Parameter      >: Data
+      *
+      *-------------------------------------------------------------------------
+     D ChkIsPartial...
+     D                 PR             1N   opdesc
+     D  Data                        256A   varying
+     D                                     options(*varsize)
+     D
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkIsPartial
       *-------------------------------------------------------------------------
       /endif
 

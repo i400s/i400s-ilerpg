@@ -2,7 +2,7 @@
       *-------------------------------------------------------------------------
       * TEMPLATE API errors DS
       *-------------------------------------------------------------------------
-     D t_QUSEC         DS                  based(pt_QUSEC)
+     D t_QUSEC         DS                  based(pt_Template)
      D                                     qualified
      D  BytesProvided                10I 0
      D  BytesAvailable...
@@ -14,7 +14,7 @@
       *-------------------------------------------------------------------------
       * TEMPLATE Convert case DS
       *-------------------------------------------------------------------------
-     D t_QLGIDRCB00    DS                  based(pt_QLGIDRCB00)
+     D t_QLGIDRCB00    DS                  based(pt_Template)
      D                                     qualified
      D  TypeOfRequest                10I 0
      D  CCSIDInput                   10I 0
@@ -55,6 +55,27 @@
      D  APIError                           options(*varsize)
      D                                     likeds(t_QUSEC)
      D                                     const
+
+      *-------------------------------------------------------------------------
+      * API Retrieve operational descriptor
+      *-------------------------------------------------------------------------
+     D t_CEEDOD        DS                  based(pt_Template)
+     D                                     qualified
+     D  ParmNo                       10I 0
+     D  DescType                     10I 0
+     D  DataType                     10I 0
+     D  DescInfo1                    10I 0
+     D  DescInfo2                    10I 0
+     D  ParmLength                   10I 0
+     D  APIError                     12A
+     D CEEDOD          PR
+     D  ParmNo                       10I 0 const
+     D  DescType                     10I 0
+     D  DataType                     10I 0
+     D  DescInfo1                    10I 0
+     D  DescInfo2                    10I 0
+     D  ParmLength                   10I 0
+     D  APIError                     12A   options(*varsize:*omit)
 
       *-------------------------------------------------------------------------
       * BEGIN Global constants
