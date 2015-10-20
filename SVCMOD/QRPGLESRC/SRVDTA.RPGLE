@@ -82,10 +82,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetImprint(p_Data:
-                         p_Keys:
-                         p_Subset:
-                         GetAction);
+       return GetImprintData(p_Data:
+                             p_Keys:
+                             p_Subset:
+                             GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -135,10 +135,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetImprint(p_Data:
-                         p_Keys:
-                         p_Subset:
-                         GetAction);
+       return GetImprintData(p_Data:
+                             p_Keys:
+                             p_Subset:
+                             GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -188,10 +188,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetImprint(p_Data:
-                         p_Keys:
-                         p_Subset:
-                         GetAction);
+       return GetImprintData(p_Data:
+                             p_Keys:
+                             p_Subset:
+                             GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -243,10 +243,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetImprint(p_Data:
-                         p_Keys:
-                         p_Subset:
-                         GetAction);
+       return GetImprintData(p_Data:
+                             p_Keys:
+                             p_Subset:
+                             GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -298,10 +298,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetImprint(p_Data:
-                         p_Keys:
-                         p_Subset:
-                         GetAction);
+       return GetImprintData(p_Data:
+                             p_Keys:
+                             p_Subset:
+                             GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -353,10 +353,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetAuthor(p_Data:
-                        p_Keys:
-                        p_Subset:
-                        GetAction);
+       return GetAuthorData(p_Data:
+                            p_Keys:
+                            p_Subset:
+                            GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -406,10 +406,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetAuthor(p_Data:
-                        p_Keys:
-                        p_Subset:
-                        GetAction);
+       return GetAuthorData(p_Data:
+                            p_Keys:
+                            p_Subset:
+                            GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -459,10 +459,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetAuthor(p_Data:
-                        p_Keys:
-                        p_Subset:
-                        GetAction);
+       return GetAuthorData(p_Data:
+                            p_Keys:
+                            p_Subset:
+                            GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -514,10 +514,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetAuthor(p_Data:
-                        p_Keys:
-                        p_Subset:
-                        GetAction);
+       return GetAuthorData(p_Data:
+                            p_Keys:
+                            p_Subset:
+                            GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -569,10 +569,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetAuthor(p_Data:
-                        p_Keys:
-                        p_Subset:
-                        GetAction);
+       return GetAuthorData(p_Data:
+                            p_Keys:
+                            p_Subset:
+                            GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -624,10 +624,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetBibliographic(p_Data:
-                               p_Keys:
-                               p_Subset:
-                               GetAction);
+       return GetBibliographicData(p_Data:
+                                   p_Keys:
+                                   p_Subset:
+                                   GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -677,10 +677,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetBibliographic(p_Data:
-                               p_Keys:
-                               p_Subset:
-                               GetAction);
+       return GetBibliographicData(p_Data:
+                                   p_Keys:
+                                   p_Subset:
+                                   GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -730,10 +730,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetBibliographic(p_Data:
-                               p_Keys:
-                               p_Subset:
-                               GetAction);
+       return GetBibliographicData(p_Data:
+                                   p_Keys:
+                                   p_Subset:
+                                   GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -785,10 +785,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetBibliographic(p_Data:
-                               p_Keys:
-                               p_Subset:
-                               GetAction);
+       return GetBibliographicData(p_Data:
+                                   p_Keys:
+                                   p_Subset:
+                                   GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -840,10 +840,10 @@
             p_Subset = %addr(Subset);
        endif;
 
-       return GetBibliographic(p_Data:
-                               p_Keys:
-                               p_Subset:
-                               GetAction);
+       return GetBibliographicData(p_Data:
+                                   p_Keys:
+                                   p_Subset:
+                                   GetAction);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -887,33 +887,33 @@
       **************************************************************************
 
       *----------------------------------------------------------------------
-      * Procedure       : GetImprint
-      * Description     : Get Imprint data
+      * Procedure       : GetImprintData
+      * Description     : Get Imprint Data
       * Returns         :< IsFound
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetImprint
+      * BEGIN Procedure : GetImprintData
       *-------------------------------------------------------------------------
-     P GetImprint...
+     P GetImprintData...
      P                 B
-     D GetImprint...
+     D GetImprintData...
      D                 PI                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * Local Variables : GetImprint
+      * Local Variables : GetImprintData
       *-------------------------------------------------------------------------
      D Data            DS                  likeds(t_Imprint)
      D                                     based(p_Data)
      D Record          DS                  likeds(t_ImprintRecord)
      D                                     inz
       *-------------------------------------------------------------------------
-      * Program code    : GetImprint
+      * Program code    : GetImprintData
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
@@ -946,7 +946,7 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetImprint
+      * END Procedure   : GetImprintData
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -971,11 +971,73 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetImprintRecord
       *-------------------------------------------------------------------------
-     D Subset          DS                  likeds(t_ImprintSubset)
-     D                                     based(p_Subset)
-     D Sequence        S              3I 0
+     D MTIMPNRecord    DS                  likerec(MTIMPNF:*input)
       *-------------------------------------------------------------------------
       * Program code    : GetImprintRecord
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if not GetMTIMPNRecord(MTIMPNRecord:
+                              p_keys:
+                              p_Subset:
+                              GetAction);
+            return *off;
+       endif;
+
+       Record.ImprintNo = MTIMPNRecord.IPIMPN;
+       Record.ISBNImprint =
+                      GetQualifiedGeneric(%trimr(MTIMPNRecord.IPISBP) + '*');
+       Record.Name = %trimr(MTIMPNRecord.IPIPNM);
+       Record.Address.Line(1) = %trimr(MTIMPNRecord.IPADR1);
+       Record.Address.Line(2) = %trimr(MTIMPNRecord.IPADR2);
+       Record.Address.Line(3) = %trimr(MTIMPNRecord.IPADR3);
+       Record.Address.Line(4) = %trimr(MTIMPNRecord.IPADR4);
+
+       Record.SearchKey = %trimr(MTIMPNRecord.IPSKSN);
+       Record.IsDeleted = (MTIMPNRecord.IPDLTD = 'Y');
+
+       Record.Audit.CreatedByUSER = MTIMPNRecord.IPCUSR;
+       Record.Audit.CreatedByPGM = MTIMPNRecord.IPCPGM;
+       Record.Audit.CreatedDTS = MTIMPNRecord.IPCDTS;
+       Record.Audit.EditedByUSER = MTIMPNRecord.IPEUSR;
+       Record.Audit.EditedByPGM = MTIMPNRecord.IPEPGM;
+       Record.Audit.EditedDTS = MTIMPNRecord.IPEDTS;
+
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetImprintRecord
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTIMPNRecord
+      * Description     : Get MTIMPN Record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTIMPNRecord
+      *-------------------------------------------------------------------------
+     P GetMTIMPNRecord...
+     P                 B
+     D GetMTIMPNRecord...
+     D                 PI                  like(*in)
+     D  Record                             likerec(MTIMPNF:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTIMPNRecord
+      *-------------------------------------------------------------------------
+     D Sequence        S              3I 0
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTIMPNRecord
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
@@ -998,7 +1060,7 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetImprintRecord
+      * END Procedure   : GetMTIMPNRecord
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -1016,7 +1078,7 @@
      P                 B
      D GetMTIMPNF...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_ImprintRecord)
+     D  Record                             likerec(MTIMPNF:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -1027,7 +1089,6 @@
      D                                     based(p_Inkeys)
      D InSubset        DS                  likeds(t_ImprintSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTIMPNF:*input)
      D Keys            DS                  likerec(MTIMPNF:*key)
      D                                     inz
      D ByKeys          DS                  likerec(MTIMPNF:*key)
@@ -1076,32 +1137,16 @@
             if GetAction = '*first'
             or GetAction = '*next'
             or GetAction = '*bykeys';
-                 read MTIMPNF FileRecord;
+                 read MTIMPNF Record;
             else;
-                 readp MTIMPNF FileRecord;
+                 readp MTIMPNF Record;
             endif;
             if %eof(MTIMPNP)
-            or not ChkImprintNo(ByKeys.IPIMPN:FileRecord.IPIMPN);
+            or not ChkImprintNo(ByKeys.IPIMPN:Record.IPIMPN);
                  return *off;
             endif;
-            if ChkMTIMPNIsValid(FileRecord:
+            if ChkMTIMPNIsValid(Record:
                                 Subset);
-                 Record.ImprintNo = FileRecord.IPIMPN;
-                 Record.ISBNImprint =
-                      GetQualifiedGeneric(%trimr(FileRecord.IPISBP) + '*');
-                 Record.Name = FileRecord.IPIPNM;
-                 Record.Address.Line(1) = FileRecord.IPADR1;
-                 Record.Address.Line(2) = FileRecord.IPADR2;
-                 Record.Address.Line(3) = FileRecord.IPADR3;
-                 Record.Address.Line(4) = FileRecord.IPADR4;
-                 Record.SearchKey = FileRecord.IPSKSN;
-                 Record.IsDeleted = (FileRecord.IPDLTD = 'Y');
-                 Record.Audit.CreatedByUSER = FileRecord.IPCUSR;
-                 Record.Audit.CreatedByPGM = FileRecord.IPCPGM;
-                 Record.Audit.CreatedDTS = FileRecord.IPCDTS;
-                 Record.Audit.EditedByUSER = FileRecord.IPEUSR;
-                 Record.Audit.EditedByPGM = FileRecord.IPEPGM;
-                 Record.Audit.EditedDTS = FileRecord.IPEDTS;
                  return *on;
             endif;
        enddo;
@@ -1126,7 +1171,7 @@
      P                 B
      D GetMTIMPNF2...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_ImprintRecord)
+     D  Record                             likerec(MTIMPNF2:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -1137,7 +1182,6 @@
      D                                     based(p_Inkeys)
      D InSubset        DS                  likeds(t_ImprintSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTIMPNF2:*input)
      D Keys            DS                  likerec(MTIMPNF2:*key)
      D                                     inz
      D Subset          DS                  likeds(t_ImprintSubset)
@@ -1181,32 +1225,16 @@
        dou %eof(MTIMPNL2);
             if GetAction ='*first'
             or GetAction ='*next';
-                 read MTIMPNF2 FileRecord;
+                 read MTIMPNF2 Record;
             else;
-                 readp MTIMPNF2 FileRecord;
+                 readp MTIMPNF2 Record;
             endif;
             if %eof(MTIMPNL2)
-            or not ChkSearchKey(Subset.SearchKey:FileRecord.IPSKSN);
+            or not ChkSearchKey(Subset.SearchKey:Record.IPSKSN);
                  return *off;
             endif;
-            if ChkMTIMPNIsValid(FileRecord:
+            if ChkMTIMPNIsValid(Record:
                                 Subset);
-                 Record.ImprintNo = FileRecord.IPIMPN;
-                 Record.ISBNImprint =
-                      GetQualifiedGeneric(%trimr(FileRecord.IPISBP) + '*');
-                 Record.Name = FileRecord.IPIPNM;
-                 Record.Address.Line(1) = FileRecord.IPADR1;
-                 Record.Address.Line(2) = FileRecord.IPADR2;
-                 Record.Address.Line(3) = FileRecord.IPADR3;
-                 Record.Address.Line(4) = FileRecord.IPADR4;
-                 Record.SearchKey = FileRecord.IPSKSN;
-                 Record.IsDeleted = (FileRecord.IPDLTD = 'Y');
-                 Record.Audit.CreatedByUSER = FileRecord.IPCUSR;
-                 Record.Audit.CreatedByPGM = FileRecord.IPCPGM;
-                 Record.Audit.CreatedDTS = FileRecord.IPCDTS;
-                 Record.Audit.EditedByUSER = FileRecord.IPEUSR;
-                 Record.Audit.EditedByPGM = FileRecord.IPEPGM;
-                 Record.Audit.EditedDTS = FileRecord.IPEDTS;
                  return *on;
             endif;
        enddo;
@@ -1302,33 +1330,33 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : GetAuthor
-      * Description     : Get Author data
+      * Procedure       : GetAuthorData
+      * Description     : Get Author Data
       * Returns         :< IsFound
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetAuthor
+      * BEGIN Procedure : GetAuthorData
       *-------------------------------------------------------------------------
-     P GetAuthor...
+     P GetAuthorData...
      P                 B
-     D GetAuthor...
+     D GetAuthorData...
      D                 PI                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * Local Variables : GetAuthor
+      * Local Variables : GetAuthorData
       *-------------------------------------------------------------------------
      D Data            DS                  likeds(t_Author)
      D                                     based(p_Data)
      D Record          DS                  likeds(t_AuthorRecord)
      D                                     inz
       *-------------------------------------------------------------------------
-      * Program code    : GetAuthor
+      * Program code    : GetAuthorData
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
@@ -1349,9 +1377,9 @@
        endif;
 
        // Update keys within data, data structure
-       Data.Keys.ISBN = Record.AUISBN;
-       Data.Keys.MARCTag = Record.AUTAGC;
-       Data.Keys.Sequence = Record.AUSEQN;
+       Data.Keys.ISBN = Record.ISBN;
+       Data.Keys.MARCTagCode = Record.MARCTagCode;
+       Data.Keys.MARCSequenceNo = Record.MARCSequenceNo;
 
        // Update record formats within data structure
        Data.Record(1) = Record;
@@ -1361,12 +1389,12 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetAuthor
+      * END Procedure   : GetAuthorData
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
       * Procedure       : GetAuthorRecord
-      * Description     : Get Author
+      * Description     : Get Author Record
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
@@ -1386,11 +1414,70 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetAuthorRecord
       *-------------------------------------------------------------------------
-     D Subset          DS                  likeds(t_AuthorSubset)
-     D                                     based(p_Subset)
-     D Sequence        S              3I 0
+     D MTAUTHRecord    DS                  likerec(MTAUTHF:*input)
+     D Keys            DS                  likerec(MTAUTHF:*key)
       *-------------------------------------------------------------------------
       * Program code    : GetAuthorRecord
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       if not GetMTAUTHRecord(MTAUTHRecord:
+                              p_Keys:
+                              p_Subset:
+                              GetAction);
+            return *off;
+       endif;
+
+       Record.ISBN = MTAUTHRecord.AUISBN;
+       Record.MARCTagCode = MTAUTHRecord.AUTAGC;
+       Record.MARCSequenceNo = MTAUTHRecord.AUSEQN;
+
+       Keys.AUISBN = MTAUTHRecord.AUISBN;
+       Keys.AUTAGC = MTAUTHRecord.AUTAGC;
+       Keys.AUSEQN = MTAUTHRecord.AUSEQN;
+       setll %kds(Keys:3) MTAUTHF;
+       dou %eof(MTAUTHP);
+            reade %kds(Keys:3) MTAUTHF MTAUTHRecord;
+            if not %eof(MTAUTHP);
+                 Record.Name += MTAUTHRecord.AUAUTN;
+            endif;
+       enddo;
+
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetAuthorRecord
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTAUTHRecord
+      * Description     : Get MTAUTH Record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTAUTHRecord
+      *-------------------------------------------------------------------------
+     P GetMTAUTHRecord...
+     P                 B
+     D GetMTAUTHRecord...
+     D                 PI                  like(*in)
+     D  Record                             likerec(MTAUTHF:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTAUTHRecord
+      *-------------------------------------------------------------------------
+     D Sequence        S              3I 0
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTAUTHRecord
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
@@ -1409,7 +1496,7 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetAuthorRecord
+      * END Procedure   : GetMTAUTHRecord
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -1427,7 +1514,7 @@
      P                 B
      D GetMTAUTHF...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_AuthorRecord)
+     D  Record                             likerec(MTAUTHF:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -1438,8 +1525,6 @@
      D                                     based(p_Inkeys)
      D InSubset        DS                  likeds(t_AuthorSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTAUTHF:*input)
-     D                                     inz
      D Keys            DS                  likerec(MTAUTHF:*key)
      D                                     inz
      D ByKeys          DS                  likerec(MTAUTHF:*key)
@@ -1458,8 +1543,8 @@
        if p_InSubset <> *null;
             Subset = InSubset;
             Keys.AUISBN = Subset.ISBN;
-            Keys.AUTAGC = Subset.MARCTag;
-            Keys.AUSEQN = Subset.Sequence;
+            Keys.AUTAGC = Subset.MARCTagCode;
+            Keys.AUSEQN = Subset.MARCSequenceNo;
        endif;
 
        // Special processing for *last positioning.
@@ -1467,10 +1552,10 @@
             if Subset.ISBN = *blanks;
                  Keys.AUISBN = GetPartialHiValue;
             endif;
-            if Subset.MARCTag = 0;
+            if Subset.MARCTagCode = 0;
                  Keys.AUTAGC = *hival;
             endif;
-            if Subset.Sequence = 0;
+            if Subset.MARCSequenceNo = 0;
                  Keys.AUSEQN = *hival;
             endif;
        endif;
@@ -1478,8 +1563,8 @@
        // Replace keys if keys passed.
        if p_InKeys <> *null;
             Keys.AUISBN = InKeys.ISBN;
-            Keys.AUTAGC = InKeys.MARCTag;
-            Keys.AUSEQN = InKeys.Sequence;
+            Keys.AUTAGC = InKeys.MARCTagCode;
+            Keys.AUSEQN = InKeys.MARCSequenceNo;
        endif;
 
        // Initialise record specific subset - key selection.
@@ -1504,33 +1589,18 @@
             if GetAction = '*first'
             or GetAction = '*next'
             or GetAction = '*bykeys';
-                 read MTAUTHF FileRecord;
+                 read MTAUTHF Record;
             else;
-                 readp MTAUTHF FileRecord;
+                 readp MTAUTHF Record;
             endif;
             if %eof(MTAUTHP)
-            or not ChkISBN(ByKeys.AUISBN:FileRecord.AUISBN)
-            or not ChkMARCTag(ByKeys.AUTAGC:FileRecord.AUTAGC)
-            or not ChkMARCsequence(ByKeys.AUSEQN:FileRecord.AUSEQN);
+            or not ChkISBN(ByKeys.AUISBN:Record.AUISBN)
+            or not ChkMARCTag(ByKeys.AUTAGC:Record.AUTAGC)
+            or not ChkMARCsequence(ByKeys.AUSEQN:Record.AUSEQN);
                  return *off;
             endif;
-            if ChkMTAUTHIsValid(FileRecord:
+            if ChkMTAUTHIsValid(Record:
                                 Subset);
-                 // Assemble data to return
-                 Keys.AUISBN = FileRecord.AUISBN;
-                 Keys.AUTAGC = FileRecord.AUTAGC;
-                 Keys.AUSEQN = FileRecord.AUSEQN;
-                 setll %kds(Keys:3) MTAUTHF;
-                 reade %kds(Keys:3) MTAUTHF FileRecord;
-                 Record.AUISBN = FileRecord.AUISBN;
-                 Record.AUTAGC = FileRecord.AUTAGC;
-                 Record.AUSEQN = FileRecord.AUSEQN;
-                 Record.CreatedDTS = %timestamp(); // TODO
-                 Record.ChangedDTS = %timestamp(); // TODO
-                 dow not %eof(MTAUTHP);
-                      Record.Name += FileRecord.AUAUTN;
-                      reade %kds(Keys:3) MTAUTHF FileRecord;
-                 enddo;
                  return *on;
             endif;
        enddo;
@@ -1570,11 +1640,11 @@
             return *off;
        endif;
 
-       If not ChkMARCTag(Subset.MARCTag:Record.AUTAGC);
+       If not ChkMARCTag(Subset.MARCTagCode:Record.AUTAGC);
             return *off;
        endif;
 
-       if not ChkMARCSequence(Subset.Sequence:Record.AUSEQN);
+       if not ChkMARCSequence(Subset.MARCSequenceNo:Record.AUSEQN);
             return *off;
        endif;
 
@@ -1582,7 +1652,7 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : ChkMTAUTHUsValid
+      * END Procedure   : ChkMTAUTHIsValid
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -1626,33 +1696,32 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : GetBibliographic
-      * Description     : Get Bibliographic data
+      * Procedure       : GetBibliographicData
+      * Description     : Get Bibliographic Data
       * Returns         :< IsFound
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : GetBibliographic
+      * BEGIN Procedure : GetBibliographicData
       *-------------------------------------------------------------------------
-     P GetBibliographic...
+     P GetBibliographicData...
      P                 B
-     D GetBibliographic...
+     D GetBibliographicData...
      D                 PI                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * Local Variables : GetBibliographic
+      * Local Variables : GetBibliographicData
       *-------------------------------------------------------------------------
      D Data            DS                  likeds(t_Bibliographic)
      D                                     based(p_Data)
      D Record          DS                  likeds(t_BibliographicRecord)
-     D                                     inz
       *-------------------------------------------------------------------------
-      * Program code    : GetBibliographic
+      * Program code    : GetBibliographicData
       *-------------------------------------------------------------------------
       /free
        if not InzSrvPgm;
@@ -1673,9 +1742,9 @@
        endif;
 
        // Update keys within data, data structure
-       Data.Keys.ISBN = Record.BLISBN;
-       Data.Keys.SupplierNo = Record.BLSUPN;
-       Data.Keys.SearchKey = Record.BLSKSN;
+       Data.Keys.ISBN = Record.ISBN;
+       Data.Keys.SupplierNo = Record.SupplierNo;
+       Data.Keys.SearchKey = Record.SearchKey;
 
        // Update record formats within data structure
        Data.Record(1) = Record;
@@ -1685,12 +1754,12 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetBibliographic
+      * END Procedure   : GetBibliographicData
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
       * Procedure       : GetBibliographicRecord
-      * Description     : Get bibligraphic record
+      * Description     : Get Bibliographic Record
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
@@ -1710,9 +1779,7 @@
       *-------------------------------------------------------------------------
       * Local Variables : GetBibliographicRecord
       *-------------------------------------------------------------------------
-     D Subset          DS                  likeds(t_BibliographicSubset)
-     D                                     based(p_Subset)
-     D Sequence        S              3I 0
+     D MTBIBLRecord    DS                  likerec(MTBIBLF1:*input)
       *-------------------------------------------------------------------------
       * Program code    : GetBibliographicRecord
       *-------------------------------------------------------------------------
@@ -1721,7 +1788,70 @@
             return *off;
        endif;
 
+       if not GetMTBIBLRecord(MTBIBLRecord:
+                              p_Keys:
+                              p_Subset:
+                              GetAction);
+            return *off;
+       endif;
+
+       Record.ISBN = MTBIBLRecord.BLISBN;
+       Record.SupplierNo = MTBIBLRecord.BLSUPN;
+       Record.PublishedDate = MTBIBLRecord.BLPBDT;
+       Record.RePrintDate = MTBIBLRecord.BLRPDT;
+       Record.Binding = MTBIBLRecord.BLBIND;
+       Record.Category = MTBIBLRecord.BLCATG;
+
+       Record.SearchKey = %trimr(MTBIBLRecord.BLSKSN);
+       Record.IsDeleted = (MTBIBLRecord.BLDLTD = 'Y');
+
+       Record.Audit.CreatedByUSER = MTBIBLRecord.BLCUSR;
+       Record.Audit.CreatedByPGM = MTBIBLRecord.BLCPGM;
+       Record.Audit.CreatedDTS = MTBIBLRecord.BLCDTS;
+       Record.Audit.EditedByUSER = MTBIBLRecord.BLEUSR;
+       Record.Audit.EditedByPGM = MTBIBLRecord.BLEPGM;
+       Record.Audit.EditedDTS = MTBIBLRecord.BLEDTS;
+
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetBibliographicRecord
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : GetMTBIBLRecord
+      * Description     : Get MTBIBL Record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTBIBLRecord
+      *-------------------------------------------------------------------------
+     P GetMTBIBLRecord...
+     P                 B
+     D GetMTBIBLRecord...
+     D                 PI                  like(*in)
+     D  Record                             likerec(MTBIBLF1:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTBIBLRecord
+      *-------------------------------------------------------------------------
+     D Sequence        S              3I 0
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTBIBLRecord
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
        Sequence = GetMTBIBLSequence(p_Subset:GetAction);
+
        select;
        when Sequence = 1;
             return GetMTBIBLF1(Record:
@@ -1747,7 +1877,7 @@
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : GetBibliographicRecord
+      * END Procedure   : GetMTBIBLRecord
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -1765,7 +1895,7 @@
      P                 B
      D GetMTBIBLF1...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF1:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -1776,8 +1906,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTBIBLF1:*input)
-     D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF1:*key)
      D                                     inz
      D ByKeys          DS                  likerec(MTBIBLF1:*key)
@@ -1813,8 +1941,6 @@
             ByKeys.BLISBN = Keys.BLISBN;
        endif;
 
-       p_MTBIBLF = %addr(Record);
-
        select;
        when GetAction = '*first'
        or   GetAction = '*previous'
@@ -1830,17 +1956,17 @@
             if GetAction = '*first'
             or GetAction = '*next'
             or GetAction = '*bykeys';
-                 read MTBIBLF1 FileRecord;
+                 read MTBIBLF1 Record;
             else;
-                 readp MTBIBLF1 FileRecord;
+                 readp MTBIBLF1 Record;
             endif;
             if %eof(MTBIBLL1)
-            or not ChkISBN(ByKeys.BLISBN:FileRecord.BLISBN)
+            or not ChkISBN(ByKeys.BLISBN:Record.BLISBN)
             or not ChkISBNImprint(Subset.ISBNImprint:
-                                  FileRecord.BLISBN);
+                                  Record.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(FileRecord:
+            if ChkMTBIBLIsValid(Record:
                                 Subset);
                  return *on;
             endif;
@@ -1866,7 +1992,7 @@
      P                 B
      D GetMTBIBLF2...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF2:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -1877,8 +2003,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTBIBLF2:*input)
-     D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF2:*key)
      D                                     inz
      D Subset          DS                  likeds(t_BibliographicSubset)
@@ -1912,8 +2036,6 @@
             Keys.BLISBN = InKeys.ISBN;
        endif;
 
-       p_MTBIBLF = %addr(Record);
-
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
@@ -1927,18 +2049,18 @@
        dou %eof(MTBIBLL2);
             if GetAction ='*first'
             or GetAction ='*next';
-                 reade %kds(Keys:1) MTBIBLF2 FileRecord;
+                 reade %kds(Keys:1) MTBIBLF2 Record;
             else;
-                 readpe %kds(Keys:1) MTBIBLF2 FileRecord;
+                 readpe %kds(Keys:1) MTBIBLF2 Record;
             endif;
             if %eof(MTBIBLL2)
-            or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
+            or not ChkSearchKey(Subset.SearchKey:Record.BLSKSN)
             or not ChkIsPartial(Subset.SearchKey)
             and not ChkISBNImprint(Subset.ISBNImprint:
-                                   FileRecord.BLISBN);
+                                   Record.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(FileRecord:
+            if ChkMTBIBLIsValid(Record:
                                 Subset);
                  return *on;
             endif;
@@ -1964,7 +2086,7 @@
      P                 B
      D GetMTBIBLF3...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF3:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -1975,8 +2097,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTBIBLF3:*input)
-     D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF3:*key)
      D                                     inz
      D Subset          DS                  likeds(t_BibliographicSubset)
@@ -2008,8 +2128,6 @@
             Keys.BLISBN = InKeys.ISBN;
        endif;
 
-       p_MTBIBLF = %addr(Record);
-
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
@@ -2023,18 +2141,18 @@
        dou %eof(MTBIBLL3);
             if GetAction = '*first'
             or GetAction = '*next';
-                 read  MTBIBLF3 FileRecord;
+                 read  MTBIBLF3 Record;
             else;
-                 readp MTBIBLF3 FileRecord;
+                 readp MTBIBLF3 Record;
             endif;
             if %eof(MTBIBLL3)
-            or not ChkSearchKey(Subset.SearchKey:FileRecord.BLSKSN)
+            or not ChkSearchKey(Subset.SearchKey:Record.BLSKSN)
             or not ChkIsPartial(Subset.SearchKey)
             and not ChkISBNImprint(Subset.ISBNImprint:
-                                   FileRecord.BLISBN);
+                                   Record.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(FileRecord:
+            if ChkMTBIBLIsValid(Record:
                                 Subset);
                  return *on;
             endif;
@@ -2060,7 +2178,7 @@
      P                 B
      D GetMTBIBLF4...
      D                 PI                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF4:*input)
      D  p_InKeys                       *
      D  p_InSubset                     *
      D  GetAction                    10A   varying
@@ -2071,8 +2189,6 @@
      D                                     based(p_InKeys)
      D InSubset        DS                  likeds(t_BibliographicSubset)
      D                                     based(p_InSubset)
-     D FileRecord      DS                  likerec(MTBIBLF4:*input)
-     D                                     based(p_MTBIBLF)
      D Keys            DS                  likerec(MTBIBLF4:*key)
      D                                     inz
      D Subset          DS                  likeds(t_BibliographicSubset)
@@ -2103,8 +2219,6 @@
             Keys.BLISBN = InKeys.ISBN;
        endif;
 
-       p_MTBIBLF = %addr(Record);
-
        select;
        when GetAction = '*first'
        or   GetAction = '*previous';
@@ -2118,16 +2232,16 @@
        dou %eof(MTBIBLL4);
             if GetAction = '*first'
             or GetAction = '*next';
-                 reade %kds(Keys:1) MTBIBLF4 FileRecord;
+                 reade %kds(Keys:1) MTBIBLF4 Record;
             else;
-                 readpe %kds(Keys:1) MTBIBLF4 FileRecord;
+                 readpe %kds(Keys:1) MTBIBLF4 Record;
             endif;
             if %eof(MTBIBLL4)
             or not ChkISBNImprint(Subset.ISBNImprint:
-                                  FileRecord.BLISBN);
+                                  Record.BLISBN);
                  return *off;
             endif;
-            if ChkMTBIBLIsValid(FileRecord:
+            if ChkMTBIBLIsValid(Record:
                                 Subset);
                  return *on;
             endif;

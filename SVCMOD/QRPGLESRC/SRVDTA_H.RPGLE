@@ -54,19 +54,19 @@
      D                 DS                  qualified
      D                                     based(pt_Template)
      D   ISBN                        10A
-     D   MARCTag                      3P 0
-     D   Sequence                     3P 0
+     D   MARCTagCode                  3P 0
+     D   MARCSequenceNo...
+     D                                3P 0
      D t_AuthorSubset...
      D                 DS                  Likeds(t_AuthorKeys)
      D                                     based(pt_Template)
      D t_AuthorRecord...
      D                 DS                  qualified
      D                                     based(pt_Template)
-     D   AUISBN                      10A
-     D   AUTAGC                       3P 0
-     D   AUSEQN                       3P 0
-     D   CreatedDTS                    Z
-     D   ChangedDTS                    Z
+     D   ISBN                        10A
+     D   MARCTagCode                  3P 0
+     D   MARCSequenceNo...
+     D                                3P 0
      D   Name                      2048A   varying
      D t_Author...
      D                 DS                  qualified
@@ -89,9 +89,20 @@
      D   ISBNImprint                 10A   varying
      D   Deleted                      1A
      D t_BibliographicRecord...
-     D               E DS                  qualified
-     D                                     extname(MTBIBLP:MTBIBLF:*input)
+     D                 DS                  qualified
      D                                     based(pt_Template)
+     D   ISBN                        10A
+     D   SupplierNo                   7P 0
+     D   SearchKey                   10A   varying
+     D   PublishedDate...
+     D                                 D
+     D   RePrintDate...
+     D                                 D
+     D   Binding                      4A
+     D   Category                     4A
+     D   IsDeleted                     N
+     D   Audit                             likeds(t_AuditStamp)
+     D
      D t_Bibliographic...
      D                 DS                  qualified
      D                                     based(pt_Template)
@@ -431,22 +442,22 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetImprint
-      * Description     : Get Imprint
+      * BEGIN Prototype : GetImprintData
+      * Description     : Get Imprint Data
       * Returns         :< IsFound
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetImprint...
+     D GetImprintData...
      D                 PR                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetImprint
+      * END Prototype   : GetImprintData
       *-------------------------------------------------------------------------
       /endif
 
@@ -473,6 +484,27 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTIMPNRecord
+      * Description     : Get MTIMPN Record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTIMPNRecord...
+     D                 PR                  like(*in)
+     D  Record                             likerec(MTIMPNF:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTIMPNRecord
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : GetMTIMPNF
       * Description     : Get MTBIBLF data
       * Returns         :< IsFound
@@ -483,7 +515,7 @@
       *-------------------------------------------------------------------------
      D GetMTIMPNF...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_ImprintRecord)
+     D  Record                             likerec(MTIMPNF:*input)
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -504,7 +536,7 @@
       *-------------------------------------------------------------------------
      D GetMTIMPNF2...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_ImprintRecord)
+     D  Record                             likerec(MTIMPNF2:*input)
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -533,7 +565,7 @@
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
       * BEGIN Prototype : GetMTIMPNSequence
-      * Description     : Get file assess sequence
+      * Description     : Get file access sequence
       * Returns         :< Sequence
       *                >:  p_Subset
       *                >:  GetAction
@@ -549,29 +581,29 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetAuthor
-      * Description     : Get Author
+      * BEGIN Prototype : GetAuthorData
+      * Description     : Get Author Data
       * Returns         :< IsFound
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetAuthor...
+     D GetAuthorData...
      D                 PR                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetAuthor
+      * END Prototype   : GetAuthorData
       *-------------------------------------------------------------------------
       /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
       * BEGIN Prototype : GetAuthorRecord
-      * Description     : Get Author
+      * Description     : Get Author Record
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
@@ -591,6 +623,27 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTAUTHRecord
+      * Description     : Get MTAUTH Record
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTAUTHRecord...
+     D                 PR                  like(*in)
+     D  Record                             likerec(MTAUTHF:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTAUTHRecord
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : GetMTAUTHF
       * Description     : Get MTAUTHF data
       * Returns         :< IsFound
@@ -601,7 +654,7 @@
       *-------------------------------------------------------------------------
      D GetMTAUTHF...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_AuthorRecord)
+     D  Record                             likerec(MTAUTHF:*input)
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -630,7 +683,7 @@
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
       * BEGIN Prototype : GetMTAUTHSequence
-      * Description     : Get file assess sequence
+      * Description     : Get file access sequence
       * Returns         :< Sequence
       *                >:  p_Subset
       *                >:  GetAction
@@ -646,29 +699,29 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : GetBibliographic
-      * Description     : Get Bibliographic
+      * BEGIN Prototype : GetBibliographicData
+      * Description     : Get Bibliographic Data
       * Returns         :< IsFound
       * Parameter      >:< p_Data
       *                >:  p_Keys
       *                >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
-     D GetBibliographic...
+     D GetBibliographicData...
      D                 PR                  like(*in)
      D  p_Data                         *
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
-      * END Prototype   : GetBibliographic
+      * END Prototype   : GetBibliographicData
       *-------------------------------------------------------------------------
       /endif
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
       * BEGIN Prototype : GetBibliographicRecord
-      * Description     : Get Bibliographic record
+      * Description     : Get Bibliographic Record
       * Returns         :< IsFound
       * Parameter      >:< Record
       *                >:  p_Keys
@@ -688,6 +741,27 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTBIBLRecord
+      * Description     : Get MTBIBL Record
+      * Returns         :  IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTBIBLRecord...
+     D                 PR                  like(*in)
+     D  Record                             likerec(MTBIBLF1:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTBIBLRecord
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : GetMTBIBLF1
       * Description     : Get MTBIBLF1 data
       * Returns         :< IsFound
@@ -698,7 +772,7 @@
       *-------------------------------------------------------------------------
      D GetMTBIBLF1...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF1:*input)
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -719,7 +793,7 @@
       *-------------------------------------------------------------------------
      D GetMTBIBLF2...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF2:*input)
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -740,7 +814,7 @@
       *-------------------------------------------------------------------------
      D GetMTBIBLF3...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF3:*input)
      D  p_keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -761,7 +835,7 @@
       *-------------------------------------------------------------------------
      D GetMTBIBLF4...
      D                 PR                  like(*in)
-     D  Record                             likeds(t_BibliographicRecord)
+     D  Record                             likerec(MTBIBLF4:*input)
      D  p_Keys                         *
      D  p_Subset                       *
      D  GetAction                    10A   varying
@@ -790,7 +864,7 @@
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
       * BEGIN Prototype : GetMTBIBLSequence
-      * Description     : Get file assess sequence
+      * Description     : Get file access sequence
       * Returns         :< Sequence
       *                >:  p_Subset
       *                >:  GetAction

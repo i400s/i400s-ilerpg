@@ -18,7 +18,7 @@
       * Global data and procedure specifications
       *_________________________________________________________________________
       /include StdDSpec
-
+      *
       /include SrvDta_H
 
      D ImprintKeys     DS                  likeds(t_ImprintKeys)
@@ -158,15 +158,15 @@
 
        // -------------------------------------------------------------------------
        AuthorKeys.ISBN = '9999999999';
-       AuthorKeys.MARCTag = 100;
-       AuthorKeys.Sequence = 1;
+       AuthorKeys.MARCTagCode = 100;
+       AuthorKeys.MARCSequenceNo = 1;
        if SRVDTA_GetAuthor(Author:AuthorKeys);
             dsply ('Error: Record');
        endif;
 
        AuthorKeys.ISBN = '0000000008';
-       AuthorKeys.MARCTag = 100;
-       AuthorKeys.Sequence = 1;
+       AuthorKeys.MARCTagCode = 100;
+       AuthorKeys.MARCSequenceNo = 1;
        if not SRVDTA_GetAuthor(Author:AuthorKeys:*omit);
             dsply ('Error: No record');
        elseif Author.Record(1).Name <> 'A long author with a very sillly +
@@ -188,9 +188,9 @@
             if not SRVDTA_GetAuthorPrevious(Author:Author.Keys);
                  dsply ('Error: no previous') ' ' wait;
             elseif Author.Keys.ISBN <> '9898989898'
-            and Author.Keys.MARCTag <> 2;
+            and Author.Keys.MARCTagCode <> 2;
                  dsply ('Error: Previous MarcTag <> 2 ' +
-                        %char(Author.Keys.MARCTag)) ' ' wait;
+                        %char(Author.Keys.MARCTagCode)) ' ' wait;
             endif;
        endif;
 
@@ -203,9 +203,9 @@
             if not SRVDTA_GetAuthorNext(Author:Author.Keys);
                  dsply ('Error: no next') ' ' wait;
             elseif Author.Keys.ISBN <> '0000000004'
-            and Author.Keys.MARCTag <> 700;
+            and Author.Keys.MARCTagCode <> 700;
                  dsply ('Error: Previous MarcTag <> 700 ' +
-                        %char(Author.Keys.MARCTag)) ' ' wait;
+                        %char(Author.Keys.MARCTagCode)) ' ' wait;
             endif;
        endif;
 
@@ -220,16 +220,16 @@
             if not SRVDTA_GetAuthorNext(Author:Author.Keys:AuthorSubset);
                  dsply ('Error: no next 0000000007') ' ' wait;
             elseif Author.Keys.ISBN <> '0000000007'
-            and Author.Keys.MARCTag <> 700;
+            and Author.Keys.MARCTagCode <> 700;
                  dsply ('Error: Next 0000000007 MarcTag <> 700 ' +
-                        %char(Author.Keys.MARCTag)) ' ' wait;
+                        %char(Author.Keys.MARCTagCode)) ' ' wait;
             else;
             if not SRVDTA_GetAuthorPrevious(Author:Author.Keys:AuthorSubset);
                  dsply ('Error: no prev 0000000007') ' ' wait;
             elseif Author.Keys.ISBN <> '0000000007'
-            and Author.Keys.MARCTag <> 100;
+            and Author.Keys.MARCTagCode <> 100;
                  dsply ('Error: prev 0000000007 MarcTag <> 100 ' +
-                        %char(Author.Keys.MARCTag)) ' ' wait;
+                        %char(Author.Keys.MARCTagCode)) ' ' wait;
             endif;
             endif;
        endif;
