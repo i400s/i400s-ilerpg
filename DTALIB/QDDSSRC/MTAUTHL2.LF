@@ -1,0 +1,5 @@
+     A          R MTAUTHF                   PFILE(*LIBL/MTAUTHP)
+                K AUTAGC
+                K AUSEQN
+                K AUISBN
+                K AUDSQN

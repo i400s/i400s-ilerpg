@@ -39,6 +39,9 @@
                   return ' /+';
         endsl;
 
+        eval *inlr =*on;
+        return *blanks;
+
       /end-free
 
      P                 E

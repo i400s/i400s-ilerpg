@@ -10,6 +10,8 @@
       * [AU] Author
      FMTAUTHP   IF   E           K DISK    usropn
      F                                     rename(MTAUTHF:MTAUTHF)
+     FMTAUTHL2  IF   E           K DISK    usropn
+     F                                     rename(MTAUTHF:MTAUTHF2)
       *-------------------------------------------------------------------------
       * [BL] Bibliographic
      FMTBIBLL1  IF   E           K DISK    usropn
@@ -1492,6 +1494,11 @@
                               p_Keys:
                               p_Subset:
                               GetAction);
+       when Sequence = 2;
+            return GetMTAUTHF2(Record:
+                               p_Keys:
+                               p_Subset:
+                               GetAction);
        endsl;
       /end-free
      P                 E
@@ -1611,6 +1618,104 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
+      * Procedure       : GetMTAUTHF2
+      * Description     : Get MTAUTHF2 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : GetMTAUTHF2
+      *-------------------------------------------------------------------------
+     P GetMTAUTHF2...
+     P                 B
+     D GetMTAUTHF2...
+     D                 PI                  like(*in)
+     D  Record                             likerec(MTAUTHF2:*input)
+     D  p_InKeys                       *
+     D  p_InSubset                     *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * Local Variables : GetMTAUTHF2
+      *-------------------------------------------------------------------------
+     D InKeys          DS                  likeds(t_AuthorKeys)
+     D                                     based(p_Inkeys)
+     D InSubset        DS                  likeds(t_AuthorSubset)
+     D                                     based(p_InSubset)
+     D Keys            DS                  likerec(MTAUTHF2:*key)
+     D                                     inz
+     D Subset          DS                  likeds(t_AuthorSubset)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : GetMTAUTHF2
+      *-------------------------------------------------------------------------
+      /free
+       if not InzSrvPgm;
+            return *off;
+       endif;
+
+       // Setup keys for record access.
+       if p_InSubset <> *null;
+            Subset = InSubset;
+            Keys.AUTAGC = Subset.MARCTagCode;
+            Keys.AUSEQN = Subset.MARCSequenceNo;
+            Keys.AUISBN = Subset.ISBN;
+       endif;
+
+       // Special processing for *last positioning.
+       if GetAction = '*last';
+            if Subset.MARCSequenceNo = 0;
+                 Keys.AUSEQN = *hival;
+            endif;
+            if Subset.ISBN = *blanks;
+                 Keys.AUISBN = GetPartialHiValue;
+            endif;
+       endif;
+
+       // Replace keys if keys passed.
+       if p_InKeys <> *null;
+            Keys.AUTAGC = InKeys.MARCTagCode;
+            Keys.AUSEQN = InKeys.MARCSequenceNo;
+            Keys.AUISBN = InKeys.ISBN;
+       endif;
+
+       select;
+       when GetAction = '*first'
+       or   GetAction = '*previous'
+       or   GetAction = '*bykeys';
+            setll %kds(Keys:3) MTAUTHF2;
+       when GetAction = '*next'
+       or   GetAction = '*last';
+            setgt %kds(Keys:3) MTAUTHF2;
+       other;
+            return *off;
+       endsl;
+       dou %eof(MTAUTHL2);
+            if GetAction = '*first'
+            or GetAction = '*next'
+            or GetAction = '*bykeys';
+                 reade %kds(Keys:1) MTAUTHF2 Record;
+            else;
+                 readpe %kds(Keys:1) MTAUTHF2 Record;
+            endif;
+            if %eof(MTAUTHL2)
+            or not ChkMARCsequence(Subset.MARCSequenceNo:Record.AUSEQN)
+            or not ChkISBN(Subset.ISBN:Record.AUISBN);
+                 return *off;
+            endif;
+            if ChkMTAUTHIsValid(Record:
+                                Subset);
+                 return *on;
+            endif;
+       enddo;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : GetMTAUTHF2
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
       * Procedure       : ChkMTAUTHIsValid
       * Description     : Check MTAUTH record is valid.
       * Returns         :< IsValid
@@ -1687,6 +1792,28 @@
        or p_Subset = *null;
             return 1;
        endif;
+
+       if Subset.MARCTagCode = 0
+       and Subset.MARCSequenceNo <> 0;
+            QmhSndPgmMsg('MSG2016':      // Seq must be zero when no TagCode
+                         MsgFileLMMSGF:  // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       endif;
+
+       if Subset.ISBN <> *blanks;
+            return 1;
+       endif;
+
+       if Subset.MARCTagCode <> 0;
+            return 2;
+       endif;
+
 
        return 1;
       /end-free
@@ -2929,6 +3056,9 @@
             if not %open(MTAUTHP);
                  open MTAUTHP;  // Author
             endif;
+            if not %open(MTAUTHL2);
+                 open MTAUTHL2; // Author
+            endif;
             if not %open(MTBIBLL1);
                  open MTBIBLL1; // Bibliographic
             endif;
@@ -2945,7 +3075,7 @@
                  open MTIMPNP;  // Imprint
             endif;
             if not %open(MTIMPNL2);
-                 open MTIMPNL2;  // Imprint
+                 open MTIMPNL2; // Imprint
             endif;
        on-error;
             OpenError = *on;

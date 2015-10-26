@@ -234,6 +234,30 @@
             endif;
        endif;
 
+       clear AuthorSubset;
+       AuthorSubset.MARCSequenceNo = 1;
+       monitor;
+            SRVDTA_GetAuthorFirst(Author:AuthorSubset);
+            dsply ('Error: no exception MARCSeq') '' wait;
+       on-error;
+       endmon;
+
+       clear AuthorSubset;
+       AuthorSubset.MARCTagCode = 700;
+       AuthorSubset.MARCSequenceNo = 1;
+       if not SRVDTA_GetAuthorFirst(Author:AuthorSubset);
+            dsply ('Error: no first 700') '' wait;
+       elseif Author.Keys.ISBN <> '0000000004';
+            dsply ('Error: ISBN not 0000000004 ' +
+                   Author.Keys.ISBN) ' ' wait;
+       elseif not SRVDTA_GetAuthorNext(Author:Author.Keys:AuthorSubset);
+            dsply ('Error: no next 700') '' wait;
+       elseif Author.Keys.ISBN <> '0000000016';
+            dsply ('Error: ISBN not 00000000016 ' +
+                   Author.Keys.ISBN) ' ' wait;
+       endif;
+
+
 
        // ----------------------------------------------------------------------
        // test Bibliographic

@@ -665,6 +665,27 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : GetMTAUTHF2
+      * Description     : Get MTAUTHF2 data
+      * Returns         :< IsFound
+      * Parameter      >:< Record
+      *                >:  p_Keys
+      *                >:  p_Subset
+      *                >:  GetAction
+      *-------------------------------------------------------------------------
+     D GetMTAUTHF2...
+     D                 PR                  like(*in)
+     D  Record                             likerec(MTAUTHF2:*input)
+     D  p_Keys                         *
+     D  p_Subset                       *
+     D  GetAction                    10A   varying
+      *-------------------------------------------------------------------------
+      * END Prototype   : GetMTAUTHF2
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : ChkMTAUTHIsValid
       * Description     : Check MTAUTH record is valid
       * Returns         :< IsValid
