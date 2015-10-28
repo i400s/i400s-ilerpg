@@ -550,7 +550,7 @@
       * BEGIN Prototype : ChkMTIMPNIsValid
       * Description     : Check MTIMPN record is valid
       * Returns         :< IsValid
-      *                >:  Record
+      * Paramter       >:  Record
       *                >:  Subset
       *-------------------------------------------------------------------------
      D ChkMTIMPNIsValid...
@@ -567,7 +567,7 @@
       * BEGIN Prototype : GetMTIMPNSequence
       * Description     : Get file access sequence
       * Returns         :< Sequence
-      *                >:  p_Subset
+      * Parameter      >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTIMPNSequence...
@@ -689,7 +689,7 @@
       * BEGIN Prototype : ChkMTAUTHIsValid
       * Description     : Check MTAUTH record is valid
       * Returns         :< IsValid
-      *                >:  Record
+      * Parameter      >:  Record
       *                >:  Subset
       *-------------------------------------------------------------------------
      D ChkMTAUTHIsValid...
@@ -706,7 +706,7 @@
       * BEGIN Prototype : GetMTAUTHSequence
       * Description     : Get file access sequence
       * Returns         :< Sequence
-      *                >:  p_Subset
+      * Parameter      >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTAUTHSequence...
@@ -870,7 +870,7 @@
       * BEGIN Prototype : ChkMTBIBLIsValid
       * Description     : Check MTBIBL record is valid
       * Returns         :< IsValid
-      *                >:  Record
+      * Parameter      >:  Record
       *                >:  Subset
       *-------------------------------------------------------------------------
      D ChkMTBIBLIsValid...
@@ -887,7 +887,7 @@
       * BEGIN Prototype : GetMTBIBLSequence
       * Description     : Get file access sequence
       * Returns         :< Sequence
-      *                >:  p_Subset
+      * Parameter      >:  p_Subset
       *                >:  GetAction
       *-------------------------------------------------------------------------
      D GetMTBIBLSequence...
@@ -977,7 +977,7 @@
       * BEGIN Prototype : ChkISBN
       * Description     : Check ISBN
       * Returns         :< IsValid
-      *                >:  ISBN1
+      * Parameter      >:  ISBN1
       *                >:  ISBN2
       *-------------------------------------------------------------------------
      D ChkISBN...
@@ -994,7 +994,7 @@
       * BEGIN Prototype : ChkMARCTag
       * Description     : Check MARC tag
       * Returns         :< IsValid
-      *                >:  TAGC1
+      * Parameter      >:  TAGC1
       *                >:  TAGC2
       *-------------------------------------------------------------------------
      D ChkMARCTag...
@@ -1011,7 +1011,7 @@
       * BEGIN Prototype : ChkMARCSequence
       * Description     : Check MARC sequence
       * Returns         :< IsValid
-      *                >:  SEQN1
+      * Parameter      >:  SEQN1
       *                >:  SEQN2
       *-------------------------------------------------------------------------
      D ChkMARCsequence...
@@ -1028,7 +1028,7 @@
       * BEGIN Prototype : ChkImprintNo
       * Description     : Check Imprint number
       * Returns         :< IsValid
-      *                >:  ImprintNo1
+      * Parameter      >:  ImprintNo1
       *                >:  ImprintNo2
       *-------------------------------------------------------------------------
      D ChkImprintNo...
@@ -1045,7 +1045,7 @@
       * BEGIN Prototype : ChkSupplierNo
       * Description     : Check Supplier number
       * Returns         :< IsValid
-      *                >:  SupplierNo1
+      * Parameter      >:  SupplierNo1
       *                >:  SupplierNo2
       *-------------------------------------------------------------------------
      D ChkSupplierNo...
@@ -1062,7 +1062,7 @@
       * BEGIN Prototype : ChkDeleted
       * Description     : Check deleted status
       * Returns         :< IsValid
-      *                >:  Deleted1
+      * Parameter      >:  Deleted1
       *                >:  Deleted2
       *-------------------------------------------------------------------------
      D ChkDeleted...
@@ -1116,15 +1116,37 @@
 
       /if NOT defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : InzSrvPgm
-      * Description     : Service program initialisation
-      * Returns         : *none
-      * Parameter       : *none
+      * BEGIN Prototype : InzPgm
+      * Description     : Program initialisation
+      * Returns         :< IsInitialised
+      * Parameter       :  *none
       *-------------------------------------------------------------------------
-     D InzSrvPgm...
+     D InzPgm...
      D                 PR             1N
       *-------------------------------------------------------------------------
-      * END Prototype   : InzSrvPgm
+      * END Prototype   : InzPgm
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : FnzPgm
+      * Description     : Program finalisation
+      * Returns         :  *none
+      * Parameter      >:  ActGrpMark
+      *                >:  Reason
+      *                >:< ResultCode
+      *                >:< UserResultCode
+      *-------------------------------------------------------------------------
+     D FnzPgm...
+     D                 PR
+     D  ActGrpMark                   10U 0
+     D  Reason                       10U 0
+     D  ResultCode                   10U 0
+     D  UserResultCode...
+     D                               10U 0
+      *-------------------------------------------------------------------------
+      * END Prototype   : FnzPgm
       *-------------------------------------------------------------------------
       /endif
 

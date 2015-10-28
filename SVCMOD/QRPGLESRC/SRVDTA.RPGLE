@@ -70,7 +70,7 @@
       * Program code    : SRVDTA_GetImprint
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -123,7 +123,7 @@
       * Program code    : SRVDTA_GetImprintFirst
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -176,7 +176,7 @@
       * Program code    : SRVDTA_GetImprintLast
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -231,7 +231,7 @@
       * Program code    : SRVDTA_GetImprintNext
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -286,7 +286,7 @@
       * Program code    : SRVDTA_GetImprintPrevious
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -341,7 +341,7 @@
       * Program code    : SRVDTA_GetAuthor
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -394,7 +394,7 @@
       * Program code    : SRVDTA_GetAuthorFirst
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -447,7 +447,7 @@
       * Program code    : SRVDTA_GetAuthorLast
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -502,7 +502,7 @@
       * Program code    : SRVDTA_GetAuthorNext
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -557,7 +557,7 @@
       * Program code    : SRVDTA_GetAuthorPrevious
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -612,7 +612,7 @@
       * Program code    : SRVDTA_GetBibliographic
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -665,7 +665,7 @@
       * Program code    : SRVDTA_GetBibliographicFirst
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -718,7 +718,7 @@
       * Program code    : SRVDTA_GetBibliographicLast
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -773,7 +773,7 @@
       * Program code    : SRVDTA_GetBibliographicNext
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -828,7 +828,7 @@
       * Program code    : SRVDTA_GetBibliographicPrevious
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             return *off;
        endif;
 
@@ -873,7 +873,7 @@
       * Program code    : SRVDTA_GetQualifiedSearchKey
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
+       if not InzPgm;
             // return *off;
        endif;
 
@@ -918,10 +918,6 @@
       * Program code    : GetImprintData
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        ChkGetParms(p_Data:
                    p_Keys:
                    p_Subset:
@@ -978,10 +974,6 @@
       * Program code    : GetImprintRecord
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if not GetMTIMPNRecord(MTIMPNRecord:
                               p_keys:
                               p_Subset:
@@ -1042,10 +1034,6 @@
       * Program code    : GetMTIMPNRecord
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        Sequence = GetMTIMPNSequence(p_Subset:GetAction);
        select;
        when Sequence = 1;
@@ -1101,10 +1089,6 @@
       * Program code    : GetMTIMPNF
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if p_InSubset <> *null;
             Subset = InSubset;
        endif;
@@ -1192,10 +1176,6 @@
       * Program code    : GetMTIMPNF2
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -1268,10 +1248,6 @@
       * Program code    : ChkMTIMPNIsValid
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if not ChkDeleted(Subset.Deleted:Record.IPDLTD);
             return *off;
        endif;
@@ -1311,10 +1287,6 @@
       * Program code    : GetMTIMPNSequence
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return 1;
-       endif;
-
        if GetAction = '*bykeys'
        or p_Subset = *null;
             return 1;
@@ -1361,10 +1333,6 @@
       * Program code    : GetAuthorData
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        ChkGetParms(p_Data:
                    p_Keys:
                    p_Subset:
@@ -1422,10 +1390,6 @@
       * Program code    : GetAuthorRecord
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if not GetMTAUTHRecord(MTAUTHRecord:
                               p_Keys:
                               p_Subset:
@@ -1482,10 +1446,6 @@
       * Program code    : GetMTAUTHRecord
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        Sequence = GetMTAUTHSequence(p_Subset:GetAction);
 
        select;
@@ -1542,10 +1502,6 @@
       * Program code    : GetMTAUTHF
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -1651,10 +1607,6 @@
       * Program code    : GetMTAUTHF2
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -1737,10 +1689,6 @@
       * Program code    : ChkMTAUTHIsValid
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if not ChkISBN(Subset.ISBN:Record.AUISBN);
             return *off;
        endif;
@@ -1784,10 +1732,6 @@
       * Program code    : GetMTAUTHSequence
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return 1;
-       endif;
-
        if GetAction = '*bykeys'
        or p_Subset = *null;
             return 1;
@@ -1851,10 +1795,6 @@
       * Program code    : GetBibliographicData
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        ChkGetParms(p_Data:
                    p_Keys:
                    p_Subset:
@@ -1911,10 +1851,6 @@
       * Program code    : GetBibliographicRecord
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if not GetMTBIBLRecord(MTBIBLRecord:
                               p_Keys:
                               p_Subset:
@@ -1973,10 +1909,6 @@
       * Program code    : GetMTBIBLRecord
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        Sequence = GetMTBIBLSequence(p_Subset:GetAction);
 
        select;
@@ -2043,10 +1975,6 @@
       * Program code    : GetMTBIBLF1
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -2138,10 +2066,6 @@
       * Program code    : GetMTBIBLF2
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -2232,10 +2156,6 @@
       * Program code    : GetMTBIBLF3
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -2324,10 +2244,6 @@
       * Program code    : GetMTBIBLF4
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // Setup keys for record access.
        if p_InSubset <> *null;
             Subset = InSubset;
@@ -2401,10 +2317,6 @@
       * Program code    : ChkMTBIBLIsValid
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if not ChkDeleted(Subset.Deleted:Record.BLDLTD);
             return *off;
        endif;
@@ -2452,10 +2364,6 @@
       * Program code    : GetMTBIBLSequence
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return 1;
-       endif;
-
        if GetAction = '*bykeys'
        or p_Subset = *null;
             return 1;
@@ -2506,10 +2414,6 @@
       * Program code    : GetQualifiedGeneric
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return '';
-       endif;
-
        if Generic = '*BLANKS';
             return *BLANKS;
        endif;
@@ -2569,10 +2473,6 @@
       * Program code    : GetPartialHiValue
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return HiValue;
-       endif;
-
        PartialPassed = (%parms >= 1 and %addr(Partial) <> *null);
 
        if %parms >= 2;
@@ -2649,10 +2549,6 @@
       * Program code    : ChkSearchKey
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if SearchKey1 = %subst(SearchKey2:1:%len(SearchKey1));
             return *on;
        endif;
@@ -2686,10 +2582,6 @@
       * Program code    : ChkISBNImprint
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if ISBNImprint = %subst(ISBN:1:%len(ISBNImprint));
             return *on;
        endif;
@@ -2723,10 +2615,6 @@
       * Program code    : ChkISBN
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if ISBN1 = *blanks
        or ISBN1 = ISBN2;
             return *on;
@@ -2761,10 +2649,6 @@
       * Program code    : ChkMARCTag
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if TAGC1 = *zero
        or TAGC1 = TAGC2;
             return *on;
@@ -2799,10 +2683,6 @@
       * Program code    : ChkMARCSequence
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if SEQN1 = *zero
        or SEQN1 = SEQN2;
             return *on;
@@ -2837,10 +2717,6 @@
       * Program code    : ChkImprintNo
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if ImprintNo1 = *zero
        or ImprintNo1 = ImprintNo2;
             return *on;
@@ -2875,10 +2751,6 @@
       * Program code    : ChkSupplierNo
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if SupplierNo1 = *zero
        or SupplierNo1 = SupplierNo2;
             return *on;
@@ -2913,10 +2785,6 @@
       * Program code    : ChkDeleted
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        if Deleted1 = 'Y' and Deleted2 = *blanks
        or Deleted1 = 'N' and Deleted2 <> *blanks;
             return *off;
@@ -2952,10 +2820,6 @@
       * Program code    : ChkIsPartial
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        CEEDOD(1:
               CEEDODds.DescType:
               CEEDODds.DataType:
@@ -3000,10 +2864,6 @@
       * Program code    : ChkGetParms
       *-------------------------------------------------------------------------
       /free
-       if not InzSrvPgm;
-            return *off;
-       endif;
-
        // test inputs
        if p_Data = *null
        or GetAction = '*bykeys' and p_Keys = *null
@@ -3028,28 +2888,34 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : InzSrvPgm
-      * Description     : initialise and open files
-      * Returns         :< IsInitilised
+      * Procedure       : InzPgm
+      * Description     : Program initialisation
+      * Returns         :< IsInitialised
       * Parameter       :  *none
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : InzSrvPgm
+      * BEGIN Procedure : InzPgm
       *-------------------------------------------------------------------------
-     P InzSrvPgm...
+     P InzPgm...
      P                 B
-     D InzSrvPgm...
+     D InzPgm...
      D                 PI             1N
       *-------------------------------------------------------------------------
-      * Local Variables : InzSrvPgm
+      * Local Variables : InzPgm
       *-------------------------------------------------------------------------
      D IsInitialised   S              1N   static
+     D FnzPgmReg       S              1N   static
      D OpenError       S              1N
       *-------------------------------------------------------------------------
-      * Program code    : InzSrvPgm
+      * Program code    : InzPgm
       *-------------------------------------------------------------------------
       /free
        If IsInitialised;
             return IsInitialised;
+       endif;
+
+       if not FnzPgmReg;
+            CEE4RAGE(%paddr(FnzPgm):*omit);
+            FnzPgmReg = *on;
        endif;
 
        monitor;
@@ -3078,17 +2944,79 @@
                  open MTIMPNL2; // Imprint
             endif;
        on-error;
-            OpenError = *on;
+            return *off;
        endmon;
 
-       if not OpenError;
-            IsInitialised = *on;
-       endif;
+       // Perform initialisation...
 
+       IsInitialised = *on;
        return IsInitialised;
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : InzSrvPgm
+      * END Procedure   : InzPgm
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : FnzPgm
+      * Description     : Program finalisation
+      * Returns         :  *none
+      * Parameter      >:  ActGrpMark
+      *                >:  Reason
+      *                >:< ResultCode
+      *                >:< UserResultCode
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : FnzPgm
+      *-------------------------------------------------------------------------
+     P FnzPgm...
+     P                 B
+     D FnzPgm...
+     D                 PI
+     D  ActGrpMark                   10U 0
+     D  Reason                       10U 0
+     D  ResultCode                   10U 0
+     D  UserResultCode...
+     D                               10U 0
+      *-------------------------------------------------------------------------
+      * Local Variables : FnzPgm
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : FnzPgm
+      *-------------------------------------------------------------------------
+      /free
+
+       if %open(MTAUTHP);
+            close MTAUTHP;  // Author
+       endif;
+       if %open(MTAUTHL2);
+            close MTAUTHL2; // Author
+       endif;
+       if %open(MTBIBLL1);
+            close MTBIBLL1; // Bibliographic
+       endif;
+       if %open(MTBIBLL2);
+            close MTBIBLL2; // Bibliographic
+       endif;
+       if %open(MTBIBLL3);
+            close MTBIBLL3; // Bibliographic
+       endif;
+       if %open(MTBIBLL4);
+            close MTBIBLL4; // Bibliographic
+       endif;
+       if %open(MTIMPNP);
+            close MTIMPNP;  // Imprint
+       endif;
+       if %open(MTIMPNL2);
+            close MTIMPNL2; // Imprint
+       endif;
+
+       // Perform finitialisation...
+
+       ResultCode = 0;
+
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : FnzPgm
       *-------------------------------------------------------------------------
 

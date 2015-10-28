@@ -75,7 +75,14 @@
      D  DescInfo1                    10I 0
      D  DescInfo2                    10I 0
      D  ParmLength                   10I 0
-     D  APIError                     12A   options(*varsize:*omit)
+     D  APIError                     12A   options(*omit)
+
+      *-------------------------------------------------------------------------
+      * API Register activation group exit procedure
+      *-------------------------------------------------------------------------
+     D CEE4RAGE        PR
+     D  Procedure                      *   procptr const
+     D  APIError                     12A   options(*omit)
 
       *-------------------------------------------------------------------------
       * BEGIN Global constants
