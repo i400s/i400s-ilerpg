@@ -42,6 +42,7 @@
 
      D wait            S              1A
      D i               S              3I 0
+     D WK001C          S              1A
       /free
        // -------------------------------------------------------------------------
        ImprintKeys.ImprintNo = 99999999;
@@ -155,6 +156,31 @@
             dsply ('Error: ImpNo lst MPRNTNM2 not 2 ' +
                    %char(Imprint.Keys.ImprintNo)) ' ' wait;
        endif;
+
+       monitor;
+            SRVDTA_ActionImprint('*copy':*off:*on:ImprintKeys:*omit);
+       on-error;
+            dsply ('Error: *copy ') '' wait;
+       endmon;
+
+       monitor;
+            SRVDTA_ActionImprint('*garbage':*off:*on:ImprintKeys:*omit);
+       on-error;
+            dsply ('Error: *garbage ') '' wait;
+       endmon;
+
+       monitor;
+            SRVDTA_ActionImprint('*delete':WK001C:*on:ImprintKeys:*omit);
+       on-error;
+            dsply ('Error: *del:WK1C ') '' wait;
+       endmon;
+
+       monitor;
+            SRVDTA_ActionImprint('*delete':*off:wk001C:ImprintKeys:*omit);
+       on-error;
+            dsply ('Error: *del:*off:WK1C ') '' wait;
+       endmon;
+
 
        // -------------------------------------------------------------------------
        AuthorKeys.ISBN = '9999999999';

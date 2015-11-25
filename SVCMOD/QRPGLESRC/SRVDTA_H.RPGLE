@@ -218,6 +218,48 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_SetImprint
+      * Description     : Set Imprint
+      * Returns         :< IsSet
+      * Parameter      >:  Data
+      *-------------------------------------------------------------------------
+     D SRVDTA_SetImprint...
+     D                 PR                  like(*in)
+     D  Data                               likeds(t_Imprint)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_SetImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_ActionImprint
+      * Description     : Perform multiple, similar, actions that are accessed
+      *                 : via key value(s) - requiring no data specific input.
+      * Returns         :< IsActioned
+      * Parameter      >:  Action
+      *                >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *                ?:  ToKeys
+      *-------------------------------------------------------------------------
+     D SRVDTA_ActionImprint...
+     D                 PR                  like(*in)
+     D  Action                       10A   varying
+     D                                     const
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  Keys                               likeds(t_ImprintKeys)
+     D  ToKeys                             likeds(t_ImprintKeys)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_ActionImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : SRVDTA_GetAuthor
       * Description     : Get Author
       * Returns         :< IsFound
@@ -463,6 +505,46 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : SetImprintData
+      * Description     : Set Imprint Data
+      * Returns         :< IsSet
+      * Parameter      >:  p_Data
+      *-------------------------------------------------------------------------
+     D SetImprintData...
+     D                 PR                  like(*in)
+     D  p_Data                         *
+      *-------------------------------------------------------------------------
+      * END Prototype   : SetImprintData
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ActionImprint
+      * Description     : Perform multiple, similar, actions that are accessed
+      *                 : via key value(s) - requiring no data specific input.
+      * Returns         :< IsActioned
+      * Parameter      >:  Action
+      *                >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *                ?:  ToKeys
+      *-------------------------------------------------------------------------
+     D ActionImprint...
+     D                 PR                  like(*in)
+     D  Action                       10A   varying
+     D                                     const
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+      *-------------------------------------------------------------------------
+      * END Prototype   : ActionImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : GetImprintRecord
       * Description     : Get Imprint record
       * Returns         :< IsFound
@@ -542,6 +624,105 @@
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SetImprintDeleted
+      * Description     : Set status deleted
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *-------------------------------------------------------------------------
+     D SetImprintDeleted...
+     D                 PR                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+      *-------------------------------------------------------------------------
+      * END Prototype   : SetImprintDeleted
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SetImprintUnDeleted
+      * Description     : Set status not deleted
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *-------------------------------------------------------------------------
+     D SetImprintUnDeleted...
+     D                 PR                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+      *-------------------------------------------------------------------------
+      * END Prototype   : SetImprintUnDeleted
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : PurgeImprintRecord
+      * Description     : Physically purge (delete) records
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *-------------------------------------------------------------------------
+     D PurgeImprintRecord...
+     D                 PR                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+      *-------------------------------------------------------------------------
+      * END Prototype   : PurgeImprintRecord
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : RenameImprint
+      * Description     : Rename Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *-------------------------------------------------------------------------
+     D RenameImprint...
+     D                 PR                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+      *-------------------------------------------------------------------------
+      * END Prototype   : RenameImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : CopyImprint
+      * Description     : Copy Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *-------------------------------------------------------------------------
+     D CopyImprint...
+     D                 PR                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+      *-------------------------------------------------------------------------
+      * END Prototype   : CopyImprint
       *-------------------------------------------------------------------------
       /endif
 
@@ -1111,6 +1292,35 @@
      D  GetAction                    10A   varying
       *-------------------------------------------------------------------------
       * END Prototype   : ChkGetParms
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : ChkActionParms
+      * Description     : Check the parameters for the accessors
+      * Returns         : IsValid
+      * Parameter      >:  Action
+      *                >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *                >:  AllowedActions
+      *
+      *-------------------------------------------------------------------------
+     D ChkActionParms...
+     D                 PR             1N   opdesc
+     D  Action                       10A   varying
+     D                                     const
+     D  CallerCommits                 1N   const
+     D  NoUpdate                      1N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+     D  AllowedActions...
+     D                              220A   varying
+     D                                     options(*varsize)
+      *-------------------------------------------------------------------------
+      * END Prototype   : ChkActionParms
       *-------------------------------------------------------------------------
       /endif
 

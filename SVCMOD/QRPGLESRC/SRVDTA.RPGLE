@@ -311,6 +311,60 @@
       *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
+      * Procedure       : SRVDTA_ActionImprint
+      * Description     : Perform multiple, similar, actions that are accessed
+      *                 : via key value(s) - requiring no data specific input.
+      * Returns         :< IsActioned
+      * Parameter      >:  Action
+      *                >;  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *                ?:  ToKeys
+      *-------------------------------------------------------------------------
+     P SRVDTA_ActionImprint...
+     P                 B                   export
+     D SRVDTA_ActionImprint...
+     D                 PI                  like(*in)
+     D  Action                       10A   varying
+     D                                     const
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  Keys                               likeds(t_ImprintKeys)
+     D  ToKeys                             likeds(t_ImprintKeys)
+     D                                     options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_ActionImprint
+      *-------------------------------------------------------------------------
+     D p_Keys          S               *
+     D p_ToKeys        S               *
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_ActionImprint
+      *-------------------------------------------------------------------------
+      /free
+       if not InzPgm;
+            return *off;
+       endif;
+
+       if %parms >= 4;
+            p_Keys = %addr(Keys);
+       endif;
+       if %parms >= 5;
+            p_ToKeys = %addr(ToKeys);
+       endif;
+
+       return ActionImprint(Action:
+                            CallerCommits:
+                            NoUpdate:
+                            p_Keys:
+                            p_ToKeys);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_ActionImprint
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
       * Procedure       : SRVDTA_GetAuthor
       * Description     : Get Author data
       * Returns         :< IsFound
@@ -945,6 +999,63 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : GetImprintData
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : ActionImprint
+      * Description     : Perform multiple, similar, actions that are accessed
+      *                 : via key value(s) - requiring no data specific input.
+      * Returns         :< IsActioned
+      * Parameter      >:  Action
+      *                >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  Keys
+      *                ?:  ToKeys
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ActionImprint
+      *-------------------------------------------------------------------------
+     P ActionImprint...
+     P                 B
+     D ActionImprint...
+     D                 PI                  like(*in)
+     D  Action                       10A   varying
+     D                                     const
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+      *-------------------------------------------------------------------------
+      * Local Variables : ActionImprint
+      *-------------------------------------------------------------------------
+     D AllowedActions...
+     D                 S             55A   varying
+     D                                     inz('*delete   1+
+     D                                          *undelete 1+
+     D                                          *purge    1+
+     D                                          *copy     2+
+     D                                          *rename   2')
+      *-------------------------------------------------------------------------
+      * Program code    : ActionImprint
+      *-------------------------------------------------------------------------
+      /free
+       ChkActionParms(Action:
+                      CallerCommits:
+                      NoUpdate:
+                      p_Keys:
+                      p_ToKeys:
+                      AllowedActions);
+
+       // Process request
+       //return SetActionImprint(Action:
+       //                        CallerCommits:
+       //                        NoUpdate:
+       //                        p_Keys:
+       //                        p_ToKeys);
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ActionImprint
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -2885,6 +2996,126 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : ChkGetParms
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : ChkActionParms
+      * Description     : Check the parameters for the accesors are valid
+      * Returns         :< IsValid
+      * Parameter      >:  Action
+      *                >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *                >:  AllowedActions
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ChkActionParms
+      *-------------------------------------------------------------------------
+     P ChkActionParms...
+     P                 B
+     D ChkActionParms...
+     D                 PI             1N   opdesc
+     D  Action                       10A   varying
+     D                                     const
+     D  CallerCommits                 1N   const
+     D  NoUpdate                      1N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+     D  AllowedActions...
+     D                              220A   varying
+     D                                     options(*varsize)
+      *-------------------------------------------------------------------------
+      * Local Variables : ChkActionParms
+      *-------------------------------------------------------------------------
+     D SizeOfActions   S              5I 0 inz(%size(AllowedActions))
+     D i               S              5I 0
+     D NoOfKeys        S              1P 0
+     D CEEDODds        DS                  likeds(t_CEEDOD)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : ChkActionParms
+      *-------------------------------------------------------------------------
+      /free
+       // test inputs
+       CEEDOD(6:
+              CEEDODds.DescType:
+              CEEDODds.DataType:
+              CEEDODds.DescInfo1:
+              CEEDODds.DescInfo2:
+              CEEDODds.ParmLength:
+              *omit);
+       if CEEDODds.ParmLength > SizeOfActions - 2;
+            QmhSndPgmMsg('MSG2017':      // Passed parm 'AllowedAction' exceeds
+                         MsgFileLMMSGF:  // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       endif;
+
+       i = %scan(Action:AllowedActions);
+       if i = 0;
+            QmhSndPgmMsg('MSG2018':      // Action &1 is invalid
+                         MsgFileLMMSGF:  // Message file
+                         Action:         // Message data
+                         10:             // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       else;
+            i += 10;
+            NoOfKeys = %dec(%subst(AllowedActions:i:1):1:0);
+       endif;
+
+       if CallerCommits <> *on
+       and CallerCommits <> *off;
+            QmhSndPgmMsg('MSG2019':      // Parameter CallerCommits invalid
+                         MsgFileLMMSGF:  // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       endif;
+
+       if NoUpdate <> *on
+       and NoUpdate <> *off;
+            QmhSndPgmMsg('MSG2020':      // Parameter CallerCommits invalid
+                         MsgFileLMMSGF:  // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       endif;
+
+       If p_Keys = *null
+       or NoOfKeys > 1 and p_ToKeys = *null;
+            QmhSndPgmMsg('MSG2001':      // Incorrect parm no's
+                         MsgFileLMMSGF:  // Message file
+                         '':             // Message data
+                         0:              // Length of message data
+                         '*ESCAPE':      // Message type
+                         '*PGMBDY':      // Call stack entry
+                         1:              // Call stack count
+                         '':             // Message key
+                         x'00000000');   // API error DS
+       endif;
+
+       return *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ChkActionParms
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
