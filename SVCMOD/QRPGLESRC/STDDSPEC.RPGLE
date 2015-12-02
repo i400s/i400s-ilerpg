@@ -57,6 +57,41 @@
      D                                     const
 
       *-------------------------------------------------------------------------
+      * API Resend escape message
+      *-------------------------------------------------------------------------
+     D QmhReSndEscMsg  PR                  extpgm('QMHRSNEM')
+     D  MsgKey                        4A   const
+     D  APIError                           options(*varsize)
+     D                                     const
+     D                                     likeds(t_QUSEC)
+     D  CallStackEntry...
+     D                              256A   options(*varsize:
+     D                                             *omit)
+     D                                     const
+     D  CallStackEntryLength...
+     D                               10I 0 options(*omit)
+     D                                     const
+     D  FmtCallStackEntry...
+     D                                8A   options(*omit)
+     D                                     const
+     D  FromCallStackEntryAddress...
+     D                                 *   options(*omit)
+     D                                     const
+     D  FromCallStackCount...
+     D                               10I 0 options(*omit)
+     D                                     const
+     D t_RSNM0100      DS                  based(pt_Template)
+     D                                     qualified
+     D  ToCallStackCount...
+     D                               10I 0
+     D  ToCallStackQualifier...
+     D                               20A
+     D  LenToCallStackEntry...
+     D                               10I 0
+     D  ToCallStackEntry...
+     D                              256A
+
+      *-------------------------------------------------------------------------
       * API Retrieve operational descriptor
       *-------------------------------------------------------------------------
      D t_CEEDOD        DS                  based(pt_Template)

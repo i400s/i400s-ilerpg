@@ -24,8 +24,9 @@
      F                                     rename(MTBIBLF:MTBIBLF4)
       *-------------------------------------------------------------------------
       * [IP] Imprint
-     FMTIMPNP   IF   E           K DISK    usropn
+     FMTIMPNP   UF A E           K DISK    usropn
      F                                     rename(MTIMPNF:MTIMPNF)
+     F                                     commit
      FMTIMPNL2  IF   E           K DISK    usropn
      F                                     rename(MTIMPNF:MTIMPNF2)
       *-------------------------------------------------------------------------
@@ -1038,20 +1039,40 @@
       * Program code    : ActionImprint
       *-------------------------------------------------------------------------
       /free
-       ChkActionParms(Action:
-                      CallerCommits:
-                      NoUpdate:
-                      p_Keys:
-                      p_ToKeys:
-                      AllowedActions);
+       if not ChkActionParms(Action:
+                             CallerCommits:
+                             NoUpdate:
+                             p_Keys:
+                             p_ToKeys:
+                             AllowedActions);
+            return *off;
+       endif;
 
-       // Process request
-       //return SetActionImprint(Action:
-       //                        CallerCommits:
-       //                        NoUpdate:
-       //                        p_Keys:
-       //                        p_ToKeys);
-       return *on;
+       select;
+       when Action = '*delete';
+            return SetImprintDeleted(CallerCommits:
+                                     NoUpdate:
+                                     p_Keys);
+       when Action = '*undelete';
+            return SetImprintUnDeleted(CallerCommits:
+                                       NoUpdate:
+                                       p_Keys);
+       when Action = '*purge';
+            return PurgeImprintRecord(CallerCommits:
+                                      NoUpdate:
+                                      p_Keys);
+       when Action = '*copy';
+            return CopyImprint(CallerCommits:
+                               NoUpdate:
+                               p_Keys:
+                               p_ToKeys);
+       when Action = '*rename';
+            return RenameImprint(CallerCommits:
+                                 NoUpdate:
+                                 p_Keys:
+                                 p_ToKeys);
+       endsl;
+       return *off;
       /end-free
      P                 E
       *-------------------------------------------------------------------------
@@ -1234,9 +1255,9 @@
             if GetAction = '*first'
             or GetAction = '*next'
             or GetAction = '*bykeys';
-                 read MTIMPNF Record;
+                 read(n) MTIMPNF Record;
             else;
-                 readp MTIMPNF Record;
+                 readp(n) MTIMPNF Record;
             endif;
             if %eof(MTIMPNP)
             or not ChkImprintNo(ByKeys.IPIMPN:Record.IPIMPN);
@@ -1335,6 +1356,327 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : GetMTIMPNF2
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : SetImprintDeleted
+      * Description     : Set status deleted
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SetImprintDeleted
+      *-------------------------------------------------------------------------
+     P SetImprintDeleted...
+     P                 B
+     D SetImprintDeleted...
+     D                 PI                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+      *-------------------------------------------------------------------------
+      * Local Variables : SetImprintDeleted
+      *-------------------------------------------------------------------------
+     D InKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D Keys            DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D Record          DS                  likerec(MTIMPNF:*input)
+     D RecordOut       DS                  likerec(MTIMPNF:*output)
+     D                                     based(p_Record)
+     D RSNM0100        DS                  likeds(t_RSNM0100)
+     D                                     inz
+      *-------------------------------------------------------------------------
+      * Program code    : SetImprintDeleted
+      *-------------------------------------------------------------------------
+      /free
+       // Setup keys for access
+       Keys.IPIMPN = InKeys.ImprintNo;
+
+       p_Record = %addr(Record);
+
+       // Update delete flag
+       monitor;
+            if NoUpdate;
+                 chain(N) %kds(Keys) MTIMPNF Record;
+            else;
+                 chain %kds(Keys) MTIMPNF Record;
+            endif;
+
+            if not %found(MTIMPNP);
+                 QmhSndPgmMsg('MSG1560':      // Invalid Imprint
+                              MsgFileLMMSGF:  // Message file
+                              '':             // Message data
+                              0:              // Length of message data
+                              '*ESCAPE':      // Message type
+                              '*':            // Call stack entry (this)
+                              0:              // Call stack count (this)
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
+
+            if Record.IPDLTD = 'Y';
+                 QmhSndPgmMsg('MSG1561':      // Imprint flagged as deleted
+                              MsgFileLMMSGF:  // Message file
+                              '':             // Message data
+                              0:              // Length of message data
+                              '*ESCAPE':      // Message type
+                              '*':            // Call stack entry (this)
+                              0:              // Call stack count (this)
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
+
+            Record.IPDLTD = 'Y';
+            Record.IPEDTS = %timestamp;
+            if not NoUpdate;
+                 update MTIMPNF RecordOut;
+            endif;
+       on-error;
+            if not CallerCommits;
+                 rolbk;
+            endif;
+            RSNM0100.ToCallStackCount = 1;
+            RSNM0100.ToCallStackQualifier = '*NONE     *NONE';
+            RSNM0100.LenToCallStackEntry = %len(RSNM0100.ToCallStackEntry);
+            RSNM0100.ToCallStackEntry = '*PGMBDY';
+            QmhReSndEscMsg(*blanks:
+                           x'00000000':
+                           RSNM0100:
+                           %size(RSNM0100):
+                           'RSNM0100':
+                           *null:
+                           0);
+       endmon;
+
+       if not NoUpdate
+       and not CallerCommits;
+            commit;
+       endif;
+
+       return *on; // Valid
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SetImprintDeleted
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : SetImprintUnDeleted
+      * Description     : Set status not deleted
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : SetImprintUnDeleted
+      *-------------------------------------------------------------------------
+     P SetImprintUnDeleted...
+     P                 B
+     D SetImprintUnDeleted...
+     D                 PI                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+      *-------------------------------------------------------------------------
+      * Local Variables : SetImprintUnDeleted
+      *-------------------------------------------------------------------------
+     D InKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D Keys            DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D Record          DS                  likerec(MTIMPNF:*input)
+     D RecordOut       DS                  likerec(MTIMPNF:*output)
+     D                                     based(p_Record)
+      *-------------------------------------------------------------------------
+      * Program code    : SetImprintUnDeleted
+      *-------------------------------------------------------------------------
+      /free
+       // Setup keys for access
+       Keys.IPIMPN = InKeys.ImprintNo;
+
+       p_Record = %addr(Record);
+
+       // Update delete flag
+       chain %kds(Keys) MTIMPNF Record;
+       if %found(MTIMPNP);
+            Record.IPDLTD = 'N';
+            Record.IPEDTS = %timestamp;
+            update MTIMPNF RecordOut;
+            commit;
+       endif;
+
+       return *on; // Valid
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SetImprintUnDeleted
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : PurgeImprintRecord
+      * Description     : Physically purge (delete) records
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : PurgeImprintRecord
+      *-------------------------------------------------------------------------
+     P PurgeImprintRecord...
+     P                 B
+     D PurgeImprintrecord...
+     D                 PI                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+      *-------------------------------------------------------------------------
+      * Local Variables : PurgeImprintRecord
+      *-------------------------------------------------------------------------
+     D InKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D Keys            DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D Record          DS                  likerec(MTIMPNF:*input)
+     D RecordOut       DS                  likerec(MTIMPNF:*output)
+     D                                     based(p_Record)
+      *-------------------------------------------------------------------------
+      * Program code    : PurgeImprintRecord
+      *-------------------------------------------------------------------------
+      /free
+       // Setup keys for access
+       Keys.IPIMPN = InKeys.ImprintNo;
+
+       p_Record = %addr(Record);
+
+       // Update delete flag
+       chain %kds(Keys) MTIMPNF Record;
+       if %found(MTIMPNP);
+            delete MTIMPNF;
+            commit;
+       endif;
+
+       return *on; // Valid
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : PurgeImprintRecord
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : RenameImprint
+      * Description     : Rename Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : RenameImprint
+      *-------------------------------------------------------------------------
+     P RenameImprint...
+     P                 B
+     D RenameImprint...
+     D                 PI                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+      *-------------------------------------------------------------------------
+      * Local Variables : RenameImprint
+      *-------------------------------------------------------------------------
+     D InKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D ToKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_Tokeys)
+     D Keys            DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D Record          DS                  likerec(MTIMPNF:*input)
+     D RecordOut       DS                  likerec(MTIMPNF:*output)
+     D                                     based(p_Record)
+      *-------------------------------------------------------------------------
+      * Program code    : RenameImprint
+      *-------------------------------------------------------------------------
+      /free
+       // Setup keys for access
+       Keys.IPIMPN = InKeys.ImprintNo;
+
+       p_Record = %addr(Record);
+
+       // Update delete flag
+       chain %kds(Keys) MTIMPNF Record;
+       if %found(MTIMPNP);
+            Record.IPIMPN = ToKeys.ImprintNo;
+            Record.IPEDTS = %timestamp;
+            update MTIMPNF RecordOut;
+            commit;
+       endif;
+
+       return *on; // Valid
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : RenameImprint
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : CopyImprint
+      * Description     : Copy Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  CallerCommits
+      *                >:  NoUpdate
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : CopyImprint
+      *-------------------------------------------------------------------------
+     P CopyImprint...
+     P                 B
+     D CopyImprint...
+     D                 PI                  like(*in)
+     D  CallerCommits                  N   const
+     D  NoUpdate                       N   const
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+      *-------------------------------------------------------------------------
+      * Local Variables : CopyImprint
+      *-------------------------------------------------------------------------
+     D InKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_keys)
+     D ToKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_Tokeys)
+     D Keys            DS                  likerec(MTIMPNF:*key)
+     D                                     inz
+     D Record          DS                  likerec(MTIMPNF:*input)
+     D RecordOut       DS                  likerec(MTIMPNF:*output)
+     D                                     based(p_Record)
+      *-------------------------------------------------------------------------
+      * Program code    : CopyImprint
+      *-------------------------------------------------------------------------
+      /free
+       // Setup keys for access
+       Keys.IPIMPN = InKeys.ImprintNo;
+
+       p_Record = %addr(Record);
+
+       // Copy record
+       chain %kds(Keys) MTIMPNF Record;
+       if %found(MTIMPNP);
+            Record.IPIMPN = ToKeys.ImprintNo;
+            Record.IPISBP = ToKeys.ISBNImprint;
+            Record.IPCDTS = %timestamp;
+            Record.IPEDTS = Record.IPCDTS;
+            write MTIMPNF RecordOut;
+            unlock MTIMPNP;
+            commit;
+       endif;
+
+       return *on; // Valid
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : CopyImprint
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------

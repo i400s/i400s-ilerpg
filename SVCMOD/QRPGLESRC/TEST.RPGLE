@@ -23,6 +23,8 @@
 
      D ImprintKeys     DS                  likeds(t_ImprintKeys)
      D                                     inz
+     D ImprintToKeys   DS                  likeds(t_ImprintKeys)
+     D                                     inz
      D Imprint         DS                  likeds(t_Imprint)
      D                                     inz
      D ImprintSubset   DS                  likeds(t_ImprintSubset)
@@ -159,27 +161,88 @@
 
        monitor;
             SRVDTA_ActionImprint('*copy':*off:*on:ImprintKeys:*omit);
+            dsply ('False no Error: Imprint *copy ') '' wait;
        on-error;
-            dsply ('Error: *copy ') '' wait;
        endmon;
 
        monitor;
             SRVDTA_ActionImprint('*garbage':*off:*on:ImprintKeys:*omit);
+            dsply ('False no Error: Imprint *garbage ') '' wait;
        on-error;
-            dsply ('Error: *garbage ') '' wait;
        endmon;
 
        monitor;
             SRVDTA_ActionImprint('*delete':WK001C:*on:ImprintKeys:*omit);
+            dsply ('False no Error: Imprint *delete no *in') '' wait;
        on-error;
-            dsply ('Error: *del:WK1C ') '' wait;
        endmon;
 
        monitor;
             SRVDTA_ActionImprint('*delete':*off:wk001C:ImprintKeys:*omit);
+            dsply ('False no Error: Imprint *delete no *off:*in ') '' wait;
        on-error;
-            dsply ('Error: *del:*off:WK1C ') '' wait;
        endmon;
+
+       clear ImprintKeys;
+       ImprintKeys.ImprintNo = 00000005;
+       if not SRVDTA_GetImprint(Imprint:ImprintKeys);
+            dsply ('Error: No Imprint 00000005') '' wait;
+       endif;
+
+       monitor;
+            if SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
+                 if not SRVDTA_GetImprint(Imprint:ImprintKeys);
+                      dsply ('Error: No Imprint:*del 00000005') '' wait;
+                 elseif not Imprint.Record(1).IsDeleted;
+                      dsply ('Error: Not *del Imprint 00000005') '' wait;
+                 endif;
+            else;
+                 dsply ('Error: Not Action *del Imprint 00000005') '' wait;
+            endif;
+       on-error;
+            dsply ('On-Error: *del Imprint 00000005') '' wait;
+       endmon;
+
+       monitor;
+            if SRVDTA_ActionImprint('*undelete':*off:*off:ImprintKeys);
+                 if not SRVDTA_GetImprint(Imprint:ImprintKeys);
+                      dsply ('Error: No Imprint:*udel 00000005') '' wait;
+                 elseif Imprint.Record(1).IsDeleted;
+                      dsply ('Error: *del Imprint 00000005') '' wait;
+                 endif;
+            else;
+                 dsply ('Error: Not Action *udel Imprint 00000005') '' wait;
+            endif;
+       on-error;
+            dsply ('On-Error: *udel Imprint 00000005') '' wait;
+       endmon;
+
+       ImprintToKeys.ImprintNo = 90000005;
+       ImprintToKeys.ISBNImprint = '95';
+       SRVDTA_ActionImprint('*copy':*off:*off:ImprintKeys:ImprintToKeys);
+       ImprintKeys.ImprintNo = 90000005;
+       ImprintToKeys.ImprintNo = 90000006;
+       SRVDTA_ActionImprint('*rename':*off:*off:ImprintKeys:ImprintToKeys);
+       SRVDTA_ActionImprint('*delete':*off:*off:ImprintToKeys);
+       SRVDTA_ActionImprint('*purge':*off:*off:ImprintTokeys);
+
+       monitor;
+       ImprintKeys.ImprintNo = 91919191; // no exist
+       SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
+       on-error;
+       endmon;
+
+       ImprintKeys.ImprintNo = 00000005;
+       SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
+
+       monitor;
+       ImprintKeys.ImprintNo = 00000005; // alredy deleted
+       SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
+       on-error;
+       endmon;
+
+       ImprintKeys.ImprintNo = 00000005;
+       SRVDTA_ActionImprint('*undelete':*off:*off:ImprintKeys);
 
 
        // -------------------------------------------------------------------------
