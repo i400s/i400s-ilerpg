@@ -312,57 +312,233 @@
       *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
-      * Procedure       : SRVDTA_ActionImprint
-      * Description     : Perform multiple, similar, actions that are accessed
-      *                 : via key value(s) - requiring no data specific input.
+      * Procedure       : SRVDTA_SetImprintDeleted
+      * Description     : Set Imprint Deleted
       * Returns         :< IsActioned
-      * Parameter      >:  Action
-      *                >;  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
-      *                ?:  ToKeys
+      * Parameter      >:  Keys
+      *                ?;  LockRecord
+      *                ?:  LocalCommit
       *-------------------------------------------------------------------------
-     P SRVDTA_ActionImprint...
+     P SRVDTA_SetImprintDeleted...
      P                 B                   export
-     D SRVDTA_ActionImprint...
+     D SRVDTA_SetImprintDeleted...
      D                 PI                  like(*in)
-     D  Action                       10A   varying
-     D                                     const
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  Keys                               likeds(t_ImprintKeys)
-     D  ToKeys                             likeds(t_ImprintKeys)
-     D                                     options(*nopass:
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
      D                                             *omit)
       *-------------------------------------------------------------------------
-      * Local Variables : SRVDTA_ActionImprint
+      * Local Variables : SRVDTA_SetImprintDeleted
       *-------------------------------------------------------------------------
      D p_Keys          S               *
-     D p_ToKeys        S               *
+     D TmpLockRecord   S               N   based(p_TmpLockRecord)
+     D TmpLocalCommit  S               N   based(p_TmpLocalCommit)
+     D SetAction       S             10A   varying
+     D                                     inz('*delete')
       *-------------------------------------------------------------------------
-      * Program code    : SRVDTA_ActionImprint
+      * Program code    : SRVDTA_SetImprintDeleted
       *-------------------------------------------------------------------------
       /free
        if not InzPgm;
             return *off;
        endif;
 
-       if %parms >= 4;
+       if %parms >= 1;
             p_Keys = %addr(Keys);
        endif;
-       if %parms >= 5;
-            p_ToKeys = %addr(ToKeys);
+
+       if %parms >= 2;
+            p_TmpLockRecord = %addr(LockRecord);
        endif;
 
-       return ActionImprint(Action:
-                            CallerCommits:
-                            NoUpdate:
+       if %parms >= 3;
+            p_TmpLocalCommit = %addr(LocalCommit);
+       endif;
+
+       return ActionImprint(SetAction:
                             p_Keys:
-                            p_ToKeys);
+                            *omit:
+                            TmpLockRecord:
+                            TmpLocalCommit);
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : SRVDTA_ActionImprint
+      * END Procedure   : SRVDTA_SetImprintDeleted
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : SRVDTA_SetImprintActive
+      * Description     : Set Imprint Active (un-deleted)
+      * Returns         :< IsActioned
+      * Parameter      >:  Keys
+      *                ?;  LockRecord
+      *                ?:  LocalCommit
+      *-------------------------------------------------------------------------
+     P SRVDTA_SetImprintActive...
+     P                 B                   export
+     D SRVDTA_SetImprintActive...
+     D                 PI                  like(*in)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_SetImprintActive
+      *-------------------------------------------------------------------------
+     D p_Keys          S               *
+     D TmpLockRecord   S               N   based(p_TmpLockRecord)
+     D TmpLocalCommit  S               N   based(p_TmpLocalCommit)
+     D SetAction       S             10A   varying
+     D                                     inz('*active')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_SetImprintActive
+      *-------------------------------------------------------------------------
+      /free
+       if not InzPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Keys = %addr(Keys);
+       endif;
+
+       if %parms >= 2;
+            p_TmpLockRecord = %addr(LockRecord);
+       endif;
+
+       if %parms >= 3;
+            p_TmpLocalCommit = %addr(LocalCommit);
+       endif;
+
+       return ActionImprint(SetAction:
+                            p_Keys:
+                            *omit:
+                            TmpLockRecord:
+                            TmpLocalCommit);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_SetImprintActive
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : SRVDTA_DeleteImprint
+      * Description     : Physically Delete Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  Keys
+      *                ?;  LockRecord
+      *                ?:  LocalCommit
+      *-------------------------------------------------------------------------
+     P SRVDTA_DeleteImprint...
+     P                 B                   export
+     D SRVDTA_DeleteImprint...
+     D                 PI                  like(*in)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_DeleteImprint
+      *-------------------------------------------------------------------------
+     D p_Keys          S               *
+     D TmpLockRecord   S               N   based(p_TmpLockRecord)
+     D TmpLocalCommit  S               N   based(p_TmpLocalCommit)
+     D SetAction       S             10A   varying
+     D                                     inz('*purge')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_DeleteImprint
+      *-------------------------------------------------------------------------
+      /free
+       if not InzPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_Keys = %addr(Keys);
+       endif;
+
+       if %parms >= 2;
+            p_TmpLockRecord = %addr(LockRecord);
+       endif;
+
+       if %parms >= 3;
+            p_TmpLocalCommit = %addr(LocalCommit);
+       endif;
+
+       return ActionImprint(SetAction:
+                            p_Keys:
+                            *omit:
+                            TmpLockRecord:
+                            TmpLocalCommit);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_DeleteImprint
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : SRVDTA_CopyImprint
+      * Description     : Copy Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  FromKeys
+      *                >;  ToKeys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
+      *-------------------------------------------------------------------------
+     P SRVDTA_CopyImprint...
+     P                 B                   export
+     D SRVDTA_CopyImprint...
+     D                 PI                  like(*in)
+     D  FromKeys                           likeds(t_ImprintKeys)
+     D  ToKeys                             likeds(t_ImprintKeys)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * Local Variables : SRVDTA_CopyImprint
+      *-------------------------------------------------------------------------
+     D p_FromKeys      S               *
+     D p_ToKeys        S               *
+     D TmpLockRecord   S               N   based(p_TmpLockRecord)
+     D TmpLocalCommit  S               N   based(p_TmpLocalCommit)
+     D SetAction       S             10A   varying
+     D                                     inz('*copy')
+      *-------------------------------------------------------------------------
+      * Program code    : SRVDTA_CopyImprint
+      *-------------------------------------------------------------------------
+      /free
+       if not InzPgm;
+            return *off;
+       endif;
+
+       if %parms >= 1;
+            p_FromKeys = %addr(FromKeys);
+       endif;
+       if %parms >= 2;
+            p_ToKeys = %addr(ToKeys);
+       endif;
+
+       if %parms >= 3;
+            p_TmpLockRecord = %addr(LockRecord);
+       endif;
+
+       if %parms >= 4;
+            p_TmpLocalCommit = %addr(LocalCommit);
+       endif;
+
+       return ActionImprint(SetAction:
+                            p_FromKeys:
+                            p_ToKeys:
+                            TmpLockRecord:
+                            TmpLocalCommit);
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : SRVDTA_CopyImprint
       *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
@@ -1008,10 +1184,10 @@
       *                 : via key value(s) - requiring no data specific input.
       * Returns         :< IsActioned
       * Parameter      >:  Action
-      *                >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
-      *                ?:  ToKeys
+      *                >:  p_Keys
+      *                >:  p_ToKeys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
       *-------------------------------------------------------------------------
       * BEGIN Procedure : ActionImprint
       *-------------------------------------------------------------------------
@@ -1020,57 +1196,51 @@
      D ActionImprint...
      D                 PI                  like(*in)
      D  Action                       10A   varying
-     D                                     const
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
-     D  p_ToKeys                       *
+     D  p_ToKeys                       *   options(*omit)
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * Local Variables : ActionImprint
       *-------------------------------------------------------------------------
      D AllowedActions...
-     D                 S             55A   varying
+     D                 S             44A   varying
      D                                     inz('*delete   1+
-     D                                          *undelete 1+
+     D                                          *active   1+
      D                                          *purge    1+
-     D                                          *copy     2+
-     D                                          *rename   2')
+     D                                          *copy     2')
+     D
       *-------------------------------------------------------------------------
       * Program code    : ActionImprint
       *-------------------------------------------------------------------------
       /free
        if not ChkActionParms(Action:
-                             CallerCommits:
-                             NoUpdate:
+                             AllowedActions:
                              p_Keys:
                              p_ToKeys:
-                             AllowedActions);
+                             LockRecord:
+                             LocalCommit);
             return *off;
        endif;
 
        select;
        when Action = '*delete';
-            return SetImprintDeleted(CallerCommits:
-                                     NoUpdate:
-                                     p_Keys);
-       when Action = '*undelete';
-            return SetImprintUnDeleted(CallerCommits:
-                                       NoUpdate:
-                                       p_Keys);
+            return SetImprintDeleted(p_Keys:
+                                     LockRecord:
+                                     LocalCommit);
+       when Action = '*active';
+            return SetImprintUnDeleted(p_Keys:
+                                       LockRecord:
+                                       LocalCommit);
        when Action = '*purge';
-            return PurgeImprintRecord(CallerCommits:
-                                      NoUpdate:
-                                      p_Keys);
+            return PurgeImprintRecord(p_Keys:
+                                      LockRecord:
+                                      LocalCommit);
        when Action = '*copy';
-            return CopyImprint(CallerCommits:
-                               NoUpdate:
-                               p_Keys:
-                               p_ToKeys);
-       when Action = '*rename';
-            return RenameImprint(CallerCommits:
-                                 NoUpdate:
-                                 p_Keys:
-                                 p_ToKeys);
+            return CopyImprint(p_Keys:
+                               p_ToKeys:
+                               LockRecord:
+                               LocalCommit);
        endsl;
        return *off;
       /end-free
@@ -1362,9 +1532,9 @@
       * Procedure       : SetImprintDeleted
       * Description     : Set status deleted
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
+      * Parameter      >:  p_Keys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
       *-------------------------------------------------------------------------
       * BEGIN Procedure : SetImprintDeleted
       *-------------------------------------------------------------------------
@@ -1372,9 +1542,9 @@
      P                 B
      D SetImprintDeleted...
      D                 PI                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * Local Variables : SetImprintDeleted
       *-------------------------------------------------------------------------
@@ -1384,7 +1554,7 @@
      D                                     inz
      D Record          DS                  likerec(MTIMPNF:*input)
      D RecordOut       DS                  likerec(MTIMPNF:*output)
-     D                                     based(p_Record)
+     D                                     based(p_RecordOut)
      D RSNM0100        DS                  likeds(t_RSNM0100)
      D                                     inz
       *-------------------------------------------------------------------------
@@ -1394,14 +1564,15 @@
        // Setup keys for access
        Keys.IPIMPN = InKeys.ImprintNo;
 
-       p_Record = %addr(Record);
+       p_RecordOut = %addr(Record);
 
        // Update delete flag
        monitor;
-            if NoUpdate;
-                 chain(N) %kds(Keys) MTIMPNF Record;
-            else;
+            if %addr(LockRecord) = *null
+            or LockRecord;
                  chain %kds(Keys) MTIMPNF Record;
+            else;
+                 chain(n) %kds(Keys) MTIMPNF Record;
             endif;
 
             if not %found(MTIMPNP);
@@ -1430,11 +1601,13 @@
 
             Record.IPDLTD = 'Y';
             Record.IPEDTS = %timestamp;
-            if not NoUpdate;
-                 update MTIMPNF RecordOut;
+            if %addr(LockRecord) = *null
+            or LockRecord;
+                 update MTIMPNF Record;
             endif;
        on-error;
-            if not CallerCommits;
+            if %addr(LocalCommit) = *null
+            or LocalCommit;
                  rolbk;
             endif;
             RSNM0100.ToCallStackCount = 1;
@@ -1450,8 +1623,8 @@
                            0);
        endmon;
 
-       if not NoUpdate
-       and not CallerCommits;
+       if %addr(LocalCommit) = *null
+       or LocalCommit;
             commit;
        endif;
 
@@ -1466,9 +1639,9 @@
       * Procedure       : SetImprintUnDeleted
       * Description     : Set status not deleted
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
+      * Parameter      >:  p_Keys
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
       * BEGIN Procedure : SetImprintUnDeleted
       *-------------------------------------------------------------------------
@@ -1476,9 +1649,9 @@
      P                 B
      D SetImprintUnDeleted...
      D                 PI                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * Local Variables : SetImprintUnDeleted
       *-------------------------------------------------------------------------
@@ -1518,9 +1691,9 @@
       * Procedure       : PurgeImprintRecord
       * Description     : Physically purge (delete) records
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
+      * Parameter      >:  p_Keys
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
       * BEGIN Procedure : PurgeImprintRecord
       *-------------------------------------------------------------------------
@@ -1528,9 +1701,9 @@
      P                 B
      D PurgeImprintrecord...
      D                 PI                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * Local Variables : PurgeImprintRecord
       *-------------------------------------------------------------------------
@@ -1565,69 +1738,13 @@
       *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
-      * Procedure       : RenameImprint
-      * Description     : Rename Imprint
-      * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
-      *                >:  p_ToKeys
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : RenameImprint
-      *-------------------------------------------------------------------------
-     P RenameImprint...
-     P                 B
-     D RenameImprint...
-     D                 PI                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
-     D  p_Keys                         *
-     D  p_ToKeys                       *
-      *-------------------------------------------------------------------------
-      * Local Variables : RenameImprint
-      *-------------------------------------------------------------------------
-     D InKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_keys)
-     D ToKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_Tokeys)
-     D Keys            DS                  likerec(MTIMPNF:*key)
-     D                                     inz
-     D Record          DS                  likerec(MTIMPNF:*input)
-     D RecordOut       DS                  likerec(MTIMPNF:*output)
-     D                                     based(p_Record)
-      *-------------------------------------------------------------------------
-      * Program code    : RenameImprint
-      *-------------------------------------------------------------------------
-      /free
-       // Setup keys for access
-       Keys.IPIMPN = InKeys.ImprintNo;
-
-       p_Record = %addr(Record);
-
-       // Update delete flag
-       chain %kds(Keys) MTIMPNF Record;
-       if %found(MTIMPNP);
-            Record.IPIMPN = ToKeys.ImprintNo;
-            Record.IPEDTS = %timestamp;
-            update MTIMPNF RecordOut;
-            commit;
-       endif;
-
-       return *on; // Valid
-      /end-free
-     P                 E
-      *-------------------------------------------------------------------------
-      * END Procedure   : RenameImprint
-      *-------------------------------------------------------------------------
-
-      *-------------------------------------------------------------------------
       * Procedure       : CopyImprint
       * Description     : Copy Imprint
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
+      * Parameter      >:  p_Keys
       *                >:  p_ToKeys
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
       * BEGIN Procedure : CopyImprint
       *-------------------------------------------------------------------------
@@ -1635,10 +1752,10 @@
      P                 B
      D CopyImprint...
      D                 PI                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
      D  p_ToKeys                       *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * Local Variables : CopyImprint
       *-------------------------------------------------------------------------
@@ -1651,6 +1768,9 @@
      D Record          DS                  likerec(MTIMPNF:*input)
      D RecordOut       DS                  likerec(MTIMPNF:*output)
      D                                     based(p_Record)
+     D RSNM0100        DS                  likeds(t_RSNM0100)
+     D                                     inz
+     D wait            S              1A
       *-------------------------------------------------------------------------
       * Program code    : CopyImprint
       *-------------------------------------------------------------------------
@@ -1661,15 +1781,42 @@
        p_Record = %addr(Record);
 
        // Copy record
-       chain %kds(Keys) MTIMPNF Record;
-       if %found(MTIMPNP);
-            Record.IPIMPN = ToKeys.ImprintNo;
-            Record.IPISBP = ToKeys.ISBNImprint;
-            Record.IPCDTS = %timestamp;
-            Record.IPEDTS = Record.IPCDTS;
-            write MTIMPNF RecordOut;
-            unlock MTIMPNP;
+       monitor;
+            chain %kds(Keys) MTIMPNF Record;
+            if %found(MTIMPNP);
+                 Record.IPIMPN = ToKeys.ImprintNo;
+                 if ToKeys.ISBNImprint <> *blanks;
+                      Record.IPISBP = ToKeys.ISBNImprint;
+                 endif;
+                 Record.IPCDTS = %timestamp;
+                 Record.IPEDTS = Record.IPCDTS;
+                 write MTIMPNF RecordOut;
+                 dsply ('Check locks now >>write<<') ' 'wait;
+            endif;
+       on-error;
+            if %addr(LocalCommit) = *null
+            or LocalCommit;
+                 dsply ('Check locks now >>rolbk-before<<') ' 'wait;
+                 rolbk;
+                 dsply ('Check locks now >>rolbk-after<<') ' 'wait;
+            endif;
+            RSNM0100.ToCallStackCount = 1;
+            RSNM0100.ToCallStackQualifier = '*NONE     *NONE';
+            RSNM0100.LenToCallStackEntry = %len(RSNM0100.ToCallStackEntry);
+            RSNM0100.ToCallStackEntry = '*PGMBDY';
+            QmhReSndEscMsg(*blanks:
+                           x'00000000':
+                           RSNM0100:
+                           %size(RSNM0100):
+                           'RSNM0100':
+                           *null:
+                           0);
+       endmon;
+
+       if %addr(LocalCommit) = *null
+       or LocalCommit;
             commit;
+            dsply ('Check locks now >>commit<<') ' 'wait;
        endif;
 
        return *on; // Valid
@@ -3342,14 +3489,14 @@
 
       *----------------------------------------------------------------------
       * Procedure       : ChkActionParms
-      * Description     : Check the parameters for the accesors are valid
+      * Description     : Check the parameters for the accessors are valid
       * Returns         :< IsValid
       * Parameter      >:  Action
-      *                >:  CallerCommits
-      *                >:  NoUpdate
+      *                >:  AllowedActions
       *                >:  p_Keys
       *                >:  p_ToKeys
-      *                >:  AllowedActions
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
       * BEGIN Procedure : ChkActionParms
       *-------------------------------------------------------------------------
@@ -3358,14 +3505,13 @@
      D ChkActionParms...
      D                 PI             1N   opdesc
      D  Action                       10A   varying
-     D                                     const
-     D  CallerCommits                 1N   const
-     D  NoUpdate                      1N   const
-     D  p_Keys                         *
-     D  p_ToKeys                       *
      D  AllowedActions...
      D                              220A   varying
      D                                     options(*varsize)
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+     D  LockRecord                     N
+     D  LocalCommit                    N
       *-------------------------------------------------------------------------
       * Local Variables : ChkActionParms
       *-------------------------------------------------------------------------
@@ -3374,6 +3520,7 @@
      D NoOfKeys        S              1P 0
      D CEEDODds        DS                  likeds(t_CEEDOD)
      D                                     inz
+     D wait            S              1A
       *-------------------------------------------------------------------------
       * Program code    : ChkActionParms
       *-------------------------------------------------------------------------
@@ -3414,32 +3561,6 @@
             NoOfKeys = %dec(%subst(AllowedActions:i:1):1:0);
        endif;
 
-       if CallerCommits <> *on
-       and CallerCommits <> *off;
-            QmhSndPgmMsg('MSG2019':      // Parameter CallerCommits invalid
-                         MsgFileLMMSGF:  // Message file
-                         '':             // Message data
-                         0:              // Length of message data
-                         '*ESCAPE':      // Message type
-                         '*PGMBDY':      // Call stack entry
-                         1:              // Call stack count
-                         '':             // Message key
-                         x'00000000');   // API error DS
-       endif;
-
-       if NoUpdate <> *on
-       and NoUpdate <> *off;
-            QmhSndPgmMsg('MSG2020':      // Parameter CallerCommits invalid
-                         MsgFileLMMSGF:  // Message file
-                         '':             // Message data
-                         0:              // Length of message data
-                         '*ESCAPE':      // Message type
-                         '*PGMBDY':      // Call stack entry
-                         1:              // Call stack count
-                         '':             // Message key
-                         x'00000000');   // API error DS
-       endif;
-
        If p_Keys = *null
        or NoOfKeys > 1 and p_ToKeys = *null;
             QmhSndPgmMsg('MSG2001':      // Incorrect parm no's
@@ -3451,6 +3572,38 @@
                          1:              // Call stack count
                          '':             // Message key
                          x'00000000');   // API error DS
+       endif;
+
+       if %addr(LockRecord) <> *null;
+            if LockRecord <> *on
+            and LockRecord <> *off;
+                 QmhSndPgmMsg('MSG2020':      // Parameter LockRecord invalid
+                              MsgFileLMMSGF:  // Message file
+                              '':             // Message data
+                              0:              // Length of message data
+                              '*ESCAPE':      // Message type
+                              // '*PGMBDY':      // Call stack entry
+                              '*':
+                              1:              // Call stack count
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
+       endif;
+
+       if %addr(LocalCommit) <> *null;
+            if LocalCommit <> *on
+            and LocalCommit <> *off;
+                 QmhSndPgmMsg('MSG2019':      // Parameter LocalCommit invalid
+                              MsgFileLMMSGF:  // Message file
+                              '':             // Message data
+                              0:              // Length of message data
+                              '*ESCAPE':      // Message type
+                              // '*PGMBDY':      // Call stack entry
+                              '*':
+                              1:              // Call stack count
+                              '':             // Message key
+                              x'00000000');   // API error DS
+            endif;
        endif;
 
        return *on;

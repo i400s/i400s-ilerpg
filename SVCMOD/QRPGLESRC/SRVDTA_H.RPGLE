@@ -109,9 +109,24 @@
      D   Keys                              likeds(t_BibliographicKeys)
      D   Record                            likeds(t_BibliographicRecord)
      D                                     dim(2)
-
       *-------------------------------------------------------------------------
       * END Global definitions and templates
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * BEGIN Global constants
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * END Global constants
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * BEGIN Global variables
+      *-------------------------------------------------------------------------
+     D CallerCommits   S               N   inz(*off)
+     D NoRecordLock    S               N   inz(*off)
+      *-------------------------------------------------------------------------
+      * END Global variables
       *-------------------------------------------------------------------------
       /endif
 
@@ -226,6 +241,10 @@
      D SRVDTA_SetImprint...
      D                 PR                  like(*in)
      D  Data                               likeds(t_Imprint)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
       *-------------------------------------------------------------------------
       * END Prototype   : SRVDTA_SetImprint
       *-------------------------------------------------------------------------
@@ -233,28 +252,87 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : SRVDTA_ActionImprint
-      * Description     : Perform multiple, similar, actions that are accessed
-      *                 : via key value(s) - requiring no data specific input.
+      * BEGIN Prototype : SRVDTA_SetImprintDeleted
+      * Description     : Set Imprint Deleted
       * Returns         :< IsActioned
-      * Parameter      >:  Action
-      *                >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
-      *                ?:  ToKeys
+      * Parameter      >:  Keys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
       *-------------------------------------------------------------------------
-     D SRVDTA_ActionImprint...
+     D SRVDTA_SetImprintDeleted...
      D                 PR                  like(*in)
-     D  Action                       10A   varying
-     D                                     const
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  Keys                               likeds(t_ImprintKeys)
-     D  ToKeys                             likeds(t_ImprintKeys)
-     D                                     options(*nopass:
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
      D                                             *omit)
       *-------------------------------------------------------------------------
-      * END Prototype   : SRVDTA_ActionImprint
+      * END Prototype   : SRVDTA_SetImprintDeleted
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_SetImprintActive
+      * Description     : Set Imprint Active
+      * Returns         :< IsActioned
+      * Parameter      >:  Keys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
+      *-------------------------------------------------------------------------
+     D SRVDTA_SetImprintActive...
+     D                 PR                  like(*in)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_SetImprintActive
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_DeleteImprint
+      * Description     : Physically Delete Imprint
+      * Returns         :< IsActioned
+      * Parameter      >:  Keys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
+      *-------------------------------------------------------------------------
+     D SRVDTA_DeleteImprint...
+     D                 PR                  like(*in)
+     D  Keys                               likeds(t_ImprintKeys)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_DeleteImprint
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if not defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : SRVDTA_CopyImprint
+      * Description     : Copy Imprint record
+      * Returns         :< IsActioned
+      * Parameter      >:  FromKeys
+      *                >:  ToKeys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
+      *-------------------------------------------------------------------------
+     D SRVDTA_CopyImprint...
+     D                 PR                  like(*in)
+     D  FromKeys                           likeds(t_ImprintKeys)
+     D  ToKeys                             likeds(t_ImprintKeys)
+     D  LockRecord                     N   options(*nopass:
+     D                                             *omit)
+     D  LocalCommit                    N   options(*nopass:
+     D                                             *omit)
+      *-------------------------------------------------------------------------
+      * END Prototype   : SRVDTA_CopyImprint
       *-------------------------------------------------------------------------
       /endif
 
@@ -524,20 +602,18 @@
       * Description     : Perform multiple, similar, actions that are accessed
       *                 : via key value(s) - requiring no data specific input.
       * Returns         :< IsActioned
-      * Parameter      >:  Action
-      *                >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
-      *                ?:  ToKeys
+      * Parameter      >:  p_Keys
+      *                >:  SetAction
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
       *-------------------------------------------------------------------------
      D ActionImprint...
      D                 PR                  like(*in)
      D  Action                       10A   varying
-     D                                     const
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
-     D  p_ToKeys                       *
+     D  p_ToKeys                       *   options(*omit)
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * END Prototype   : ActionImprint
       *-------------------------------------------------------------------------
@@ -632,15 +708,15 @@
       * BEGIN Prototype : SetImprintDeleted
       * Description     : Set status deleted
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
+      * Parameter      >:  p_Keys
+      *                ?:  LockRecord
+      *                ?:  LocalCommit
       *-------------------------------------------------------------------------
      D SetImprintDeleted...
      D                 PR                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * END Prototype   : SetImprintDeleted
       *-------------------------------------------------------------------------
@@ -651,15 +727,15 @@
       * BEGIN Prototype : SetImprintUnDeleted
       * Description     : Set status not deleted
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
+      * Parameter      >:  p_Keys
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
      D SetImprintUnDeleted...
      D                 PR                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * END Prototype   : SetImprintUnDeleted
       *-------------------------------------------------------------------------
@@ -670,38 +746,17 @@
       * BEGIN Prototype : PurgeImprintRecord
       * Description     : Physically purge (delete) records
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  Keys
+      * Parameter      >:  p_Keys
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
      D PurgeImprintRecord...
      D                 PR                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * END Prototype   : PurgeImprintRecord
-      *-------------------------------------------------------------------------
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
-      * BEGIN Prototype : RenameImprint
-      * Description     : Rename Imprint
-      * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
-      *                >:  p_ToKeys
-      *-------------------------------------------------------------------------
-     D RenameImprint...
-     D                 PR                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
-     D  p_Keys                         *
-     D  p_ToKeys                       *
-      *-------------------------------------------------------------------------
-      * END Prototype   : RenameImprint
       *-------------------------------------------------------------------------
       /endif
 
@@ -710,17 +765,17 @@
       * BEGIN Prototype : CopyImprint
       * Description     : Copy Imprint
       * Returns         :< IsActioned
-      * Parameter      >:  CallerCommits
-      *                >:  NoUpdate
-      *                >:  p_Keys
+      * Parameter      >:  p_Keys
       *                >:  p_ToKeys
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *-------------------------------------------------------------------------
      D CopyImprint...
      D                 PR                  like(*in)
-     D  CallerCommits                  N   const
-     D  NoUpdate                       N   const
      D  p_Keys                         *
      D  p_ToKeys                       *
+     D  LockRecord                     N   options(*omit)
+     D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
       * END Prototype   : CopyImprint
       *-------------------------------------------------------------------------
@@ -1301,24 +1356,23 @@
       * Description     : Check the parameters for the accessors
       * Returns         : IsValid
       * Parameter      >:  Action
-      *                >:  CallerCommits
-      *                >:  NoUpdate
+      *                >:  AllowedActions
       *                >:  p_Keys
       *                >:  p_ToKeys
-      *                >:  AllowedActions
+      *                >:  LockRecord
+      *                >:  LocalCommit
       *
       *-------------------------------------------------------------------------
      D ChkActionParms...
      D                 PR             1N   opdesc
      D  Action                       10A   varying
-     D                                     const
-     D  CallerCommits                 1N   const
-     D  NoUpdate                      1N   const
-     D  p_Keys                         *
-     D  p_ToKeys                       *
      D  AllowedActions...
      D                              220A   varying
      D                                     options(*varsize)
+     D  p_Keys                         *
+     D  p_ToKeys                       *
+     D  LockRecord                     N
+     D  LocalCommit                    N
       *-------------------------------------------------------------------------
       * END Prototype   : ChkActionParms
       *-------------------------------------------------------------------------

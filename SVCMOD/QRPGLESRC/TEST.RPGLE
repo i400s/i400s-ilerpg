@@ -159,26 +159,28 @@
                    %char(Imprint.Keys.ImprintNo)) ' ' wait;
        endif;
 
+       clear ImprintKeys;
+       ImprintKeys.ImprintNo = 98765432;
        monitor;
-            SRVDTA_ActionImprint('*copy':*off:*on:ImprintKeys:*omit);
-            dsply ('False no Error: Imprint *copy ') '' wait;
-       on-error;
-       endmon;
-
-       monitor;
-            SRVDTA_ActionImprint('*garbage':*off:*on:ImprintKeys:*omit);
-            dsply ('False no Error: Imprint *garbage ') '' wait;
-       on-error;
-       endmon;
-
-       monitor;
-            SRVDTA_ActionImprint('*delete':WK001C:*on:ImprintKeys:*omit);
+            SRVDTA_SetImprintDeleted(ImprintKeys:*omit:*omit);
             dsply ('False no Error: Imprint *delete no *in') '' wait;
        on-error;
        endmon;
 
        monitor;
-            SRVDTA_ActionImprint('*delete':*off:wk001C:ImprintKeys:*omit);
+            SRVDTA_SetImprintDeleted(ImprintKeys:*omit);
+            dsply ('False no Error: Imprint *delete no *in') '' wait;
+       on-error;
+       endmon;
+
+       monitor;
+            SRVDTA_SetImprintDeleted(ImprintKeys:WK001C:CallerCommits);
+            dsply ('False no Error: Imprint *delete no *in') '' wait;
+       on-error;
+       endmon;
+
+       monitor;
+            SRVDTA_SetImprintDeleted(ImprintKeys:NoRecordLock:wk001C);
             dsply ('False no Error: Imprint *delete no *off:*in ') '' wait;
        on-error;
        endmon;
@@ -190,7 +192,7 @@
        endif;
 
        monitor;
-            if SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
+            if SRVDTA_SetImprintDeleted(ImprintKeys);
                  if not SRVDTA_GetImprint(Imprint:ImprintKeys);
                       dsply ('Error: No Imprint:*del 00000005') '' wait;
                  elseif not Imprint.Record(1).IsDeleted;
@@ -204,7 +206,7 @@
        endmon;
 
        monitor;
-            if SRVDTA_ActionImprint('*undelete':*off:*off:ImprintKeys);
+            if SRVDTA_SetImprintActive(ImprintKeys:NoRecordLock:CallerCommits);
                  if not SRVDTA_GetImprint(Imprint:ImprintKeys);
                       dsply ('Error: No Imprint:*udel 00000005') '' wait;
                  elseif Imprint.Record(1).IsDeleted;
@@ -218,32 +220,58 @@
        endmon;
 
        ImprintToKeys.ImprintNo = 90000005;
+       monitor;
+            SRVDTA_CopyImprint(ImprintKeys:ImprintToKeys);
+            dsply ('monitor: no dupkey on alt LF') ' 'wait;
+       on-error;
+       endmon;
+
        ImprintToKeys.ISBNImprint = '95';
-       SRVDTA_ActionImprint('*copy':*off:*off:ImprintKeys:ImprintToKeys);
-       ImprintKeys.ImprintNo = 90000005;
-       ImprintToKeys.ImprintNo = 90000006;
-       SRVDTA_ActionImprint('*rename':*off:*off:ImprintKeys:ImprintToKeys);
-       SRVDTA_ActionImprint('*delete':*off:*off:ImprintToKeys);
-       SRVDTA_ActionImprint('*purge':*off:*off:ImprintTokeys);
+       monitor;
+            SRVDTA_CopyImprint(ImprintKeys:ImprintToKeys);
+       on-error;
+            dsply ('On-Error: fail 9000000005-95') ' 'wait;
+       endmon;
 
        monitor;
+            SRVDTA_SetImprintDeleted(ImprintToKeys);
+       on-error;
+            dsply ('On-Error: fail') ' 'wait;
+       endmon;
+
+       monitor;
+            SRVDTA_DeleteImprint(ImprintToKeys);
+       on-error;
+            dsply ('On-Error: fail') ' 'wait;
+       endmon;
+
        ImprintKeys.ImprintNo = 91919191; // no exist
-       SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
-       on-error;
-       endmon;
-
-       ImprintKeys.ImprintNo = 00000005;
-       SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
-
        monitor;
-       ImprintKeys.ImprintNo = 00000005; // alredy deleted
-       SRVDTA_ActionImprint('*delete':*off:*off:ImprintKeys);
+            SRVDTA_SetImprintDeleted(ImprintKeys);
+            dsply ('monitor: fail 91919191') ' 'wait;
        on-error;
        endmon;
 
        ImprintKeys.ImprintNo = 00000005;
-       SRVDTA_ActionImprint('*undelete':*off:*off:ImprintKeys);
+       monitor;
+            SRVDTA_SetImprintDeleted(ImprintKeys);
+       on-error;
+            dsply ('on-error: fail 90000005') ' 'wait;
+       endmon;
 
+       ImprintKeys.ImprintNo = 00000005; // alredy deleted
+       monitor;
+            SRVDTA_SetImprintDeleted(ImprintKeys);
+            dsply ('monitor: fail 00000005-already deleted') ' 'wait;
+       on-error;
+       endmon;
+
+       ImprintKeys.ImprintNo = 00000005;
+       monitor;
+            SRVDTA_SetImprintActive(ImprintKeys);
+       on-error;
+            dsply ('on-error: active fail 00000005') ' 'wait;
+       endmon;
 
        // -------------------------------------------------------------------------
        AuthorKeys.ISBN = '9999999999';
