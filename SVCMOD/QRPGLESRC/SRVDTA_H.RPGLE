@@ -124,7 +124,7 @@
       * BEGIN Global variables
       *-------------------------------------------------------------------------
      D CallerCommits   S               N   inz(*off)
-     D NoRecordLock    S               N   inz(*off)
+     D NoLockRecord    S               N   inz(*off)
       *-------------------------------------------------------------------------
       * END Global variables
       *-------------------------------------------------------------------------
@@ -598,29 +598,6 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : ActionImprint
-      * Description     : Perform multiple, similar, actions that are accessed
-      *                 : via key value(s) - requiring no data specific input.
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  SetAction
-      *                ?:  LockRecord
-      *                ?:  LocalCommit
-      *-------------------------------------------------------------------------
-     D ActionImprint...
-     D                 PR                  like(*in)
-     D  Action                       10A   varying
-     D  p_Keys                         *
-     D  p_ToKeys                       *   options(*omit)
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * END Prototype   : ActionImprint
-      *-------------------------------------------------------------------------
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
       * BEGIN Prototype : GetImprintRecord
       * Description     : Get Imprint record
       * Returns         :< IsFound
@@ -705,79 +682,24 @@
 
       /if not defined(SrvDta_h)
       *-------------------------------------------------------------------------
-      * BEGIN Prototype : SetImprintDeleted
-      * Description     : Set status deleted
+      * BEGIN Prototype : ActionMTIMPNF
+      * Description     : Action MTIMPNF, set flags or perform action
       * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
+      * Parameter      >:  Action
+      *                >:  p_Keys
+      *                ?:  p_ToKeys
       *                ?:  LockRecord
       *                ?:  LocalCommit
       *-------------------------------------------------------------------------
-     D SetImprintDeleted...
+     D ActionMTIMPNF...
      D                 PR                  like(*in)
+     D  Action                       10A   varying
      D  p_Keys                         *
+     D  p_ToKeys                       *   options(*omit)
      D  LockRecord                     N   options(*omit)
      D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
-      * END Prototype   : SetImprintDeleted
-      *-------------------------------------------------------------------------
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
-      * BEGIN Prototype : SetImprintUnDeleted
-      * Description     : Set status not deleted
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  LockRecord
-      *                >:  LocalCommit
-      *-------------------------------------------------------------------------
-     D SetImprintUnDeleted...
-     D                 PR                  like(*in)
-     D  p_Keys                         *
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * END Prototype   : SetImprintUnDeleted
-      *-------------------------------------------------------------------------
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
-      * BEGIN Prototype : PurgeImprintRecord
-      * Description     : Physically purge (delete) records
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  LockRecord
-      *                >:  LocalCommit
-      *-------------------------------------------------------------------------
-     D PurgeImprintRecord...
-     D                 PR                  like(*in)
-     D  p_Keys                         *
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * END Prototype   : PurgeImprintRecord
-      *-------------------------------------------------------------------------
-      /endif
-
-      /if not defined(SrvDta_h)
-      *-------------------------------------------------------------------------
-      * BEGIN Prototype : CopyImprint
-      * Description     : Copy Imprint
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  p_ToKeys
-      *                >:  LockRecord
-      *                >:  LocalCommit
-      *-------------------------------------------------------------------------
-     D CopyImprint...
-     D                 PR                  like(*in)
-     D  p_Keys                         *
-     D  p_ToKeys                       *
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * END Prototype   : CopyImprint
+      * END Prototype   : ActionMTIMPNF
       *-------------------------------------------------------------------------
       /endif
 
@@ -1356,7 +1278,6 @@
       * Description     : Check the parameters for the accessors
       * Returns         : IsValid
       * Parameter      >:  Action
-      *                >:  AllowedActions
       *                >:  p_Keys
       *                >:  p_ToKeys
       *                >:  LockRecord
@@ -1364,17 +1285,46 @@
       *
       *-------------------------------------------------------------------------
      D ChkActionParms...
-     D                 PR             1N   opdesc
+     D                 PR             1N
      D  Action                       10A   varying
-     D  AllowedActions...
-     D                              220A   varying
-     D                                     options(*varsize)
      D  p_Keys                         *
      D  p_ToKeys                       *
      D  LockRecord                     N
      D  LocalCommit                    N
       *-------------------------------------------------------------------------
       * END Prototype   : ChkActionParms
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : IsLockRecord
+      * Description     : Check parameter value means lock record
+      * Returns         :< IsLockRecord
+      * Parameter      >:  LockRecord
+      *
+      *-------------------------------------------------------------------------
+     D IsLockRecord...
+     D                 PR              N
+     D  LockRecord                     N
+      *-------------------------------------------------------------------------
+      * END Prototype   : IsLockRecord
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
+      * BEGIN Prototype : IsLocalCommit
+      * Description     : Check parameter value means local commit
+      * Returns         :< IsLocalCommit
+      * Parameter      >:  LocalCommit
+      *
+      *-------------------------------------------------------------------------
+     D IsLocalCommit...
+     D                 PR              N
+     D  LocalCommit                    N
+      *-------------------------------------------------------------------------
+      * END Prototype   : IsLocalCommit
       *-------------------------------------------------------------------------
       /endif
 

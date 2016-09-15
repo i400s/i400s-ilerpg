@@ -180,7 +180,7 @@
        endmon;
 
        monitor;
-            SRVDTA_SetImprintDeleted(ImprintKeys:NoRecordLock:wk001C);
+            SRVDTA_SetImprintDeleted(ImprintKeys:NoLockRecord:wk001C);
             dsply ('False no Error: Imprint *delete no *off:*in ') '' wait;
        on-error;
        endmon;
@@ -206,11 +206,12 @@
        endmon;
 
        monitor;
-            if SRVDTA_SetImprintActive(ImprintKeys:NoRecordLock:CallerCommits);
+            if SRVDTA_SetImprintActive(ImprintKeys:NoLockRecord);
                  if not SRVDTA_GetImprint(Imprint:ImprintKeys);
                       dsply ('Error: No Imprint:*udel 00000005') '' wait;
-                 elseif Imprint.Record(1).IsDeleted;
-                      dsply ('Error: *del Imprint 00000005') '' wait;
+                 // note: *active didn't happen, because NoLockRecord
+                 elseif not Imprint.Record(1).IsDeleted;
+                      dsply ('Error: *active Imprint 00000005') '' wait;
                  endif;
             else;
                  dsply ('Error: Not Action *udel Imprint 00000005') '' wait;
@@ -230,7 +231,7 @@
        monitor;
             SRVDTA_CopyImprint(ImprintKeys:ImprintToKeys);
        on-error;
-            dsply ('On-Error: fail 9000000005-95') ' 'wait;
+            dsply ('On-Error: fail 90000005-95') ' 'wait;
        endmon;
 
        monitor;
@@ -250,13 +251,6 @@
             SRVDTA_SetImprintDeleted(ImprintKeys);
             dsply ('monitor: fail 91919191') ' 'wait;
        on-error;
-       endmon;
-
-       ImprintKeys.ImprintNo = 00000005;
-       monitor;
-            SRVDTA_SetImprintDeleted(ImprintKeys);
-       on-error;
-            dsply ('on-error: fail 90000005') ' 'wait;
        endmon;
 
        ImprintKeys.ImprintNo = 00000005; // alredy deleted

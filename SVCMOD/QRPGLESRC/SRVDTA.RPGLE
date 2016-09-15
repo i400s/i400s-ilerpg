@@ -356,7 +356,7 @@
             p_TmpLocalCommit = %addr(LocalCommit);
        endif;
 
-       return ActionImprint(SetAction:
+       return ActionMTIMPNF(SetAction:
                             p_Keys:
                             *omit:
                             TmpLockRecord:
@@ -412,7 +412,7 @@
             p_TmpLocalCommit = %addr(LocalCommit);
        endif;
 
-       return ActionImprint(SetAction:
+       return ActionMTIMPNF(SetAction:
                             p_Keys:
                             *omit:
                             TmpLockRecord:
@@ -468,7 +468,7 @@
             p_TmpLocalCommit = %addr(LocalCommit);
        endif;
 
-       return ActionImprint(SetAction:
+       return ActionMTIMPNF(SetAction:
                             p_Keys:
                             *omit:
                             TmpLockRecord:
@@ -530,7 +530,7 @@
             p_TmpLocalCommit = %addr(LocalCommit);
        endif;
 
-       return ActionImprint(SetAction:
+       return ActionMTIMPNF(SetAction:
                             p_FromKeys:
                             p_ToKeys:
                             TmpLockRecord:
@@ -1179,77 +1179,6 @@
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
-      * Procedure       : ActionImprint
-      * Description     : Perform multiple, similar, actions that are accessed
-      *                 : via key value(s) - requiring no data specific input.
-      * Returns         :< IsActioned
-      * Parameter      >:  Action
-      *                >:  p_Keys
-      *                >:  p_ToKeys
-      *                ?:  LockRecord
-      *                ?:  LocalCommit
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : ActionImprint
-      *-------------------------------------------------------------------------
-     P ActionImprint...
-     P                 B
-     D ActionImprint...
-     D                 PI                  like(*in)
-     D  Action                       10A   varying
-     D  p_Keys                         *
-     D  p_ToKeys                       *   options(*omit)
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * Local Variables : ActionImprint
-      *-------------------------------------------------------------------------
-     D AllowedActions...
-     D                 S             44A   varying
-     D                                     inz('*delete   1+
-     D                                          *active   1+
-     D                                          *purge    1+
-     D                                          *copy     2')
-     D
-      *-------------------------------------------------------------------------
-      * Program code    : ActionImprint
-      *-------------------------------------------------------------------------
-      /free
-       if not ChkActionParms(Action:
-                             AllowedActions:
-                             p_Keys:
-                             p_ToKeys:
-                             LockRecord:
-                             LocalCommit);
-            return *off;
-       endif;
-
-       select;
-       when Action = '*delete';
-            return SetImprintDeleted(p_Keys:
-                                     LockRecord:
-                                     LocalCommit);
-       when Action = '*active';
-            return SetImprintUnDeleted(p_Keys:
-                                       LockRecord:
-                                       LocalCommit);
-       when Action = '*purge';
-            return PurgeImprintRecord(p_Keys:
-                                      LockRecord:
-                                      LocalCommit);
-       when Action = '*copy';
-            return CopyImprint(p_Keys:
-                               p_ToKeys:
-                               LockRecord:
-                               LocalCommit);
-       endsl;
-       return *off;
-      /end-free
-     P                 E
-      *-------------------------------------------------------------------------
-      * END Procedure   : ActionImprint
-      *-------------------------------------------------------------------------
-
-      *----------------------------------------------------------------------
       * Procedure       : GetImprintRecord
       * Description     : Get Imprint record
       * Returns         :< IsFound
@@ -1529,27 +1458,32 @@
       *-------------------------------------------------------------------------
 
       *-------------------------------------------------------------------------
-      * Procedure       : SetImprintDeleted
-      * Description     : Set status deleted
+      * Procedure       : ActionMTIMPNF
+      * Description     : Action MTIMPNF, set flags or perform action
       * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
+      * Parameter      >:  Action
+      *                >:  p_Keys
       *                ?:  LockRecord
       *                ?:  LocalCommit
       *-------------------------------------------------------------------------
-      * BEGIN Procedure : SetImprintDeleted
+      * BEGIN Procedure : ActionMTIMPNF
       *-------------------------------------------------------------------------
-     P SetImprintDeleted...
+     P ActionMTIMPNF...
      P                 B
-     D SetImprintDeleted...
+     D ActionMTIMPNF...
      D                 PI                  like(*in)
-     D  p_Keys                         *
+     D  Action                       10A   varying
+     D  p_InKeys                       *
+     D  p_ToKeys                       *   options(*omit)
      D  LockRecord                     N   options(*omit)
      D  LocalCommit                    N   options(*omit)
       *-------------------------------------------------------------------------
-      * Local Variables : SetImprintDeleted
+      * Local Variables : ActionMTIMPNF
       *-------------------------------------------------------------------------
      D InKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_keys)
+     D                                     based(p_Inkeys)
+     D ToKeys          DS                  likeds(t_ImprintKeys)
+     D                                     based(p_ToKeys)
      D Keys            DS                  likerec(MTIMPNF:*key)
      D                                     inz
      D Record          DS                  likerec(MTIMPNF:*input)
@@ -1558,18 +1492,22 @@
      D RSNM0100        DS                  likeds(t_RSNM0100)
      D                                     inz
       *-------------------------------------------------------------------------
-      * Program code    : SetImprintDeleted
+      * Program code    : ActionMTIMPNF
       *-------------------------------------------------------------------------
       /free
+       if not ChkActionParms(Action:
+                             p_InKeys:
+                             p_ToKeys:
+                             LockRecord:
+                             LocalCommit);
+            return *off;
+       endif;
+
        // Setup keys for access
        Keys.IPIMPN = InKeys.ImprintNo;
 
-       p_RecordOut = %addr(Record);
-
-       // Update delete flag
        monitor;
-            if %addr(LockRecord) = *null
-            or LockRecord;
+            if IsLockRecord(LockRecord);
                  chain %kds(Keys) MTIMPNF Record;
             else;
                  chain(n) %kds(Keys) MTIMPNF Record;
@@ -1587,218 +1525,59 @@
                               x'00000000');   // API error DS
             endif;
 
-            if Record.IPDLTD = 'Y';
-                 QmhSndPgmMsg('MSG1561':      // Imprint flagged as deleted
-                              MsgFileLMMSGF:  // Message file
-                              '':             // Message data
-                              0:              // Length of message data
-                              '*ESCAPE':      // Message type
-                              '*':            // Call stack entry (this)
-                              0:              // Call stack count (this)
-                              '':             // Message key
-                              x'00000000');   // API error DS
-            endif;
-
-            Record.IPDLTD = 'Y';
-            Record.IPEDTS = %timestamp;
-            if %addr(LockRecord) = *null
-            or LockRecord;
-                 update MTIMPNF Record;
-            endif;
-       on-error;
-            if %addr(LocalCommit) = *null
-            or LocalCommit;
-                 rolbk;
-            endif;
-            RSNM0100.ToCallStackCount = 1;
-            RSNM0100.ToCallStackQualifier = '*NONE     *NONE';
-            RSNM0100.LenToCallStackEntry = %len(RSNM0100.ToCallStackEntry);
-            RSNM0100.ToCallStackEntry = '*PGMBDY';
-            QmhReSndEscMsg(*blanks:
-                           x'00000000':
-                           RSNM0100:
-                           %size(RSNM0100):
-                           'RSNM0100':
-                           *null:
-                           0);
-       endmon;
-
-       if %addr(LocalCommit) = *null
-       or LocalCommit;
-            commit;
-       endif;
-
-       return *on; // Valid
-      /end-free
-     P                 E
-      *-------------------------------------------------------------------------
-      * END Procedure   : SetImprintDeleted
-      *-------------------------------------------------------------------------
-
-      *-------------------------------------------------------------------------
-      * Procedure       : SetImprintUnDeleted
-      * Description     : Set status not deleted
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  LockRecord
-      *                >:  LocalCommit
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : SetImprintUnDeleted
-      *-------------------------------------------------------------------------
-     P SetImprintUnDeleted...
-     P                 B
-     D SetImprintUnDeleted...
-     D                 PI                  like(*in)
-     D  p_Keys                         *
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * Local Variables : SetImprintUnDeleted
-      *-------------------------------------------------------------------------
-     D InKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_keys)
-     D Keys            DS                  likerec(MTIMPNF:*key)
-     D                                     inz
-     D Record          DS                  likerec(MTIMPNF:*input)
-     D RecordOut       DS                  likerec(MTIMPNF:*output)
-     D                                     based(p_Record)
-      *-------------------------------------------------------------------------
-      * Program code    : SetImprintUnDeleted
-      *-------------------------------------------------------------------------
-      /free
-       // Setup keys for access
-       Keys.IPIMPN = InKeys.ImprintNo;
-
-       p_Record = %addr(Record);
-
-       // Update delete flag
-       chain %kds(Keys) MTIMPNF Record;
-       if %found(MTIMPNP);
-            Record.IPDLTD = 'N';
-            Record.IPEDTS = %timestamp;
-            update MTIMPNF RecordOut;
-            commit;
-       endif;
-
-       return *on; // Valid
-      /end-free
-     P                 E
-      *-------------------------------------------------------------------------
-      * END Procedure   : SetImprintUnDeleted
-      *-------------------------------------------------------------------------
-
-      *-------------------------------------------------------------------------
-      * Procedure       : PurgeImprintRecord
-      * Description     : Physically purge (delete) records
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  LockRecord
-      *                >:  LocalCommit
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : PurgeImprintRecord
-      *-------------------------------------------------------------------------
-     P PurgeImprintRecord...
-     P                 B
-     D PurgeImprintrecord...
-     D                 PI                  like(*in)
-     D  p_Keys                         *
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * Local Variables : PurgeImprintRecord
-      *-------------------------------------------------------------------------
-     D InKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_keys)
-     D Keys            DS                  likerec(MTIMPNF:*key)
-     D                                     inz
-     D Record          DS                  likerec(MTIMPNF:*input)
-     D RecordOut       DS                  likerec(MTIMPNF:*output)
-     D                                     based(p_Record)
-      *-------------------------------------------------------------------------
-      * Program code    : PurgeImprintRecord
-      *-------------------------------------------------------------------------
-      /free
-       // Setup keys for access
-       Keys.IPIMPN = InKeys.ImprintNo;
-
-       p_Record = %addr(Record);
-
-       // Update delete flag
-       chain %kds(Keys) MTIMPNF Record;
-       if %found(MTIMPNP);
-            delete MTIMPNF;
-            commit;
-       endif;
-
-       return *on; // Valid
-      /end-free
-     P                 E
-      *-------------------------------------------------------------------------
-      * END Procedure   : PurgeImprintRecord
-      *-------------------------------------------------------------------------
-
-      *-------------------------------------------------------------------------
-      * Procedure       : CopyImprint
-      * Description     : Copy Imprint
-      * Returns         :< IsActioned
-      * Parameter      >:  p_Keys
-      *                >:  p_ToKeys
-      *                >:  LockRecord
-      *                >:  LocalCommit
-      *-------------------------------------------------------------------------
-      * BEGIN Procedure : CopyImprint
-      *-------------------------------------------------------------------------
-     P CopyImprint...
-     P                 B
-     D CopyImprint...
-     D                 PI                  like(*in)
-     D  p_Keys                         *
-     D  p_ToKeys                       *
-     D  LockRecord                     N   options(*omit)
-     D  LocalCommit                    N   options(*omit)
-      *-------------------------------------------------------------------------
-      * Local Variables : CopyImprint
-      *-------------------------------------------------------------------------
-     D InKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_keys)
-     D ToKeys          DS                  likeds(t_ImprintKeys)
-     D                                     based(p_Tokeys)
-     D Keys            DS                  likerec(MTIMPNF:*key)
-     D                                     inz
-     D Record          DS                  likerec(MTIMPNF:*input)
-     D RecordOut       DS                  likerec(MTIMPNF:*output)
-     D                                     based(p_Record)
-     D RSNM0100        DS                  likeds(t_RSNM0100)
-     D                                     inz
-     D wait            S              1A
-      *-------------------------------------------------------------------------
-      * Program code    : CopyImprint
-      *-------------------------------------------------------------------------
-      /free
-       // Setup keys for access
-       Keys.IPIMPN = InKeys.ImprintNo;
-
-       p_Record = %addr(Record);
-
-       // Copy record
-       monitor;
-            chain %kds(Keys) MTIMPNF Record;
-            if %found(MTIMPNP);
-                 Record.IPIMPN = ToKeys.ImprintNo;
-                 if ToKeys.ISBNImprint <> *blanks;
-                      Record.IPISBP = ToKeys.ISBNImprint;
+            select;
+            when Action = '*delete';
+                 if Record.IPDLTD = 'Y';
+                      QmhSndPgmMsg('MSG1561':      // Imprint flagged as deleted
+                                   MsgFileLMMSGF:  // Message file
+                                   '':             // Message data
+                                   0:              // Length of message data
+                                   '*ESCAPE':      // Message type
+                                   '*':            // Call stack entry (this)
+                                   0:              // Call stack count (this)
+                                   '':             // Message key
+                                   x'00000000');   // API error DS
                  endif;
-                 Record.IPCDTS = %timestamp;
-                 Record.IPEDTS = Record.IPCDTS;
-                 write MTIMPNF RecordOut;
-                 dsply ('Check locks now >>write<<') ' 'wait;
+                 Record.IPDLTD = 'Y';
+            when Action = '*active'
+            or   Action = '*purge';
+                 if Record.IPDLTD <> 'Y';
+                      QmhSndPgmMsg('MSG156A':      // Imprint flagged as active
+                                   MsgFileLMMSGF:  // Message file
+                                   '':             // Message data
+                                   0:              // Length of message data
+                                   '*ESCAPE':      // Message type
+                                   '*':            // Call stack entry (this)
+                                   0:              // Call stack count (this)
+                                   '':             // Message key
+                                   x'00000000');   // API error DS
+                 endif;
+                 Record.IPDLTD = 'N';
+            endsl;
+
+            Record.IPEDTS = %timestamp;
+            if IsLockRecord(LockRecord);
+                 select;
+                 when Action = '*delete'
+                 or   Action = '*active';
+                      update MTIMPNF Record;
+                 when Action = '*purge';
+                      delete MTIMPNF;
+                 when Action = '*copy';
+                      Record.IPIMPN = ToKeys.ImprintNo;
+                      if ToKeys.ISBNImprint <> *blanks;
+                           Record.IPISBP = ToKeys.ISBNImprint;
+                      endif;
+                      Record.IPCDTS = Record.IPEDTS;
+                      Record.IPDLTD = 'N';
+                      p_RecordOut = %addr(Record); // Link output to input
+                      write MTIMPNF RecordOut;
+                 endsl;
             endif;
        on-error;
-            if %addr(LocalCommit) = *null
-            or LocalCommit;
-                 dsply ('Check locks now >>rolbk-before<<') ' 'wait;
+            if IsLockRecord(LockRecord)
+            and IsLocalCommit(LocalCommit);
                  rolbk;
-                 dsply ('Check locks now >>rolbk-after<<') ' 'wait;
             endif;
             RSNM0100.ToCallStackCount = 1;
             RSNM0100.ToCallStackQualifier = '*NONE     *NONE';
@@ -1813,17 +1592,16 @@
                            0);
        endmon;
 
-       if %addr(LocalCommit) = *null
-       or LocalCommit;
+       if IsLockRecord(LockRecord)
+       and IsLocalCommit(LocalCommit);
             commit;
-            dsply ('Check locks now >>commit<<') ' 'wait;
        endif;
 
        return *on; // Valid
       /end-free
      P                 E
       *-------------------------------------------------------------------------
-      * END Procedure   : CopyImprint
+      * END Procedure   : ActionMTIMPNF
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
@@ -3489,10 +3267,12 @@
 
       *----------------------------------------------------------------------
       * Procedure       : ChkActionParms
-      * Description     : Check the parameters for the accessors are valid
+      * Description     : Check the parameters for the accessors
+      *                 : It should be noted that the Action value should
+      *                 :   not be reused for different actions, but instead
+      *                 :   should be unique to a specific action type.
       * Returns         :< IsValid
       * Parameter      >:  Action
-      *                >:  AllowedActions
       *                >:  p_Keys
       *                >:  p_ToKeys
       *                >:  LockRecord
@@ -3503,11 +3283,8 @@
      P ChkActionParms...
      P                 B
      D ChkActionParms...
-     D                 PI             1N   opdesc
+     D                 PI             1N
      D  Action                       10A   varying
-     D  AllowedActions...
-     D                              220A   varying
-     D                                     options(*varsize)
      D  p_Keys                         *
      D  p_ToKeys                       *
      D  LockRecord                     N
@@ -3515,36 +3292,19 @@
       *-------------------------------------------------------------------------
       * Local Variables : ChkActionParms
       *-------------------------------------------------------------------------
-     D SizeOfActions   S              5I 0 inz(%size(AllowedActions))
+     D AllowedActions...
+     D                 C                   const('*delete   1+
+     D                                            *active   1+
+     D                                            *purge    1+
+     D                                            *copy     2+
+     D                                            *rename   3')
      D i               S              5I 0
      D NoOfKeys        S              1P 0
-     D CEEDODds        DS                  likeds(t_CEEDOD)
-     D                                     inz
-     D wait            S              1A
       *-------------------------------------------------------------------------
       * Program code    : ChkActionParms
       *-------------------------------------------------------------------------
       /free
        // test inputs
-       CEEDOD(6:
-              CEEDODds.DescType:
-              CEEDODds.DataType:
-              CEEDODds.DescInfo1:
-              CEEDODds.DescInfo2:
-              CEEDODds.ParmLength:
-              *omit);
-       if CEEDODds.ParmLength > SizeOfActions - 2;
-            QmhSndPgmMsg('MSG2017':      // Passed parm 'AllowedAction' exceeds
-                         MsgFileLMMSGF:  // Message file
-                         '':             // Message data
-                         0:              // Length of message data
-                         '*ESCAPE':      // Message type
-                         '*PGMBDY':      // Call stack entry
-                         1:              // Call stack count
-                         '':             // Message key
-                         x'00000000');   // API error DS
-       endif;
-
        i = %scan(Action:AllowedActions);
        if i = 0;
             QmhSndPgmMsg('MSG2018':      // Action &1 is invalid
@@ -3611,6 +3371,62 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : ChkActionParms
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : IsLockRecord
+      * Description     : Check parameter value means lock record
+      * Returns         :< IsLockRecord
+      * Parameter      >:  LockRecord
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : IsLockRecord
+      *-------------------------------------------------------------------------
+     P IsLockRecord...
+     P                 B
+     D IsLockRecord...
+     D                 PI              N
+     D  LockRecord                     N
+      *-------------------------------------------------------------------------
+      * Local Variables : IsLockRecord
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : IsLockRecord
+      *-------------------------------------------------------------------------
+      /free
+       return %addr(LockRecord) = *null
+              or LockRecord = *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : IsLockRecord
+      *-------------------------------------------------------------------------
+
+      *----------------------------------------------------------------------
+      * Procedure       : IsLocalCommit
+      * Description     : Check parameter value means local commit
+      * Returns         :< IsLocalCommit
+      * Parameter      >:  LocalCommit
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : IsLocalCommit
+      *-------------------------------------------------------------------------
+     P IsLocalCommit...
+     P                 B
+     D IsLocalCommit...
+     D                 PI              N
+     D  LocalCommit                    N
+      *-------------------------------------------------------------------------
+      * Local Variables : IsLocalCommit
+      *-------------------------------------------------------------------------
+      *-------------------------------------------------------------------------
+      * Program code    : IsLocalCommit
+      *-------------------------------------------------------------------------
+      /free
+       return %addr(LocalCommit) = *null
+              or LocalCommit = *on;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : IsLocalCommit
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
