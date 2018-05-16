@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iSeriesMemberMetaData version="5.0">
-<properties>
+<properties com.ibm.etools.iseries.perspective.member-description="Imprint by ISBN prefix">
 <cachedProperties/>
 </properties>
 <isvproperties>

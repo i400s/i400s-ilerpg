@@ -1330,6 +1330,33 @@
 
       /if NOT defined(SrvDta_h)
       *-------------------------------------------------------------------------
+      * BEGIN Prototype : ReplaceExceptionMsg
+      * Description     : Replace exception message with a more user
+      *                 :   friendly and descriptive one
+      * Returns         :< AlternativeMsgExists
+      * Parameter       :< OriginalMsgKey
+      *                 :< NewMsgId
+      *                 :< NewQualifiedMsgFile
+      *                 :< NewMsgData
+      *                >:  NewMsgDataSize
+      *-------------------------------------------------------------------------
+     D ReplaceExceptionMsg...
+     D                 PR              N
+     D  MsgId...
+     D                                7A
+     D  QualifedMsgFile...
+     D                               20A
+     D  MsgData...
+     D                             8192A   options(*varsize)
+     D  MsgDataSize...
+     D                               10I 0 const
+      *-------------------------------------------------------------------------
+      * END Prototype   : IsLocalCommit
+      *-------------------------------------------------------------------------
+      /endif
+
+      /if NOT defined(SrvDta_h)
+      *-------------------------------------------------------------------------
       * BEGIN Prototype : InzPgm
       * Description     : Program initialisation
       * Returns         :< IsInitialised

@@ -1489,8 +1489,12 @@
      D Record          DS                  likerec(MTIMPNF:*input)
      D RecordOut       DS                  likerec(MTIMPNF:*output)
      D                                     based(p_RecordOut)
-     D RSNM0100        DS                  likeds(t_RSNM0100)
-     D                                     inz
+     D MsgId...
+     D                 S              7A
+     D QualifiedMsgFile...
+     D                 S             20A
+     D MsgData...
+     D                 S           8192A
       *-------------------------------------------------------------------------
       * Program code    : ActionMTIMPNF
       *-------------------------------------------------------------------------
@@ -1513,7 +1517,8 @@
                  chain(n) %kds(Keys) MTIMPNF Record;
             endif;
 
-            if not %found(MTIMPNP);
+            select;
+            when not %found(MTIMPNP);
                  QmhSndPgmMsg('MSG1560':      // Invalid Imprint
                               MsgFileLMMSGF:  // Message file
                               '':             // Message data
@@ -1523,9 +1528,7 @@
                               0:              // Call stack count (this)
                               '':             // Message key
                               x'00000000');   // API error DS
-            endif;
 
-            select;
             when Action = '*delete';
                  if Record.IPDLTD = 'Y';
                       QmhSndPgmMsg('MSG1561':      // Imprint flagged as deleted
@@ -1539,6 +1542,7 @@
                                    x'00000000');   // API error DS
                  endif;
                  Record.IPDLTD = 'Y';
+
             when Action = '*active'
             or   Action = '*purge';
                  if Record.IPDLTD <> 'Y';
@@ -1579,17 +1583,29 @@
             and IsLocalCommit(LocalCommit);
                  rolbk;
             endif;
-            RSNM0100.ToCallStackCount = 1;
-            RSNM0100.ToCallStackQualifier = '*NONE     *NONE';
-            RSNM0100.LenToCallStackEntry = %len(RSNM0100.ToCallStackEntry);
-            RSNM0100.ToCallStackEntry = '*PGMBDY';
-            QmhReSndEscMsg(*blanks:
-                           x'00000000':
-                           RSNM0100:
-                           %size(RSNM0100):
-                           'RSNM0100':
-                           *null:
-                           0);
+
+            if ReplaceExceptionMsg(
+                 MsgId:
+                 QualifiedMsgFile:
+                 MsgData:
+                 %size(MsgData));
+
+                 QmhSndPgmMsg(
+                      MsgId:
+                      QualifiedMsgFile:
+                      MsgData:
+                      %size(MsgData):
+                      '*ESCAPE':      // Message type
+                      '*':            // Call stack entry (this)
+                      1:              // Call stack count (previous)
+                      '':             // Message key
+                      x'00000000');   // API error DS
+
+            else;
+                 QmhReSndEscMsg(
+                      *blanks:
+                      x'00000000');
+            endif;
        endmon;
 
        if IsLockRecord(LockRecord)
@@ -3427,6 +3443,142 @@
      P                 E
       *-------------------------------------------------------------------------
       * END Procedure   : IsLocalCommit
+      *-------------------------------------------------------------------------
+
+      *-------------------------------------------------------------------------
+      * Procedure       : ReplaceExceptionMsg
+      * Description     : Replace exception message with a more user
+      *                 :   friendly and descriptive one
+      * Returns         :< ReplaceExceptionMsg
+      * Parameter       :< MsgId
+      *                 :< QualifiedMsgFile
+      *                 :< MsgData
+      *                >:  MsgDataSize
+      *-------------------------------------------------------------------------
+      * BEGIN Procedure : ReplaceExceptionMsg
+      *-------------------------------------------------------------------------
+     P ReplaceExceptionMsg...
+     P                 B
+     D ReplaceExceptionMsg...
+     D                 PI                  like(*in)
+     D   MsgId...
+     D                                7A
+     D   QualifiedMsgFile...
+     D                               20A
+     D   MsgData...
+     D                             8192A   options(*varsize)
+     D   MsgDataSize...
+     D                               10I 0 const
+      *-------------------------------------------------------------------------
+      * Local Variables : ReplaceExceptionMsg
+      *-------------------------------------------------------------------------
+     D RCVM0100        DS                  likeds(t_RCVM0100)
+     D                                     inz(*likeds)
+     D MBRD0100        DS                  likeds(t_MBRD0100)
+     D                                     inz(*likeds)
+     D MSG2021         DS                  inz
+     D                                     qualified
+     D   DBMember                    10A
+     D   DBFile                      10A
+     D   DBLibrary                   10A
+     D   RPGMember                   10A
+     D   RPGFile                     10A
+     D   RPGLibrary                  10A
+     D   MemberText                  40A
+     D Library         S             10A
+     D File            S             10A
+     D Member          S             10A
+     D wk0033c         S             33A
+     D i               S              5I 0
+      *-------------------------------------------------------------------------
+      * Program code    : ReplaceExceptionMsg
+      *-------------------------------------------------------------------------
+      /free
+       // Recieve program message, *ESCAPE, from caller
+       QmhRcvPgmMsg(
+            RCVM0100:
+            %size(RCVM0100):
+            'RCVM0100':
+            '*':
+            1:
+            '*ESCAPE':
+            *blanks:
+            0:
+            '*SAME':
+            x'00000000');
+
+       if RCVM0100.MessageID = 'RNX1021'; // Duplicate key error
+
+            wk0033c = %subst(RCVM0100.MsgData:60:33); // 'library/file(member)'
+            i = %scan('/':wk0033c);
+            library = %subst(wk0033c:1:i-1);          // 'library'
+            MSG2021.RPGLibrary = library;
+
+            wk0033c = %subst(wk0033c:i+1);            // 'file(member)'
+            i = %scan('(':wk0033c);
+            file = %subst(wk0033c:1:i-1);             // 'file'
+            MSG2021.RPGFile = file;
+
+            wk0033c = %subst(wk0033c:i+1);            // 'member)'
+            i = %scan(')':wk0033c);
+            Member = %subst(wk0033c:1:i-1);           // 'member'
+            MSG2021.RPGMember = Member;
+
+            // Recieve program message, *DIAG, from caller
+            QmhRcvPgmMsg(
+                 RCVM0100:
+                 %size(RCVM0100):
+                 'RCVM0100':
+                 '*':
+                 1:
+                 '*DIAG':
+                 *blanks:
+                 0:
+                 '*SAME':
+                 x'00000000');
+
+            if RCVM0100.MessageID = 'CPF5009'; // Duplicate key error
+                 Library = %subst(RCVM0100.MsgData:21:10);
+                 MSG2021.DBLibrary = Library;
+                 File = %subst(RCVM0100.MsgData:11:10);
+                 MSG2021.DBFile = file;
+                 Member = %subst(RCVM0100.MsgData:1:10);
+                 MSG2021.DBMember = Member;
+            endif;
+
+            // get mbr description...
+            QusrMbrDsc(
+                 MBRD0100:
+                 %size(MBRD0100):
+                 'MBRD0100':
+                 File + Library:
+                 Member:
+                 *on:
+                 x'00000000');
+
+            MSG2021.MemberText = MBRD0100.MbrTextDescription;
+            if MSG2021.MemberText = *blanks;
+                 MSG2021.MemberText =
+                      %trimr(Library) +
+                       '/' +
+                      %trimr(File) +
+                      '(' +
+                      %trimr(Member) +
+                      ')';
+            endif;
+
+            MsgId = 'MSG2021';
+            QualifiedMsgFile = MsgFileLMMSGF;
+            MsgData = MSG2021;
+
+            return *on;
+       endif;
+
+       return *off;
+      /end-free
+     P                 E
+      *-------------------------------------------------------------------------
+      * END Procedure   : ReplaceExceptionMsg
       *-------------------------------------------------------------------------
 
       *----------------------------------------------------------------------
